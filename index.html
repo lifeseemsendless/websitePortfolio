@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VELOR — Experience Driving Redefined</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Syne:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --black:#000;--white:#fff;
+  --silver:#c8cdd6;--silver-dark:#8a8f99;
+  --gold:#b8975a;--gold-light:#d4b47a;
+  --surface:#0a0a0c;--surface-2:#111115;--surface-3:#1a1a20;--surface-4:#222229;
+  --text-primary:#f0f0f5;--text-secondary:#8a8a99;--text-muted:#555560;
+  --border:#1e1e26;--border-light:#2a2a35;
+  --accent:#b8975a;
+  --font-display:'Cormorant Garamond',serif;
+  --font-ui:'Syne',sans-serif;
+  --nav-h:72px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--surface);color:var(--text-primary);font-family:var(--font-ui);overflow-x:hidden;line-height:1.6}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+button{border:none;background:none;cursor:pointer;font-family:var(--font-ui)}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px}
+
+/* ─── CURSOR ─── */
+.cursor{position:fixed;width:8px;height:8px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,opacity .2s}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(184,151,90,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .1s,width .2s,height .2s}
+.cursor.hover{width:16px;height:16px}
+.cursor-ring.hover{width:48px;height:48px;border-color:rgba(184,151,90,.7)}
+
+/* ─── NAV ─── */
+nav{position:fixed;top:0;left:0;width:100%;height:var(--nav-h);z-index:1000;transition:background .4s,backdrop-filter .4s,border-bottom .4s;padding:0 48px;display:flex;align-items:center;justify-content:space-between}
+nav.solid{background:rgba(10,10,12,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:var(--font-display);font-size:24px;font-weight:300;letter-spacing:.3em;color:var(--text-primary);text-transform:uppercase}
+.nav-logo span{color:var(--gold)}
+.nav-links{display:flex;align-items:center;gap:40px;list-style:none}
+.nav-links a{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-secondary);transition:color .2s;font-weight:500}
+.nav-links a:hover{color:var(--gold)}
+.nav-links .nav-cta{border:1px solid var(--gold);padding:10px 24px;color:var(--gold);transition:all .2s}
+.nav-links .nav-cta:hover{background:var(--gold);color:var(--black)}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer}
+.nav-hamburger span{width:24px;height:1px;background:var(--text-primary);transition:all .3s}
+
+/* ─── HERO ─── */
+#hero{position:relative;height:100vh;min-height:700px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-canvas{position:absolute;inset:0;width:100%;height:100%}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,.85) 0%,rgba(0,0,0,.3) 60%,rgba(0,0,0,.6) 100%)}
+.hero-content{position:relative;z-index:1;text-align:center;max-width:900px;padding:0 24px}
+.hero-eyebrow{font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);margin-bottom:28px;opacity:0;animation:fadeUp .8s .3s forwards}
+.hero-title{font-family:var(--font-display);font-size:clamp(52px,8vw,100px);font-weight:300;line-height:1.05;letter-spacing:-.01em;margin-bottom:28px;opacity:0;animation:fadeUp .8s .5s forwards}
+.hero-title em{font-style:italic;color:var(--gold)}
+.hero-sub{font-size:14px;letter-spacing:.15em;color:var(--text-secondary);text-transform:uppercase;margin-bottom:48px;opacity:0;animation:fadeUp .8s .7s forwards}
+.hero-actions{display:flex;gap:20px;justify-content:center;opacity:0;animation:fadeUp .8s .9s forwards}
+.btn-primary{background:var(--gold);color:var(--black);padding:16px 40px;font-size:11px;letter-spacing:.25em;text-transform:uppercase;font-weight:600;transition:all .3s;font-family:var(--font-ui)}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-2px)}
+.btn-outline{border:1px solid rgba(255,255,255,.3);color:var(--text-primary);padding:16px 40px;font-size:11px;letter-spacing:.25em;text-transform:uppercase;font-weight:500;transition:all .3s;font-family:var(--font-ui)}
+.btn-outline:hover{border-color:var(--white);transform:translateY(-2px)}
+.scroll-indicator{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:fadeUp .8s 1.2s forwards}
+.scroll-indicator span{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--text-muted)}
+.scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollPulse 2s infinite}
+
+/* ─── SECTION COMMON ─── */
+.section{padding:120px 0}
+.section-inner{max-width:1320px;margin:0 auto;padding:0 48px}
+.section-label{font-size:10px;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.section-title{font-family:var(--font-display);font-size:clamp(36px,5vw,64px);font-weight:300;line-height:1.1;letter-spacing:-.01em}
+.section-subtitle{font-size:14px;color:var(--text-secondary);letter-spacing:.05em;margin-top:16px;max-width:520px;line-height:1.8}
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s,transform .8s}
+.reveal.visible{opacity:1;transform:none}
+
+/* ─── DIVIDER ─── */
+.gold-line{width:48px;height:1px;background:var(--gold);margin:24px 0}
+
+/* ─── FEATURED VEHICLES ─── */
+#models{background:var(--surface-2)}
+.models-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:64px}
+.models-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.car-card{background:var(--surface-2);overflow:hidden;position:relative;cursor:pointer;transition:all .4s}
+.car-card:hover{background:var(--surface-3)}
+.car-card-img{aspect-ratio:16/9;overflow:hidden;position:relative;background:var(--surface-3)}
+.car-card-img::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.6),transparent 60%);z-index:1}
+.car-visual{width:100%;height:100%;display:flex;align-items:center;justify-content:center;transition:transform .6s}
+.car-card:hover .car-visual{transform:scale(1.04)}
+.car-card-body{padding:28px 28px 24px}
+.car-tag{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.car-name{font-family:var(--font-display);font-size:26px;font-weight:400;letter-spacing:-.01em;margin-bottom:4px}
+.car-model{font-size:12px;color:var(--text-secondary);letter-spacing:.1em;margin-bottom:20px}
+.car-specs{display:flex;gap:24px;margin-bottom:20px}
+.spec-item{display:flex;flex-direction:column;gap:4px}
+.spec-val{font-size:20px;font-family:var(--font-display);font-weight:400;color:var(--text-primary)}
+.spec-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted)}
+.car-card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:20px;border-top:1px solid var(--border)}
+.car-price{font-family:var(--font-display);font-size:18px;font-weight:400;color:var(--gold)}
+.car-price small{font-size:11px;color:var(--text-muted);font-family:var(--font-ui);margin-right:4px}
+.btn-ghost{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-secondary);display:flex;align-items:center;gap:8px;transition:color .2s;font-family:var(--font-ui)}
+.btn-ghost:hover{color:var(--gold)}
+.btn-ghost::after{content:'→';transition:transform .2s}
+.btn-ghost:hover::after{transform:translateX(4px)}
+
+/* ─── DETAIL / HERO SPLIT ─── */
+#detail{background:var(--surface)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:700px}
+.detail-left{position:relative;overflow:hidden;background:var(--surface-3)}
+.detail-viewer{width:100%;height:100%;min-height:600px;display:flex;align-items:center;justify-content:center;position:relative}
+.detail-thumbnails{position:absolute;bottom:32px;left:32px;display:flex;gap:8px}
+.thumb{width:48px;height:32px;border:1px solid var(--border-light);cursor:pointer;overflow:hidden;transition:border-color .2s}
+.thumb.active{border-color:var(--gold)}
+.detail-right{padding:80px 64px;display:flex;flex-direction:column;justify-content:center;background:var(--surface-2)}
+.detail-badge{display:inline-flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(184,151,90,.3);padding:8px 16px;margin-bottom:28px}
+.detail-title{font-family:var(--font-display);font-size:clamp(40px,4vw,56px);font-weight:300;line-height:1.1;margin-bottom:8px}
+.detail-price-row{display:flex;align-items:baseline;gap:12px;margin:24px 0;padding:20px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.detail-price{font-family:var(--font-display);font-size:36px;font-weight:400;color:var(--gold)}
+.detail-price-label{font-size:11px;color:var(--text-muted);letter-spacing:.15em;text-transform:uppercase}
+.detail-specs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:24px 0}
+.detail-spec{padding:16px;border:1px solid var(--border);background:var(--surface-3)}
+.detail-spec-val{font-family:var(--font-display);font-size:22px;font-weight:400;color:var(--text-primary)}
+.detail-spec-key{font-size:10px;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase;margin-top:4px}
+.color-picker{margin:28px 0}
+.color-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:12px}
+.colors{display:flex;gap:10px}
+.color-swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border-color .2s;position:relative}
+.color-swatch.active::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--gold)}
+.detail-actions{display:flex;gap:12px;margin-top:8px}
+
+/* ─── CONFIGURATOR ─── */
+#configure{background:var(--surface-3)}
+.configure-wrap{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+.config-preview{position:sticky;top:100px}
+.config-car-display{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;background:var(--surface-2);border:1px solid var(--border);position:relative;overflow:hidden}
+.config-price-display{margin-top:24px;padding:20px;border:1px solid var(--border);background:var(--surface)}
+.config-price-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
+.config-price-val{font-family:var(--font-display);font-size:40px;font-weight:300;color:var(--gold)}
+.config-options{display:flex;flex-direction:column;gap:40px}
+.config-section-title{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.config-pills{display:flex;flex-wrap:wrap;gap:10px}
+.config-pill{padding:10px 20px;font-size:12px;letter-spacing:.1em;border:1px solid var(--border-light);color:var(--text-secondary);cursor:pointer;transition:all .2s;text-transform:uppercase}
+.config-pill.selected{border-color:var(--gold);color:var(--gold);background:rgba(184,151,90,.05)}
+.config-colors{display:flex;gap:12px}
+.config-color{width:36px;height:36px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border-color .2s;position:relative}
+.config-color.selected::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--gold)}
+
+/* ─── EV SECTION ─── */
+#electric{background:var(--black);position:relative;overflow:hidden}
+#electric::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(184,151,90,.08),transparent)}
+.ev-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.ev-visual{position:relative}
+.ev-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:1px}
+.ev-metric{background:var(--surface);padding:28px 20px;text-align:center}
+.ev-metric-val{font-family:var(--font-display);font-size:40px;font-weight:300;color:var(--gold);line-height:1}
+.ev-metric-unit{font-size:13px;color:var(--gold);font-family:var(--font-display)}
+.ev-metric-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-top:8px}
+.ev-features{display:flex;flex-direction:column;gap:24px;margin-top:40px}
+.ev-feature{display:flex;gap:20px;align-items:flex-start;padding:20px;border-left:1px solid var(--border);transition:border-color .3s}
+.ev-feature:hover{border-color:var(--gold)}
+.ev-feature-icon{width:40px;height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid var(--border-light)}
+.ev-feature-title{font-size:14px;font-weight:500;letter-spacing:.05em;margin-bottom:4px}
+.ev-feature-desc{font-size:13px;color:var(--text-secondary);line-height:1.7}
+.ev-battery-bar{margin-top:32px}
+.battery-track{height:4px;background:var(--border);position:relative;overflow:hidden}
+.battery-fill{height:100%;background:linear-gradient(to right,var(--gold),var(--gold-light));width:0;transition:width 1.5s ease}
+.battery-track.animated .battery-fill{width:87%}
+.battery-labels{display:flex;justify-content:space-between;margin-top:8px}
+.battery-label{font-size:11px;color:var(--text-muted);letter-spacing:.1em}
+
+/* ─── FINANCING ─── */
+#financing{background:var(--surface-2)}
+.fin-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+.emi-card{background:var(--surface-3);border:1px solid var(--border);padding:40px}
+.emi-title{font-family:var(--font-display);font-size:28px;font-weight:300;margin-bottom:32px}
+.emi-input-group{margin-bottom:24px}
+.emi-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:8px}
+.emi-input{width:100%;background:var(--surface);border:1px solid var(--border-light);color:var(--text-primary);padding:14px 16px;font-family:var(--font-ui);font-size:14px;outline:none;transition:border-color .2s}
+.emi-input:focus{border-color:var(--gold)}
+.emi-range{width:100%;accent-color:var(--gold);margin-top:8px;cursor:pointer}
+.emi-result{margin-top:32px;padding:24px;background:var(--surface);border:1px solid var(--border)}
+.emi-monthly{font-family:var(--font-display);font-size:44px;font-weight:300;color:var(--gold)}
+.emi-monthly span{font-size:16px;color:var(--text-muted);font-family:var(--font-ui)}
+.offers-list{display:flex;flex-direction:column;gap:16px}
+.offer-card{padding:24px;border:1px solid var(--border);background:var(--surface-3);transition:border-color .3s}
+.offer-card:hover{border-color:var(--gold)}
+.offer-tag{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.offer-title{font-size:16px;font-weight:500;margin-bottom:6px}
+.offer-desc{font-size:13px;color:var(--text-secondary);line-height:1.7}
+
+/* ─── ABOUT / TIMELINE ─── */
+#about{background:var(--surface)}
+.about-intro{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-bottom:80px;align-items:center}
+.timeline{position:relative;padding-left:48px}
+.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--border)}
+.timeline-item{position:relative;margin-bottom:48px}
+.timeline-item::before{content:'';position:absolute;left:-52px;top:4px;width:8px;height:8px;border-radius:50%;background:var(--gold)}
+.timeline-year{font-size:11px;letter-spacing:.3em;color:var(--gold);margin-bottom:8px;text-transform:uppercase}
+.timeline-title{font-size:16px;font-weight:500;margin-bottom:8px}
+.timeline-desc{font-size:13px;color:var(--text-secondary);line-height:1.7}
+.awards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin-top:60px}
+.award-item{background:var(--surface-2);padding:28px;text-align:center}
+.award-num{font-family:var(--font-display);font-size:48px;font-weight:300;color:var(--gold);line-height:1}
+.award-label{font-size:11px;color:var(--text-secondary);letter-spacing:.15em;text-transform:uppercase;margin-top:8px}
+
+/* ─── TESTIMONIALS ─── */
+#testimonials{background:var(--surface-3)}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.testi-card{background:var(--surface-3);padding:36px}
+.stars{display:flex;gap:4px;margin-bottom:16px}
+.star{color:var(--gold);font-size:14px}
+.testi-text{font-family:var(--font-display);font-size:18px;font-weight:300;font-style:italic;line-height:1.6;color:var(--text-primary);margin-bottom:24px}
+.testi-author{display:flex;align-items:center;gap:12px}
+.testi-avatar{width:40px;height:40px;border-radius:50%;background:var(--surface-4);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--gold);font-family:var(--font-ui)}
+.testi-name{font-size:14px;font-weight:500}
+.testi-role{font-size:12px;color:var(--text-muted)}
+
+/* ─── CONTACT ─── */
+#contact{background:var(--surface-2)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px}
+.contact-form{display:flex;flex-direction:column;gap:20px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-group{display:flex;flex-direction:column;gap:8px}
+.form-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-secondary)}
+.form-input{background:var(--surface);border:1px solid var(--border-light);color:var(--text-primary);padding:14px 16px;font-family:var(--font-ui);font-size:14px;outline:none;transition:border-color .2s;resize:none}
+.form-input:focus{border-color:var(--gold)}
+.dealer-list{display:flex;flex-direction:column;gap:16px}
+.dealer-card{padding:20px;border:1px solid var(--border);cursor:pointer;transition:border-color .3s,background .3s}
+.dealer-card:hover,.dealer-card.active{border-color:var(--gold);background:rgba(184,151,90,.04)}
+.dealer-name{font-size:15px;font-weight:500;margin-bottom:4px}
+.dealer-addr{font-size:13px;color:var(--text-secondary)}
+.dealer-hours{font-size:12px;color:var(--text-muted);margin-top:4px}
+.map-placeholder{width:100%;height:200px;background:var(--surface-3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:20px;position:relative;overflow:hidden}
+
+/* ─── FOOTER ─── */
+footer{background:var(--black);border-top:1px solid var(--border);padding:64px 0 32px}
+.footer-inner{max-width:1320px;margin:0 auto;padding:0 48px}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;margin-bottom:60px}
+.footer-brand-name{font-family:var(--font-display);font-size:28px;font-weight:300;letter-spacing:.2em;color:var(--text-primary);margin-bottom:16px}
+.footer-brand-name span{color:var(--gold)}
+.footer-tagline{font-size:13px;color:var(--text-secondary);line-height:1.8;max-width:280px;margin-bottom:28px}
+.social-links{display:flex;gap:16px}
+.social-link{width:36px;height:36px;border:1px solid var(--border-light);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text-secondary);transition:all .2s}
+.social-link:hover{border-color:var(--gold);color:var(--gold)}
+.footer-col-title{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-links a{font-size:13px;color:var(--text-secondary);transition:color .2s}
+.footer-links a:hover{color:var(--text-primary)}
+.newsletter{margin-top:8px}
+.newsletter-input-row{display:flex;margin-top:12px}
+.newsletter-input{flex:1;background:var(--surface-2);border:1px solid var(--border-light);border-right:none;color:var(--text-primary);padding:12px 16px;font-family:var(--font-ui);font-size:13px;outline:none}
+.newsletter-btn{background:var(--gold);border:none;padding:12px 20px;color:var(--black);font-size:11px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;font-family:var(--font-ui);font-weight:600;transition:background .2s}
+.newsletter-btn:hover{background:var(--gold-light)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:32px;border-top:1px solid var(--border)}
+.footer-legal{font-size:12px;color:var(--text-muted)}
+.footer-legal-links{display:flex;gap:24px}
+.footer-legal-links a{font-size:12px;color:var(--text-muted);transition:color .2s}
+.footer-legal-links a:hover{color:var(--text-secondary)}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes scrollPulse{0%,100%{opacity:.3;transform:scaleY(.8)}50%{opacity:1;transform:scaleY(1)}}
+@keyframes carFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes shimmer{0%{background-position:-200%}100%{background-position:200%}}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+.float{animation:carFloat 4s ease-in-out infinite}
+
+/* ─── MOBILE ─── */
+@media(max-width:1024px){
+  .models-grid{grid-template-columns:repeat(2,1fr)}
+  .ev-grid,.fin-grid,.configure-wrap,.about-intro,.contact-grid,.detail-grid{grid-template-columns:1fr}
+  .awards-grid{grid-template-columns:repeat(2,1fr)}
+  .testi-grid{grid-template-columns:1fr}
+  .detail-right{padding:40px 32px}
+  .footer-top{grid-template-columns:1fr 1fr;gap:40px}
+}
+@media(max-width:768px){
+  nav{padding:0 24px}
+  .nav-links{display:none}
+  .nav-hamburger{display:flex}
+  .section-inner{padding:0 24px}
+  .section{padding:80px 0}
+  .models-grid{grid-template-columns:1fr}
+  .hero-actions{flex-direction:column;align-items:center}
+  .configure-wrap{gap:40px}
+  .config-preview{position:relative;top:0}
+  .footer-top{grid-template-columns:1fr}
+  .footer-inner{padding:0 24px}
+  .footer-bottom{flex-direction:column;gap:16px;text-align:center}
+  .form-row{grid-template-columns:1fr}
+  .awards-grid{grid-template-columns:repeat(2,1fr)}
+}
+
+/* Mobile nav overlay */
+.nav-mobile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.98);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:32px}
+.nav-mobile-overlay.open{display:flex}
+.nav-mobile-overlay a{font-family:var(--font-display);font-size:36px;font-weight:300;color:var(--text-primary);letter-spacing:.05em;transition:color .2s}
+.nav-mobile-overlay a:hover{color:var(--gold)}
+.nav-close{position:absolute;top:28px;right:24px;font-size:24px;color:var(--text-secondary);cursor:pointer;background:none;border:none;font-family:var(--font-ui)}
+
+/* Notification toast */
+.toast{position:fixed;bottom:32px;right:32px;background:var(--surface-4);border:1px solid var(--gold);padding:16px 24px;font-size:13px;color:var(--text-primary);z-index:2000;transform:translateY(80px);opacity:0;transition:all .3s;max-width:300px}
+.toast.show{transform:none;opacity:1}
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ─── NAV ─── -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">VEL<span>O</span>R</a>
+  <ul class="nav-links">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#models">Models</a></li>
+    <li><a href="#electric">Electric</a></li>
+    <li><a href="#financing">Offers</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact" class="nav-cta">Contact</a></li>
+  </ul>
+  <div class="nav-hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- Mobile Nav -->
+<div class="nav-mobile-overlay" id="mobileNav">
+  <button class="nav-close" id="navClose">✕</button>
+  <a href="#hero" onclick="closeMobileNav()">Home</a>
+  <a href="#models" onclick="closeMobileNav()">Models</a>
+  <a href="#electric" onclick="closeMobileNav()">Electric</a>
+  <a href="#financing" onclick="closeMobileNav()">Offers</a>
+  <a href="#about" onclick="closeMobileNav()">About</a>
+  <a href="#contact" onclick="closeMobileNav()">Contact</a>
+</div>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-bg">
+    <canvas class="hero-canvas" id="heroCanvas"></canvas>
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Est. 1964 · Precision Engineering</p>
+    <h1 class="hero-title">Experience<br><em>Driving</em><br>Redefined</h1>
+    <p class="hero-sub">Where Engineering Meets Artistry</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="scrollTo('#models')">Explore Models</button>
+      <button class="btn-outline" onclick="scrollTo('#contact')">Book a Test Drive</button>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ─── FEATURED VEHICLES ─── -->
+<section class="section" id="models">
+  <div class="section-inner">
+    <div class="models-header reveal">
+      <div>
+        <p class="section-label">Our Collection</p>
+        <h2 class="section-title">Featured<br>Vehicles</h2>
+      </div>
+      <a href="#configure" class="btn-ghost">View All Models</a>
+    </div>
+    <div class="models-grid reveal" id="carsGrid"></div>
+  </div>
+</section>
+
+<!-- ─── VEHICLE DETAIL ─── -->
+<section class="section" id="detail" style="padding:0">
+  <div class="detail-grid">
+    <div class="detail-left">
+      <div class="detail-viewer" id="detailViewer"></div>
+      <div class="detail-thumbnails" id="detailThumbs"></div>
+    </div>
+    <div class="detail-right reveal">
+      <div class="detail-badge">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block"></span>
+        New Model 2025
+      </div>
+      <h2 class="detail-title">VELOR<br>APEX GTR</h2>
+      <p style="font-size:14px;color:var(--text-secondary);line-height:1.8;margin-top:12px">Conceived at the intersection of raw performance and refined luxury. The Apex GTR redefines what a grand tourer can be.</p>
+      <div class="detail-price-row">
+        <div class="detail-price">$189,500</div>
+        <div class="detail-price-label">Starting Price</div>
+      </div>
+      <div class="detail-specs-grid">
+        <div class="detail-spec"><div class="detail-spec-val">710</div><div class="detail-spec-key">Horsepower</div></div>
+        <div class="detail-spec"><div class="detail-spec-val">3.1s</div><div class="detail-spec-key">0–60 mph</div></div>
+        <div class="detail-spec"><div class="detail-spec-val">211</div><div class="detail-spec-key">Top Speed mph</div></div>
+        <div class="detail-spec"><div class="detail-spec-val">AWD</div><div class="detail-spec-key">Drivetrain</div></div>
+      </div>
+      <div class="color-picker">
+        <p class="color-label">Exterior Color — <span id="colorName">Midnight Obsidian</span></p>
+        <div class="colors" id="colorSwatches"></div>
+      </div>
+      <div class="detail-actions">
+        <button class="btn-primary" onclick="showToast('Customization tool launching...')">Customize</button>
+        <button class="btn-outline" onclick="showToast('Test drive booking confirmed!')">Book Test Drive</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── BUILD & CONFIGURE ─── -->
+<section class="section" id="configure">
+  <div class="section-inner">
+    <div class="reveal" style="margin-bottom:64px">
+      <p class="section-label">Build Yours</p>
+      <h2 class="section-title">Configure<br>Your Velor</h2>
+      <div class="gold-line"></div>
+      <p class="section-subtitle">Personalize every detail. Your vision, engineered to perfection.</p>
+    </div>
+    <div class="configure-wrap">
+      <div class="config-preview reveal">
+        <div class="config-car-display" id="configDisplay"></div>
+        <div class="config-price-display">
+          <div class="config-price-label">Estimated Total</div>
+          <div class="config-price-val" id="configPrice">$142,000</div>
+        </div>
+        <button class="btn-primary" style="width:100%;margin-top:12px;padding:18px" onclick="showToast('Configuration saved! A specialist will contact you.')">Save Configuration</button>
+      </div>
+      <div class="config-options reveal" id="configOptions"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ELECTRIC / EV ─── -->
+<section class="section" id="electric">
+  <div class="section-inner">
+    <div class="ev-grid">
+      <div class="ev-visual reveal">
+        <p class="section-label">Zero Emissions</p>
+        <h2 class="section-title">The Electric<br><em style="font-style:italic;color:var(--gold)">Revolution</em></h2>
+        <div class="gold-line"></div>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.8;margin-bottom:32px">Velor's all-electric platform delivers instantaneous torque, zero emissions, and a driving experience unlike anything before. The future isn't coming — it's here.</p>
+        <div class="ev-battery-bar" id="batteryBar">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <span style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-secondary)">Estimated Range</span>
+            <span style="font-size:11px;color:var(--gold);font-family:var(--font-display);font-weight:400">520 mi</span>
+          </div>
+          <div class="battery-track" id="batteryTrack">
+            <div class="battery-fill"></div>
+          </div>
+          <div class="battery-labels">
+            <span class="battery-label">0 mi</span>
+            <span class="battery-label">600 mi</span>
+          </div>
+        </div>
+        <div class="ev-features" style="margin-top:32px">
+          <div class="ev-feature">
+            <div class="ev-feature-icon">⚡</div>
+            <div><div class="ev-feature-title">Ultra-Fast Charging</div><div class="ev-feature-desc">0–80% in 22 minutes with 350kW DC fast charging capability</div></div>
+          </div>
+          <div class="ev-feature">
+            <div class="ev-feature-icon">🔋</div>
+            <div><div class="ev-feature-title">Dual-Motor AWD</div><div class="ev-feature-desc">Combined output of 1,020 hp with independent front and rear motors</div></div>
+          </div>
+          <div class="ev-feature">
+            <div class="ev-feature-icon">🌿</div>
+            <div><div class="ev-feature-title">Sustainable Materials</div><div class="ev-feature-desc">Interior crafted from recycled ocean plastics and plant-based leather alternatives</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div id="evVisualCanvas" style="aspect-ratio:1;position:relative;overflow:hidden;background:var(--surface-3);border:1px solid var(--border)"></div>
+        <div class="ev-metrics">
+          <div class="ev-metric"><div class="ev-metric-val">520<span class="ev-metric-unit">mi</span></div><div class="ev-metric-label">Range</div></div>
+          <div class="ev-metric"><div class="ev-metric-val">22<span class="ev-metric-unit">min</span></div><div class="ev-metric-label">Fast Charge</div></div>
+          <div class="ev-metric"><div class="ev-metric-val">2.4<span class="ev-metric-unit">s</span></div><div class="ev-metric-label">0–60 mph</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FINANCING ─── -->
+<section class="section" id="financing">
+  <div class="section-inner">
+    <div class="reveal" style="margin-bottom:64px">
+      <p class="section-label">Ownership Made Easy</p>
+      <h2 class="section-title">Offers &<br>Financing</h2>
+    </div>
+    <div class="fin-grid">
+      <div class="emi-card reveal">
+        <h3 class="emi-title">EMI Calculator</h3>
+        <div class="emi-input-group">
+          <div class="emi-label">Vehicle Price</div>
+          <input class="emi-input" type="number" id="emiPrice" value="142000" oninput="calcEMI()">
+        </div>
+        <div class="emi-input-group">
+          <div class="emi-label">Down Payment — <span id="downLabel">$28,400</span></div>
+          <input class="emi-range" type="range" min="10" max="50" value="20" id="downSlider" oninput="updateDown();calcEMI()">
+        </div>
+        <div class="emi-input-group">
+          <div class="emi-label">Loan Term — <span id="termLabel">60 months</span></div>
+          <input class="emi-range" type="range" min="24" max="84" step="12" value="60" id="termSlider" oninput="updateTerm();calcEMI()">
+        </div>
+        <div class="emi-input-group">
+          <div class="emi-label">Interest Rate — <span id="rateLabel">6.9%</span></div>
+          <input class="emi-range" type="range" min="3" max="15" step="0.1" value="6.9" id="rateSlider" oninput="updateRate();calcEMI()">
+        </div>
+        <div class="emi-result">
+          <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px">Monthly Payment</div>
+          <div class="emi-monthly" id="emiResult">$0<span>/mo</span></div>
+        </div>
+      </div>
+      <div class="reveal">
+        <p class="section-label">Current Promotions</p>
+        <div class="offers-list" id="offersList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ABOUT ─── -->
+<section class="section" id="about">
+  <div class="section-inner">
+    <div class="about-intro reveal">
+      <div>
+        <p class="section-label">Our Story</p>
+        <h2 class="section-title">Sixty Years<br>of <em style="font-style:italic;color:var(--gold)">Passion</em></h2>
+        <div class="gold-line"></div>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.8;margin-top:0">Founded in the Swiss Alps by two visionary engineers, Velor has always believed that the perfect automobile is a work of art. Every vehicle we create bears the mark of relentless pursuit — of speed, of beauty, of the ineffable sensation of perfect motion.</p>
+        <button class="btn-primary" style="margin-top:32px" onclick="showToast('Our story continues...')">Our Heritage</button>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item"><div class="timeline-year">1964</div><div class="timeline-title">Founded in Geneva</div><div class="timeline-desc">Ernst Velor and Marco Aldini create their first prototype in a converted watch factory.</div></div>
+        <div class="timeline-item"><div class="timeline-year">1978</div><div class="timeline-title">First Production Model</div><div class="timeline-desc">The V8 Classico enters production, capturing hearts with its revolutionary twin-turbo engine.</div></div>
+        <div class="timeline-item"><div class="timeline-year">1995</div><div class="timeline-title">Formula Racing Entry</div><div class="timeline-desc">Velor Motorsport wins back-to-back championships, cementing our performance legacy.</div></div>
+        <div class="timeline-item"><div class="timeline-year">2019</div><div class="timeline-title">Electric Future Begins</div><div class="timeline-desc">Project EV-1 unveiled — a 1,000 hp all-electric hypercar that shocked the automotive world.</div></div>
+        <div class="timeline-item"><div class="timeline-year">2025</div><div class="timeline-title">The Apex GTR</div><div class="timeline-desc">Our most advanced road car ever, blending hybrid power with unmatched digital integration.</div></div>
+      </div>
+    </div>
+    <div class="awards-grid reveal">
+      <div class="award-item"><div class="award-num">47</div><div class="award-label">International Awards</div></div>
+      <div class="award-item"><div class="award-num">12</div><div class="award-label">Racing Championships</div></div>
+      <div class="award-item"><div class="award-num">94k</div><div class="award-label">Cars Delivered</div></div>
+      <div class="award-item"><div class="award-num">62</div><div class="award-label">Years of Excellence</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TESTIMONIALS ─── -->
+<section class="section" id="testimonials">
+  <div class="section-inner">
+    <div class="reveal" style="margin-bottom:64px;text-align:center">
+      <p class="section-label">Owner Stories</p>
+      <h2 class="section-title" style="text-align:center">What Our Owners<br>Are Saying</h2>
+    </div>
+    <div class="testi-grid reveal" id="testiGrid"></div>
+  </div>
+</section>
+
+<!-- ─── CONTACT ─── -->
+<section class="section" id="contact">
+  <div class="section-inner">
+    <div class="reveal" style="margin-bottom:64px">
+      <p class="section-label">Get in Touch</p>
+      <h2 class="section-title">Contact &<br>Locations</h2>
+    </div>
+    <div class="contact-grid">
+      <div class="reveal">
+        <form class="contact-form" onsubmit="handleForm(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input class="form-input" type="text" placeholder="Alexander">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input class="form-input" type="text" placeholder="Reeves">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" type="email" placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Enquiry Type</label>
+            <select class="form-input" style="cursor:pointer">
+              <option>Test Drive Request</option>
+              <option>Vehicle Purchase</option>
+              <option>Service & Maintenance</option>
+              <option>General Enquiry</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea class="form-input" rows="4" placeholder="Tell us how we can help..."></textarea>
+          </div>
+          <button type="submit" class="btn-primary" style="padding:18px;font-size:12px;letter-spacing:.25em">Send Message</button>
+        </form>
+      </div>
+      <div class="reveal">
+        <div class="map-placeholder" id="mapViz"></div>
+        <div class="dealer-list" id="dealerList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-name">VEL<span>O</span>R</div>
+        <p class="footer-tagline">Crafting automotive masterpieces since 1964. Precision, performance, and passion — embodied in every vehicle.</p>
+        <div class="social-links">
+          <a class="social-link">in</a>
+          <a class="social-link">tw</a>
+          <a class="social-link">ig</a>
+          <a class="social-link">yt</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Models</div>
+        <ul class="footer-links">
+          <li><a href="#">Apex GTR</a></li>
+          <li><a href="#">Classico V12</a></li>
+          <li><a href="#">Storm EV</a></li>
+          <li><a href="#">Touring SE</a></li>
+          <li><a href="#">Heritage Edition</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About Velor</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press Room</a></li>
+          <li><a href="#">Investor Relations</a></li>
+          <li><a href="#">Sustainability</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Newsletter</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:0">Be the first to know about new models and exclusive events.</p>
+        <div class="newsletter">
+          <div class="newsletter-input-row">
+            <input class="newsletter-input" type="email" placeholder="your@email.com">
+            <button class="newsletter-btn">→</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-legal">© 2025 Velor Automotive GmbH. All rights reserved.</p>
+      <div class="footer-legal-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">Cookies</a>
+        <a href="#">Sitemap</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA ───
+const cars=[
+  {tag:'Grand Tourer',name:'Apex GTR',model:'2025 · 4.0L Biturbo V8',hp:'710',speed:'3.1s',range:'520mi',price:'189,500',color:'#1a1a2e'},
+  {tag:'Sport Sedan',name:'Classico V12',model:'2025 · 6.0L Naturally Aspirated',hp:'630',speed:'3.8s',range:'380mi',price:'142,000',color:'#0d1b2a'},
+  {tag:'Electric SUV',name:'Storm EV',model:'2025 · Dual Motor Electric',hp:'1020',speed:'2.4s',range:'520mi',price:'165,000',color:'#0a1628'},
+  {tag:'Executive Sedan',name:'Touring SE',model:'2025 · 3.0L Inline-6 Hybrid',hp:'450',speed:'4.5s',range:'680mi',price:'98,500',color:'#1c1c1e'},
+  {tag:'Sports Coupe',name:'Helix RS',model:'2025 · 2.5L Turbocharged',hp:'380',speed:'4.9s',range:'320mi',price:'74,900',color:'#161616'},
+  {tag:'Hypercar',name:'Apex R',model:'2025 · Hybrid V10',hp:'1250',speed:'2.1s',range:'210mi',price:'489,000',color:'#0e0e12'},
+];
+
+const carColors=[
+  {name:'Midnight Obsidian',hex:'#1a1a1a'},
+  {name:'Arctic White',hex:'#f5f5f0'},
+  {name:'Storm Grey',hex:'#4a5568'},
+  {name:'Crimson Fire',hex:'#8b1a1a'},
+  {name:'Cobalt Blue',hex:'#1a3a6b'},
+  {name:'Champagne Gold',hex:'#c8a96e'},
+];
+
+const testimonials=[
+  {text:'The Apex GTR changed everything I believed about driving. Pure artistry in motion.',name:'Sebastian M.',role:'Apex GTR Owner',initials:'SM'},
+  {text:'I\'ve owned luxury vehicles from every major brand. Nothing compares to Velor\'s engineering soul.',name:'Natalia K.',role:'Classico V12 Owner',initials:'NK'},
+  {text:'The Storm EV proved electric performance isn\'t a compromise — it\'s an evolution.',name:'Marcus R.',role:'Storm EV Owner',initials:'MR'},
+];
+
+const offers=[
+  {tag:'Limited Time',title:'0% Finance for 36 Months',desc:'On selected 2025 models. Terms and conditions apply.'},
+  {tag:'New Arrival',title:'Apex GTR Launch Edition',desc:'Exclusive specification with complimentary 5-year service plan.'},
+  {tag:'Trade-In',title:'Enhanced Trade-In Value',desc:'Up to $15,000 above market value on any qualifying vehicle.'},
+  {tag:'Corporate',title:'Fleet & Corporate Rates',desc:'Special pricing available for orders of 3 or more vehicles.'},
+];
+
+const dealers=[
+  {name:'Velor London Mayfair',addr:'12 Berkeley Square, London W1J 6BS',hours:'Mon–Sat 9am–7pm'},
+  {name:'Velor Monaco',addr:'5 Avenue de la Costa, MC 98000',hours:'Mon–Sat 10am–6pm'},
+  {name:'Velor New York',addr:'770 Park Avenue, New York NY 10021',hours:'Mon–Sat 9am–8pm'},
+];
+
+// ─── RENDER CARS ───
+function renderCars(){
+  const g=document.getElementById('carsGrid');
+  g.innerHTML=cars.map((c,i)=>`
+    <div class="car-card reveal" style="transition-delay:${i*.1}s">
+      <div class="car-card-img">
+        <div class="car-visual">${drawCarSVG(c.color,i)}</div>
+      </div>
+      <div class="car-card-body">
+        <div class="car-tag">${c.tag}</div>
+        <div class="car-name">${c.name}</div>
+        <div class="car-model">${c.model}</div>
+        <div class="car-specs">
+          <div class="spec-item"><div class="spec-val">${c.hp}</div><div class="spec-label">HP</div></div>
+          <div class="spec-item"><div class="spec-val">${c.speed}</div><div class="spec-label">0–60</div></div>
+          <div class="spec-item"><div class="spec-val">${c.range}</div><div class="spec-label">Range</div></div>
+        </div>
+        <div class="car-card-footer">
+          <div class="car-price"><small>from</small>$${c.price}</div>
+          <a class="btn-ghost" href="#detail">View Details</a>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function drawCarSVG(color,variant){
+  const colors=[
+    {body:'#1a1a2e',window:'#2a2a4e',wheel:'#0a0a0a',rim:'#888'},
+    {body:'#0d1b2a',window:'#1a3555',wheel:'#111',rim:'#aaa'},
+    {body:'#1a1a28',window:'#22223a',wheel:'#0e0e0e',rim:'#999'},
+    {body:'#1c1c20',window:'#28282e',wheel:'#0a0a0a',rim:'#777'},
+    {body:'#1a1a1a',window:'#222222',wheel:'#111',rim:'#888'},
+    {body:'#0e0e14',window:'#1a1a24',wheel:'#0a0a0a',rim:'#bbb'},
+  ];
+  const c=colors[variant%colors.length];
+  const styles=[
+    // GT Coupe
+    `<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+      <rect width="400" height="180" fill="#0a0a12"/>
+      <ellipse cx="200" cy="160" rx="180" ry="16" fill="rgba(0,0,0,.4)"/>
+      <path d="M40 120 L60 85 L100 65 L170 55 L240 55 L300 68 L350 95 L360 120 Z" fill="${c.body}"/>
+      <path d="M100 65 L120 45 L180 38 L240 38 L280 48 L300 68 Z" fill="${c.window}"/>
+      <path d="M120 45 L135 42 L165 38 L165 68 L105 68 Z" fill="rgba(100,160,255,.25)"/>
+      <path d="M175 38 L240 38 L270 50 L250 68 L165 68 L165 38 Z" fill="rgba(100,160,255,.2)"/>
+      <path d="M280 48 L300 68 L260 68 Z" fill="rgba(100,160,255,.15)"/>
+      <circle cx="110" cy="122" r="24" fill="${c.wheel}"/><circle cx="110" cy="122" r="16" fill="#1a1a1a"/><circle cx="110" cy="122" r="10" fill="${c.rim}" opacity=".6"/>
+      <circle cx="290" cy="122" r="24" fill="${c.wheel}"/><circle cx="290" cy="122" r="16" fill="#1a1a1a"/><circle cx="290" cy="122" r="10" fill="${c.rim}" opacity=".6"/>
+      <path d="M40 120 L50 115 L350 115 L360 120 Z" fill="${c.body}" opacity=".5"/>
+      <rect x="38" y="112" width="16" height="6" rx="2" fill="#f0a040" opacity=".9"/>
+      <rect x="346" y="112" width="16" height="6" rx="2" fill="#e04040" opacity=".9"/>
+      <line x1="155" y1="55" x2="155" y2="68" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+      <ellipse cx="200" cy="52" rx="20" ry="3" fill="rgba(255,255,255,.05)"/>
+    </svg>`,
+    // Sedan
+    `<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+      <rect width="400" height="180" fill="#080814"/>
+      <ellipse cx="200" cy="160" rx="185" ry="14" fill="rgba(0,0,0,.4)"/>
+      <path d="M30 118 L55 88 L90 68 L165 58 L245 58 L320 70 L365 96 L370 118 Z" fill="${c.body}"/>
+      <path d="M90 68 L108 50 L165 42 L245 42 L280 52 L300 68 Z" fill="${c.window}"/>
+      <path d="M108 50 L130 46 L165 42 L165 68 L92 68 Z" fill="rgba(120,180,255,.22)"/>
+      <path d="M175 42 L245 42 L272 52 L250 68 L165 68 Z" fill="rgba(120,180,255,.18)"/>
+      <circle cx="100" cy="120" r="22" fill="${c.wheel}"/><circle cx="100" cy="120" r="15" fill="#181818"/><circle cx="100" cy="120" r="9" fill="${c.rim}" opacity=".55"/>
+      <circle cx="300" cy="120" r="22" fill="${c.wheel}"/><circle cx="300" cy="120" r="15" fill="#181818"/><circle cx="300" cy="120" r="9" fill="${c.rim}" opacity=".55"/>
+      <rect x="28" y="110" width="14" height="5" rx="2" fill="#f5b040" opacity=".85"/>
+      <rect x="358" y="110" width="14" height="5" rx="2" fill="#e03030" opacity=".85"/>
+    </svg>`,
+    // EV SUV
+    `<svg viewBox="0 0 400 190" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+      <rect width="400" height="190" fill="#060610"/>
+      <ellipse cx="200" cy="165" rx="188" ry="15" fill="rgba(0,0,0,.4)"/>
+      <path d="M25 125 L45 82 L80 60 L150 48 L260 48 L330 62 L375 90 L380 125 Z" fill="${c.body}"/>
+      <path d="M80 60 L95 44 L150 36 L260 36 L300 46 L320 62 Z" fill="${c.window}"/>
+      <path d="M95 44 L125 40 L155 36 L155 62 L83 62 Z" fill="rgba(80,200,255,.2)"/>
+      <path d="M165 36 L260 36 L292 46 L268 62 L155 62 Z" fill="rgba(80,200,255,.16)"/>
+      <path d="M300 46 L320 62 L280 62 Z" fill="rgba(80,200,255,.12)"/>
+      <circle cx="105" cy="127" r="26" fill="${c.wheel}"/><circle cx="105" cy="127" r="18" fill="#151515"/><circle cx="105" cy="127" r="11" fill="${c.rim}" opacity=".6"/>
+      <circle cx="295" cy="127" r="26" fill="${c.wheel}"/><circle cx="295" cy="127" r="18" fill="#151515"/><circle cx="295" cy="127" r="11" fill="${c.rim}" opacity=".6"/>
+      <rect x="23" y="115" width="18" height="7" rx="2" fill="#60d0ff" opacity=".7"/>
+      <rect x="359" y="115" width="18" height="7" rx="2" fill="#e03030" opacity=".9"/>
+      <rect x="150" y="108" width="100" height="2" rx="1" fill="rgba(80,200,255,.4)"/>
+    </svg>`,
+  ];
+  return styles[variant%styles.length]||styles[0];
+}
+
+// ─── DETAIL VIEWER ───
+function renderDetail(){
+  const v=document.getElementById('detailViewer');
+  v.innerHTML=`<div class="float" style="width:85%;padding:20px">${drawCarSVG('#1a1a2e',0)}</div>`;
+  const sw=document.getElementById('colorSwatches');
+  sw.innerHTML=carColors.map((c,i)=>`
+    <div class="color-swatch ${i===0?'active':''}" style="background:${c.hex}" data-name="${c.name}" onclick="selectColor(this,'${c.name}')"></div>`).join('');
+}
+
+function selectColor(el,name){
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('colorName').textContent=name;
+}
+
+// ─── CONFIGURATOR ───
+const configData={
+  basePrice:112000,
+  model:{selected:'Classico',options:[{n:'Classico V12',p:0},{n:'Apex GTR',p:47500},{n:'Storm EV',p:23000},{n:'Touring SE',p:0}]},
+  color:{selected:'#1a1a1a',options:[{n:'Obsidian',hex:'#1a1a1a',p:0},{n:'Arctic White',hex:'#f5f5f0',p:1200},{n:'Storm Grey',hex:'#4a5568',p:800},{n:'Crimson',hex:'#8b1a1a',p:1500},{n:'Gold',hex:'#c8a96e',p:2000}]},
+  wheels:{selected:'20"',options:[{n:'20" Standard',p:0},{n:'21" Sport',p:3200},{n:'22" Performance',p:5400}]},
+  interior:{selected:'Black Leather',options:[{n:'Black Leather',p:0},{n:'Cream Nappa',p:4800},{n:'Alcantara Sport',p:6200},{n:'Bespoke Wood',p:8900}]},
+};
+let configSelections={model:0,color:0,wheels:0,interior:0};
+
+function calcConfigPrice(){
+  let p=configData.basePrice;
+  Object.keys(configSelections).forEach(k=>{
+    const opts=configData[k].options;
+    p+=opts[configSelections[k]].p;
+  });
+  document.getElementById('configPrice').textContent='$'+p.toLocaleString();
+}
+
+function renderConfigurator(){
+  const d=document.getElementById('configDisplay');
+  const colorHex=configData.color.options[configSelections.color].hex;
+  d.innerHTML=`<div class="float" style="width:90%">${drawConfigCar(colorHex)}</div>`;
+  const o=document.getElementById('configOptions');
+  o.innerHTML=Object.keys(configData).filter(k=>k!=='basePrice').map(k=>`
+    <div>
+      <div class="config-section-title">${k.charAt(0).toUpperCase()+k.slice(1)}</div>
+      ${k==='color'?`<div class="config-colors">${configData[k].options.map((opt,i)=>`
+        <div class="config-color ${configSelections[k]===i?'selected':''}" style="background:${opt.hex}" title="${opt.n}" onclick="selectConfig('${k}',${i})"></div>`).join('')}</div>`:
+      `<div class="config-pills">${configData[k].options.map((opt,i)=>`
+        <div class="config-pill ${configSelections[k]===i?'selected':''}" onclick="selectConfig('${k}',${i})">${opt.n}${opt.p>0?' +$'+opt.p.toLocaleString():''}</div>`).join('')}</div>`}
+    </div>`).join('');
+  calcConfigPrice();
+}
+
+function selectConfig(key,idx){
+  configSelections[key]=idx;
+  renderConfigurator();
+}
+
+function drawConfigCar(color){
+  return `<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+    <rect width="400" height="180" fill="transparent"/>
+    <path d="M40 120 L60 85 L100 65 L170 55 L240 55 L300 68 L350 95 L360 120 Z" fill="${color}" stroke="rgba(255,255,255,.1)" stroke-width="0.5"/>
+    <path d="M100 65 L120 45 L180 38 L240 38 L280 48 L300 68 Z" fill="rgba(60,80,120,.6)"/>
+    <path d="M120 45 L165 38 L165 68 L105 68 Z" fill="rgba(120,180,255,.2)"/>
+    <path d="M175 38 L240 38 L270 50 L250 68 L165 68 Z" fill="rgba(120,180,255,.18)"/>
+    <circle cx="110" cy="122" r="24" fill="#111"/><circle cx="110" cy="122" r="16" fill="#222"/><circle cx="110" cy="122" r="10" fill="#666" opacity=".5"/>
+    <circle cx="290" cy="122" r="24" fill="#111"/><circle cx="290" cy="122" r="16" fill="#222"/><circle cx="290" cy="122" r="10" fill="#666" opacity=".5"/>
+    <rect x="38" y="112" width="16" height="6" rx="2" fill="#f0a040" opacity=".8"/>
+    <rect x="346" y="112" width="16" height="6" rx="2" fill="#e04040" opacity=".8"/>
+  </svg>`;
+}
+
+// ─── TESTIMONIALS ───
+function renderTestimonials(){
+  document.getElementById('testiGrid').innerHTML=testimonials.map(t=>`
+    <div class="testi-card">
+      <div class="stars">${'★'.repeat(5)}</div>
+      <p class="testi-text">"${t.text}"</p>
+      <div class="testi-author">
+        <div class="testi-avatar">${t.initials}</div>
+        <div><div class="testi-name">${t.name}</div><div class="testi-role">${t.role}</div></div>
+      </div>
+    </div>`).join('');
+}
+
+// ─── OFFERS ───
+function renderOffers(){
+  document.getElementById('offersList').innerHTML=offers.map(o=>`
+    <div class="offer-card">
+      <div class="offer-tag">${o.tag}</div>
+      <div class="offer-title">${o.title}</div>
+      <div class="offer-desc">${o.desc}</div>
+    </div>`).join('');
+}
+
+// ─── DEALERS ───
+function renderDealers(){
+  document.getElementById('dealerList').innerHTML=dealers.map((d,i)=>`
+    <div class="dealer-card ${i===0?'active':''}" onclick="selectDealer(this)">
+      <div class="dealer-name">${d.name}</div>
+      <div class="dealer-addr">${d.addr}</div>
+      <div class="dealer-hours">${d.hours}</div>
+    </div>`).join('');
+  const m=document.getElementById('mapViz');
+  m.innerHTML=drawMapSVG();
+}
+
+function selectDealer(el){
+  document.querySelectorAll('.dealer-card').forEach(d=>d.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function drawMapSVG(){
+  return `<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+    <rect width="400" height="180" fill="#0d1117"/>
+    <rect x="0" y="85" width="400" height="1" stroke="#1e2430" stroke-width="0.5" fill="none"/>
+    <rect x="200" y="0" width="1" height="180" stroke="#1e2430" stroke-width="0.5" fill="none"/>
+    <path d="M0 90 Q80 70 160 85 T320 80 T400 85" fill="none" stroke="#1e2430" stroke-width="1"/>
+    <path d="M0 60 Q100 50 200 65 T400 60" fill="none" stroke="#1e2430" stroke-width="0.5"/>
+    <circle cx="185" cy="75" r="5" fill="#b8975a"/>
+    <circle cx="185" cy="75" r="10" fill="rgba(184,151,90,.2)" class="pulse" style="animation:pulse 2s infinite"/>
+    <text x="195" y="70" fill="#b8975a" font-size="9" font-family="Syne,sans-serif">London</text>
+    <circle cx="215" cy="82" r="5" fill="#b8975a"/>
+    <circle cx="215" cy="82" r="10" fill="rgba(184,151,90,.2)" style="animation:pulse 2s .5s infinite"/>
+    <text x="225" y="78" fill="#b8975a" font-size="9" font-family="Syne,sans-serif">Monaco</text>
+    <circle cx="75" cy="85" r="5" fill="#b8975a"/>
+    <circle cx="75" cy="85" r="10" fill="rgba(184,151,90,.2)" style="animation:pulse 2s 1s infinite"/>
+    <text x="60" y="80" fill="#b8975a" font-size="9" font-family="Syne,sans-serif">New York</text>
+    <text x="200" y="170" fill="#333" font-size="8" font-family="Syne,sans-serif" text-anchor="middle">VELOR GLOBAL DEALERSHIP NETWORK</text>
+  </svg>`;
+}
+
+// ─── EMI CALCULATOR ───
+function calcEMI(){
+  const price=parseFloat(document.getElementById('emiPrice').value)||0;
+  const down=parseFloat(document.getElementById('downSlider').value)/100;
+  const term=parseInt(document.getElementById('termSlider').value);
+  const rate=parseFloat(document.getElementById('rateSlider').value)/100/12;
+  const loan=price*(1-down);
+  const emi=loan>0&&rate>0?loan*rate*Math.pow(1+rate,term)/(Math.pow(1+rate,term)-1):loan/term;
+  document.getElementById('emiResult').innerHTML='$'+Math.round(emi).toLocaleString()+'<span>/mo</span>';
+}
+function updateDown(){const v=document.getElementById('downSlider').value;const p=parseFloat(document.getElementById('emiPrice').value)||0;document.getElementById('downLabel').textContent='$'+(p*v/100).toLocaleString();}
+function updateTerm(){document.getElementById('termLabel').textContent=document.getElementById('termSlider').value+' months';}
+function updateRate(){document.getElementById('rateLabel').textContent=parseFloat(document.getElementById('rateSlider').value).toFixed(1)+'%';}
+
+// ─── HERO CANVAS ───
+function initHeroCanvas(){
+  const canvas=document.getElementById('heroCanvas');
+  const ctx=canvas.getContext('2d');
+  let W,H,particles=[];
+  function resize(){W=canvas.width=canvas.offsetWidth;H=canvas.height=canvas.offsetHeight;}
+  resize();
+  window.addEventListener('resize',resize);
+  class Particle{
+    constructor(){this.reset()}
+    reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.3;this.vy=(Math.random()-.5)*.2;this.life=Math.random();this.maxLife=.5+Math.random()*.5;this.r=Math.random()*1.5+.3;this.gold=Math.random()>.85}
+    update(){this.x+=this.vx;this.y+=this.vy;this.life+=.003;if(this.life>this.maxLife||this.x<0||this.x>W||this.y<0||this.y>H)this.reset()}
+    draw(){const a=Math.sin(this.life/this.maxLife*Math.PI)*.6;ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=this.gold?`rgba(184,151,90,${a})`:`rgba(200,210,220,${a*.5})`;ctx.fill()}
+  }
+  for(let i=0;i<120;i++)particles.push(new Particle());
+  function drawGrid(){
+    ctx.strokeStyle='rgba(184,151,90,.03)';ctx.lineWidth=1;
+    for(let x=0;x<W;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+    for(let y=0;y<H;y+=80){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+  }
+  function drawCarSilhouette(){
+    const cx=W/2,cy=H/2+30,w=Math.min(W*.7,600),h=w*.25;
+    ctx.save();
+    ctx.strokeStyle='rgba(184,151,90,.06)';ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(cx-w/2,cy+h/2);
+    ctx.lineTo(cx-w/2+w*.1,cy-h*.2);
+    ctx.quadraticCurveTo(cx-w*.2,cy-h*.8,cx-w*.05,cy-h*.9);
+    ctx.lineTo(cx+w*.15,cy-h*.9);
+    ctx.quadraticCurveTo(cx+w*.35,cy-h*.8,cx+w*.35,cy-h*.2);
+    ctx.lineTo(cx+w/2,cy+h/2);
+    ctx.stroke();
+    ctx.restore();
+  }
+  let t=0;
+  function animate(){
+    ctx.clearRect(0,0,W,H);
+    drawGrid();
+    ctx.fillStyle='rgba(5,5,15,.4)';ctx.fillRect(0,0,W,H);
+    particles.forEach(p=>{p.update();p.draw()});
+    drawCarSilhouette();
+    const gy=ctx.createLinearGradient(0,H*.4,0,H);
+    gy.addColorStop(0,'rgba(184,151,90,.0)');gy.addColorStop(.6,'rgba(184,151,90,.04)');gy.addColorStop(1,'rgba(0,0,0,.8)');
+    ctx.fillStyle=gy;ctx.fillRect(0,0,W,H);
+    t+=.01;
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ─── EV CANVAS ───
+function renderEVCanvas(){
+  const d=document.getElementById('evVisualCanvas');
+  d.innerHTML=`<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;inset:0">
+    <defs>
+      <radialGradient id="evGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#b8975a" stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="#b8975a" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <rect width="400" height="400" fill="#060610"/>
+    <circle cx="200" cy="200" r="180" fill="url(#evGlow)"/>
+    <circle cx="200" cy="200" r="160" fill="none" stroke="rgba(184,151,90,.08)" stroke-width="1"/>
+    <circle cx="200" cy="200" r="120" fill="none" stroke="rgba(184,151,90,.05)" stroke-width="1"/>
+    <circle cx="200" cy="200" r="80" fill="none" stroke="rgba(184,151,90,.08)" stroke-width="1"/>
+    <path d="M200 80 L212 160 L240 160 L218 210 L230 210 L195 310 L185 220 L198 220 L180 165 L210 165 Z" fill="none" stroke="#b8975a" stroke-width="1.5" opacity="0.7"/>
+    <circle cx="200" cy="200" r="8" fill="#b8975a" opacity="0.9"/>
+    <circle cx="200" cy="200" r="16" fill="rgba(184,151,90,.2)"/>
+    <text x="200" y="350" text-anchor="middle" fill="rgba(184,151,90,.5)" font-size="10" font-family="Syne,sans-serif" letter-spacing="4">ELECTRIC CORE</text>
+  </svg>
+  <div class="float" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:40px">
+    ${drawCarSVG('#0a1628',2)}
+  </div>`;
+}
+
+// ─── NAVBAR SCROLL ───
+window.addEventListener('scroll',()=>{
+  const nav=document.getElementById('navbar');
+  nav.classList.toggle('solid',window.scrollY>60);
+  const battery=document.getElementById('batteryTrack');
+  if(battery){
+    const rect=battery.getBoundingClientRect();
+    if(rect.top<window.innerHeight)battery.classList.add('animated');
+  }
+});
+
+// ─── SCROLL REVEAL ───
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible')}});
+},{threshold:.1});
+function observeReveals(){document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));}
+
+// ─── CURSOR ───
+const cursor=document.getElementById('cursor');
+const ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
+setInterval(()=>{rx+=(mx-rx)*.15;ry+=(my-ry)*.15;ring.style.left=rx+'px';ring.style.top=ry+'px'},16);
+document.querySelectorAll('a,button,.car-card,.color-swatch,.config-pill,.dealer-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.classList.add('hover');ring.classList.add('hover')});
+  el.addEventListener('mouseleave',()=>{cursor.classList.remove('hover');ring.classList.remove('hover')});
+});
+
+// ─── MOBILE NAV ───
+document.getElementById('hamburger').addEventListener('click',()=>document.getElementById('mobileNav').classList.add('open'));
+document.getElementById('navClose').addEventListener('click',()=>document.getElementById('mobileNav').classList.remove('open'));
+function closeMobileNav(){document.getElementById('mobileNav').classList.remove('open')}
+
+// ─── TOAST ───
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ─── FORM ───
+function handleForm(e){e.preventDefault();showToast('Message sent! We\'ll contact you within 24 hours.')}
+
+// ─── SCROLL HELPER ───
+function scrollTo(id){document.querySelector(id).scrollIntoView({behavior:'smooth'})}
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded',()=>{
+  renderCars();
+  renderDetail();
+  renderConfigurator();
+  renderTestimonials();
+  renderOffers();
+  renderDealers();
+  renderEVCanvas();
+  calcEMI();
+  updateDown();
+  observeReveals();
+  initHeroCanvas();
+  setTimeout(observeReveals,500);
+});
+</script>
+</body>
+</html>
