@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Blurr — Digital Innovation Agency</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#06060a;
+    --surface:#0e0e16;
+    --surface2:#161622;
+    --border:#ffffff12;
+    --accent:#c8f135;
+    --accent2:#7b61ff;
+    --text:#f0f0f0;
+    --muted:#888;
+    --font-display:'Bebas Neue',sans-serif;
+    --font-body:'DM Sans',sans-serif;
+    --font-mono:'Space Mono',monospace;
+  }
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-body);overflow-x:hidden;cursor:none}
+
+  /* CUSTOM CURSOR */
+  #cursor,#cursor-ring{display:none}
+  @media(pointer:fine){
+    body{cursor:none}
+    #cursor{display:block;position:fixed;width:10px;height:10px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.08s,width 0.2s,height 0.2s;mix-blend-mode:difference}
+    #cursor-ring{display:block;position:fixed;width:40px;height:40px;border:1px solid rgba(200,241,53,0.6);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.14s ease;mix-blend-mode:difference}
+    .cursor-grow #cursor-ring{width:70px;height:70px;opacity:0.4}
+    .cursor-grow #cursor{width:6px;height:6px}
+  }
+  @media(pointer:coarse){body{cursor:auto}}
+
+  /* PAGES */
+  .page{display:none;min-height:100vh}
+  .page.active{display:block}
+
+  /* SCROLL PROGRESS */
+  .progress-bar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent2),var(--accent));z-index:200;width:0%;transition:width 0.05s linear;box-shadow:0 0 12px rgba(200,241,53,0.6)}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 4rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid transparent;transition:all 0.4s}
+  nav.scrolled{background:rgba(6,6,10,0.9);backdrop-filter:blur(24px);border-color:var(--border)}
+  .nav-logo{font-family:var(--font-display);font-size:2rem;letter-spacing:0.1em;color:var(--accent);cursor:pointer;transition:opacity 0.2s}
+  .nav-logo:hover{opacity:0.8}
+  .nav-links{display:flex;gap:2rem;list-style:none}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;font-weight:500;transition:color 0.2s;cursor:pointer}
+  .nav-links a:hover{color:var(--text)}
+  .nav-cta{background:var(--accent);color:#000;padding:0.6rem 1.5rem;border-radius:2rem;font-size:0.85rem;font-weight:700;letter-spacing:0.05em;cursor:pointer;border:none;transition:transform 0.2s,box-shadow 0.2s}
+  .nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,241,53,0.35)}
+
+  /* ========= THREE.JS HERO CANVAS ========= */
+  #hero-page{position:relative;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+  #three-canvas{position:absolute;inset:0;z-index:0;width:100%;height:100%}
+
+  .hero-overlay{
+    position:absolute;inset:0;z-index:1;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%,rgba(123,97,255,0.15) 0%,transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 100%,rgba(200,241,53,0.07) 0%,transparent 60%),
+      linear-gradient(to bottom, rgba(6,6,10,0.3) 0%, rgba(6,6,10,0.65) 100%);
+    pointer-events:none;
+  }
+
+  .hero-grid{position:absolute;inset:0;z-index:1;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:80px 80px;animation:grid-drift 25s linear infinite;pointer-events:none}
+  @keyframes grid-drift{0%{transform:translateY(0)}100%{transform:translateY(80px)}}
+
+  /* FLOAT CARDS */
+  .hero-3d-scene{position:absolute;inset:0;z-index:2;pointer-events:none;perspective:1000px}
+  .float-card{
+    position:absolute;background:rgba(255,255,255,0.03);
+    border:1px solid rgba(200,241,53,0.12);
+    border-radius:12px;backdrop-filter:blur(8px);
+    font-family:var(--font-mono);font-size:0.65rem;
+    color:rgba(200,241,53,0.5);padding:12px 16px;
+    letter-spacing:0.1em;
+    transition:transform 0.3s ease;
+  }
+  .fc1{top:18%;left:8%;animation:fc-float1 7s ease-in-out infinite}
+  .fc2{top:25%;right:10%;animation:fc-float2 9s ease-in-out infinite}
+  .fc3{bottom:28%;left:6%;animation:fc-float3 8s ease-in-out infinite}
+  .fc4{bottom:22%;right:8%;animation:fc-float1 10s ease-in-out infinite reverse}
+  .fc5{top:50%;left:3%;animation:fc-float2 11s ease-in-out infinite}
+  @keyframes fc-float1{0%,100%{transform:translateY(0px) rotateX(8deg) rotateY(-5deg)}50%{transform:translateY(-18px) rotateX(-4deg) rotateY(5deg)}}
+  @keyframes fc-float2{0%,100%{transform:translateY(0px) rotateX(-6deg) rotateY(8deg)}50%{transform:translateY(-22px) rotateX(6deg) rotateY(-6deg)}}
+  @keyframes fc-float3{0%,100%{transform:translateY(0px) rotateX(4deg) rotateY(10deg)}50%{transform:translateY(-14px) rotateX(-8deg) rotateY(-4deg)}}
+
+  .hero-content{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .hero-tag{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:0.15em;color:var(--accent);text-transform:uppercase;margin-bottom:1.5rem;opacity:0;animation:fade-up 0.8s 0.2s forwards}
+  .hero-title{font-family:var(--font-display);font-size:clamp(5rem,12vw,13rem);line-height:0.9;letter-spacing:0.02em;opacity:0;animation:fade-up 0.9s 0.4s forwards}
+  .hero-title span{color:var(--accent)}
+  .hero-title .glitch{position:relative;display:inline-block}
+  .hero-title .glitch::before,.hero-title .glitch::after{
+    content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;
+    opacity:0.06;
+  }
+  .hero-title .glitch::before{color:#0ff;left:2px;animation:glitch1 4s infinite steps(1)}
+  .hero-title .glitch::after{color:#f0f;left:-2px;animation:glitch2 4s infinite steps(1)}
+  @keyframes glitch1{0%,85%,91%,100%{clip-path:none;transform:none}86%{clip-path:polygon(0 20%,100% 20%,100% 30%,0 30%);transform:translateX(-3px)}89%{clip-path:polygon(0 60%,100% 60%,100% 75%,0 75%);transform:translateX(2px)}}
+  @keyframes glitch2{0%,85%,91%,100%{clip-path:none;transform:none}87%{clip-path:polygon(0 40%,100% 40%,100% 55%,0 55%);transform:translateX(3px)}90%{clip-path:polygon(0 10%,100% 10%,100% 20%,0 20%);transform:translateX(-2px)}}
+
+  .hero-sub{font-size:1.15rem;color:var(--muted);max-width:520px;text-align:center;line-height:1.7;margin-top:2rem;opacity:0;animation:fade-up 0.9s 0.6s forwards;font-weight:300}
+  .hero-cta-group{display:flex;gap:1rem;margin-top:2.5rem;opacity:0;animation:fade-up 0.9s 0.8s forwards}
+  .btn-primary{background:var(--accent);color:#000;padding:0.9rem 2.5rem;border-radius:2rem;font-weight:700;font-size:0.9rem;letter-spacing:0.05em;cursor:pointer;border:none;transition:all 0.3s}
+  .btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(200,241,53,0.4)}
+  .btn-ghost{background:transparent;color:var(--text);padding:0.9rem 2.5rem;border-radius:2rem;font-weight:500;font-size:0.9rem;letter-spacing:0.05em;cursor:pointer;border:1px solid var(--border);transition:all 0.3s}
+  .btn-ghost:hover{border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.05)}
+
+  .hero-ticker{
+    margin-top:2rem;opacity:0;animation:fade-up 0.8s 1s forwards;
+    font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.1em;color:var(--muted);
+    display:flex;align-items:center;gap:0.6rem;
+  }
+  .ticker-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:blink 1s infinite;flex-shrink:0}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  #typewriter{color:var(--accent)}
+
+  .hero-scroll{position:absolute;bottom:2.5rem;display:flex;flex-direction:column;align-items:center;gap:0.5rem;z-index:3;opacity:0;animation:fade-up 1s 1.3s forwards}
+  .scroll-text{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.15em;color:var(--muted);text-transform:uppercase}
+  .scroll-line{width:1px;height:60px;background:linear-gradient(to bottom,var(--accent),transparent);animation:scroll-pulse 2s ease-in-out infinite}
+  @keyframes scroll-pulse{0%,100%{opacity:0.3;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.15)}}
+  @keyframes fade-up{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ========= 3D SCROLL SCENE ========= */
+  #scroll-3d-section{
+    height:400vh;position:relative;
+    background:var(--bg);
+  }
+  .scroll-3d-sticky{
+    position:sticky;top:0;height:100vh;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+  }
+  #scroll-3d-canvas{position:absolute;inset:0;width:100%;height:100%}
+  .scroll-3d-text{
+    position:relative;z-index:2;text-align:center;pointer-events:none;
+    transition:opacity 0.5s;
+  }
+  .scroll-3d-label{
+    font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.2em;
+    color:var(--accent);text-transform:uppercase;margin-bottom:1rem;
+  }
+  .scroll-3d-title{
+    font-family:var(--font-display);
+    font-size:clamp(3rem,7vw,7rem);
+    line-height:0.9;letter-spacing:0.02em;
+  }
+
+  /* ========= MARQUEE ========= */
+  .marquee-wrap{padding:1.5rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;background:var(--surface);position:relative;z-index:2}
+  .marquee-inner{display:flex;gap:0;white-space:nowrap;animation:marquee 22s linear infinite}
+  .marquee-item{font-family:var(--font-display);font-size:1.2rem;letter-spacing:0.1em;padding:0 2rem;color:var(--muted)}
+  .marquee-item span{color:var(--accent);margin-right:2rem}
+  @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ========= SERVICES ========= */
+  .services-section{padding:8rem 4rem;position:relative;overflow:hidden}
+  .section-eyebrow{font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.18em;color:var(--accent);text-transform:uppercase;margin-bottom:1rem}
+  .section-title{font-family:var(--font-display);font-size:clamp(3rem,6vw,6rem);line-height:0.95;margin-bottom:4rem;letter-spacing:0.02em}
+
+  .services-track{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;width:100%;
+  }
+  .service-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:20px;
+    padding:2.5rem 2rem;width:100%;flex-shrink:0;cursor:pointer;position:relative;overflow:hidden;
+    transition:transform 0.4s cubic-bezier(0.23,1,0.32,1),box-shadow 0.4s,border-color 0.4s;
+    transform-style:preserve-3d;will-change:transform;
+  }
+  .service-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(200,241,53,0.06) 0%,transparent 60%);opacity:0;transition:opacity 0.4s;border-radius:20px}
+  .service-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent2),var(--accent));transform:scaleX(0);transition:transform 0.4s;transform-origin:left;border-radius:0 0 20px 20px}
+  .service-card:hover{transform:translateY(-12px) rotateX(6deg) rotateY(-2deg);box-shadow:0 40px 60px rgba(0,0,0,0.6),0 0 40px rgba(200,241,53,0.06);border-color:rgba(200,241,53,0.2)}
+  .service-card:hover::before{opacity:1}
+  .service-card:hover::after{transform:scaleX(1)}
+  .card-num{font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);margin-bottom:1.5rem;letter-spacing:0.1em}
+  .card-icon{font-size:2.5rem;margin-bottom:1.5rem;display:block;filter:drop-shadow(0 0 12px rgba(200,241,53,0.3))}
+  .card-title{font-family:var(--font-display);font-size:2rem;letter-spacing:0.04em;margin-bottom:1rem;line-height:1}
+  .card-desc{color:var(--muted);font-size:0.88rem;line-height:1.7;font-weight:300}
+  .card-arrow{position:absolute;top:2rem;right:2rem;width:36px;height:36px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:1rem;transition:all 0.3s}
+  .service-card:hover .card-arrow{border-color:var(--accent);color:var(--accent);transform:rotate(45deg)}
+
+  /* DRAG HINT hidden */
+  .drag-hint{display:none}
+
+  /* ========= STATS ========= */
+  .stats-section{padding:6rem 4rem;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem}
+  .stat-item{text-align:center;padding:2rem;position:relative}
+  .stat-item::after{content:'';position:absolute;right:0;top:20%;height:60%;width:1px;background:var(--border)}
+  .stat-item:last-child::after{display:none}
+  .stat-num{font-family:var(--font-display);font-size:5.5rem;color:var(--accent);line-height:1;display:block;text-shadow:0 0 40px rgba(200,241,53,0.3)}
+  .stat-label{font-size:0.85rem;color:var(--muted);margin-top:0.5rem;letter-spacing:0.05em}
+
+  /* ========= REVIEWS ========= */
+  .reviews-section{padding:8rem 4rem;background:var(--bg);position:relative;overflow:hidden}
+  .reviews-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 50%,rgba(123,97,255,0.06) 0%,transparent 70%);pointer-events:none}
+  .reviews-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3rem}
+  .review-overall{text-align:right}
+  .review-big-score{font-family:var(--font-display);font-size:5rem;line-height:1;color:var(--accent)}
+  .review-big-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.12em;color:var(--muted);text-transform:uppercase}
+
+  .reviews-track-wrap{overflow-x:auto;padding:20px 4px 40px;scrollbar-width:none;cursor:grab}
+  .reviews-track-wrap::-webkit-scrollbar{display:none}
+  .reviews-track-wrap:active{cursor:grabbing}
+  .reviews-track{display:flex;gap:16px;width:max-content}
+
+  .review-card{
+    width:310px;flex-shrink:0;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:16px;padding:1.8rem;
+    transition:border-color 0.3s,transform 0.3s;position:relative;
+  }
+  .review-card:hover{border-color:rgba(200,241,53,0.15);transform:translateY(-4px)}
+
+  .review-header{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
+  .review-avatar{
+    width:44px;height:44px;border-radius:50%;
+    overflow:hidden;flex-shrink:0;
+    border:2px solid rgba(200,241,53,0.2);
+  }
+  .review-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  .review-meta{flex:1}
+  .review-name{font-size:0.9rem;font-weight:600;line-height:1}
+  .review-role{font-size:0.7rem;color:var(--muted);letter-spacing:0.05em;margin-top:2px}
+
+  .review-stars{display:flex;gap:2px;margin-bottom:0.8rem}
+  .star{font-size:0.9rem;color:#444}
+  .star.lit{color:#f5c518}
+
+  .review-text{font-size:0.88rem;line-height:1.65;color:var(--muted);font-style:italic}
+  .review-service{margin-top:1rem;padding-top:0.8rem;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.1em;color:rgba(200,241,53,0.5);text-transform:uppercase}
+  .review-verified{position:absolute;top:1rem;right:1rem;font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.08em;color:rgba(200,241,53,0.6);border:1px solid rgba(200,241,53,0.2);padding:2px 7px;border-radius:20px;text-transform:uppercase}
+
+  /* ========= CTA ========= */
+  .cta-section{padding:10rem 4rem;text-align:center;position:relative;overflow:hidden}
+  .cta-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(123,97,255,0.1) 0%,transparent 70%);pointer-events:none}
+  .cta-title{font-family:var(--font-display);font-size:clamp(4rem,8vw,9rem);line-height:0.9;margin-bottom:2rem}
+  .cta-title em{font-style:normal;color:var(--accent)}
+
+  /* ========= CONTACT ========= */
+  .contact-section{padding:6rem 4rem;background:var(--surface);border-top:1px solid var(--border)}
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start}
+  .contact-form{display:flex;flex-direction:column;gap:1.2rem}
+  .form-group{display:flex;flex-direction:column;gap:0.4rem}
+  .form-group label{font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);font-family:var(--font-mono)}
+  .form-group input,.form-group textarea,.form-group select{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:0.9rem 1.2rem;border-radius:10px;font-family:var(--font-body);font-size:0.95rem;transition:border-color 0.2s,box-shadow 0.2s;outline:none;-webkit-appearance:none}
+  .form-group select option{background:var(--surface2)}
+  .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:rgba(200,241,53,0.4);box-shadow:0 0 0 3px rgba(200,241,53,0.06)}
+  .form-group textarea{min-height:140px;resize:vertical}
+  .form-submit{background:var(--accent);color:#000;padding:1rem 2.5rem;border-radius:2rem;font-size:0.95rem;font-weight:700;letter-spacing:0.05em;cursor:pointer;border:none;transition:all 0.3s;align-self:flex-start;margin-top:0.5rem}
+  .form-submit:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(200,241,53,0.4)}
+  .contact-info h3{font-family:var(--font-display);font-size:3.5rem;margin-bottom:1.5rem}
+  .contact-info p{color:var(--muted);line-height:1.7;margin-bottom:2rem;font-weight:300}
+  .contact-detail{display:flex;align-items:center;gap:1rem;padding:1.2rem 0;border-bottom:1px solid var(--border);font-size:0.9rem}
+  .contact-detail-icon{width:36px;height:36px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:var(--accent);flex-shrink:0}
+
+  /* ========= FOOTER ========= */
+  footer{padding:3rem 4rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .footer-logo{font-family:var(--font-display);font-size:1.8rem;color:var(--accent);letter-spacing:0.1em;cursor:pointer}
+  .footer-copy{font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);letter-spacing:0.1em}
+
+  /* ========= SERVICE DETAIL PAGE ========= */
+  #service-page{display:none;min-height:100vh}
+  #service-page.active{display:block}
+  .sp-hero{min-height:70vh;display:flex;align-items:flex-end;padding:6rem 4rem 4rem;position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+  .sp-bg{position:absolute;inset:0;pointer-events:none}
+  .sp-back{display:inline-flex;align-items:center;gap:0.5rem;color:var(--muted);font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:none;background:none;margin-bottom:2rem;transition:color 0.2s;padding:0}
+  .sp-back:hover{color:var(--accent)}
+  .sp-tag{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.18em;color:var(--accent);text-transform:uppercase;margin-bottom:1rem;display:block}
+  .sp-title{font-family:var(--font-display);font-size:clamp(5rem,10vw,11rem);line-height:0.9;letter-spacing:0.02em;margin-bottom:1.5rem}
+  .sp-intro{font-size:1.2rem;color:var(--muted);max-width:600px;line-height:1.7;font-weight:300}
+  .sp-body{padding:6rem 4rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start}
+  .sp-features{display:flex;flex-direction:column;gap:2rem}
+  .sp-feature{padding:2rem;border:1px solid var(--border);border-radius:12px;background:var(--surface);transition:border-color 0.3s,transform 0.3s}
+  .sp-feature:hover{border-color:rgba(200,241,53,0.3);transform:translateX(8px)}
+  .sp-feature-icon{font-size:1.5rem;margin-bottom:1rem;display:block}
+  .sp-feature-title{font-size:1rem;font-weight:600;letter-spacing:0.05em;margin-bottom:0.5rem}
+  .sp-feature-desc{color:var(--muted);font-size:0.9rem;line-height:1.6;font-weight:300}
+  .sp-sidebar{position:sticky;top:8rem}
+  .sp-card{background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:2.5rem;margin-bottom:1.5rem}
+  .sp-card-title{font-family:var(--font-display);font-size:1.8rem;margin-bottom:1.5rem;color:var(--accent)}
+  .sp-list{list-style:none;display:flex;flex-direction:column;gap:0.8rem}
+  .sp-list li{display:flex;align-items:center;gap:0.75rem;font-size:0.9rem;color:var(--muted)}
+  .sp-list li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
+  .sp-process{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin:0 4rem 6rem}
+  .sp-step{background:var(--bg);padding:2.5rem 2rem;position:relative}
+  .sp-step-num{font-family:var(--font-display);font-size:4rem;color:rgba(200,241,53,0.15);margin-bottom:0.5rem;line-height:1}
+  .sp-step-title{font-size:0.95rem;font-weight:600;margin-bottom:0.5rem}
+  .sp-step-desc{font-size:0.85rem;color:var(--muted);line-height:1.6}
+  .sp-cta{margin:0 4rem 6rem;padding:5rem;background:var(--surface);border:1px solid var(--border);border-radius:20px;text-align:center;position:relative;overflow:hidden}
+  .sp-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% 100%,rgba(200,241,53,0.08) 0%,transparent 70%)}
+  .sp-cta h2{font-family:var(--font-display);font-size:clamp(3rem,5vw,5rem);margin-bottom:1rem}
+  .sp-cta p{color:var(--muted);margin-bottom:2rem;font-size:1rem}
+
+  /* REVEAL */
+  .reveal{opacity:0;transform:translateY(40px);transition:opacity 0.8s cubic-bezier(0.23,1,0.32,1),transform 0.8s cubic-bezier(0.23,1,0.32,1)}
+  .reveal.visible{opacity:1;transform:translateY(0)}
+  .reveal-left{opacity:0;transform:translateX(-40px);transition:opacity 0.7s,transform 0.7s}
+  .reveal-left.visible{opacity:1;transform:translateX(0)}
+
+  /* NOISE OVERLAY */
+  body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9000;opacity:0.4}
+
+  /* ========= BONUS: MAGNETIC BUTTON ========= */
+  .magnetic{transition:transform 0.3s cubic-bezier(0.23,1,0.32,1)}
+
+  /* ========= BONUS: HORIZONTAL SCROLL TECH STACK ========= */
+  .tech-section{padding:6rem 0;border-top:1px solid var(--border);overflow:hidden;background:var(--surface)}
+  .tech-marquee{display:flex;gap:3rem;animation:tech-scroll 20s linear infinite;width:max-content}
+  .tech-badge{display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1.5rem;border:1px solid var(--border);border-radius:2rem;font-family:var(--font-mono);font-size:0.75rem;letter-spacing:0.1em;color:var(--muted);white-space:nowrap;transition:border-color 0.3s,color 0.3s}
+  .tech-badge:hover{border-color:rgba(200,241,53,0.3);color:var(--accent)}
+  .tech-badge span{font-size:1.2rem}
+  @keyframes tech-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ========= BONUS: CONTACT GLOW ========= */
+  .contact-section{position:relative;overflow:hidden}
+  .contact-section::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(123,97,255,0.08) 0%,transparent 70%);top:-200px;right:-200px;pointer-events:none}
+
+  @media(max-width:1024px){
+    .services-track{grid-template-columns:repeat(2,1fr)}
+  }
+  @media(max-width:768px){
+    nav{padding:1.2rem 1.5rem}
+    .stats-grid{grid-template-columns:repeat(2,1fr)}
+    .sp-body{grid-template-columns:1fr;gap:3rem}
+    .sp-sidebar{position:static}
+    .sp-process{grid-template-columns:1fr 1fr;margin:0 1.5rem 4rem}
+    .services-section,.cta-section,.contact-section,.reviews-section{padding:5rem 1.5rem}
+    .sp-hero{padding:6rem 1.5rem 3rem}
+    .sp-cta{margin:0 1.5rem 4rem;padding:3rem 1.5rem}
+    .sp-body{padding:4rem 1.5rem}
+    .contact-grid{grid-template-columns:1fr;gap:3rem}
+    footer{flex-direction:column;gap:1rem;text-align:center;padding:2rem 1.5rem}
+    .nav-links{display:none}
+    .fc1,.fc2,.fc3,.fc4,.fc5{display:none}
+    .services-track{grid-template-columns:1fr}
+    #scroll-3d-section{height:250vh}
+  }
+  /* iOS Safari: make divs with onclick tappable — prevents 300ms delay */
+  .service-card,.nav-logo,.footer-logo,.nav-links a{
+    cursor:pointer;
+    -webkit-tap-highlight-color:rgba(200,241,53,0.12);
+    touch-action:manipulation;
+  }
+  a,button,.sp-back{touch-action:manipulation;}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div class="progress-bar" id="progress"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo" onclick="showHome()">Blurr</div>
+  <ul class="nav-links">
+    <li><a onclick="showHome()">Home</a></li>
+    <li><a onclick="scrollToServices()">Services</a></li>
+    <li><a onclick="scrollToReviews()">Reviews</a></li>
+    <li><a onclick="scrollToContact()">Contact</a></li>
+  </ul>
+  <button class="nav-cta magnetic" onclick="scrollToContact()">Get Started</button>
+</nav>
+
+<!-- ===== HOME PAGE ===== -->
+<div id="home-page" class="page active">
+
+  <!-- HERO with Three.js -->
+  <section id="hero-page">
+    <canvas id="three-canvas"></canvas>
+    <div class="hero-overlay"></div>
+    <div class="hero-grid"></div>
+
+    <div class="hero-3d-scene">
+      <div class="float-card fc1">// SSL_CTX_new()<br>→ HTTPS ready ✓</div>
+      <div class="float-card fc2">const app = await<br>buildFuture()</div>
+      <div class="float-card fc3">SEO_SCORE: 98 / 100<br>↑ +24 this month</div>
+      <div class="float-card fc4">Mobile: iOS + Android<br>deploy: SUCCESS ✓</div>
+      <div class="float-card fc5">$rev += 340%<br>// ecommerce 🔥</div>
+    </div>
+
+    <div class="hero-content">
+      <p class="hero-tag">// Digital Innovation Agency</p>
+      <h1 class="hero-title">WE BUILD<br><span class="glitch" data-text="DIGITAL">DIGITAL</span><br>FUTURES</h1>
+      <p class="hero-sub">Full-spectrum digital services — from fortified web security to immersive mobile apps that move markets.</p>
+      <div class="hero-cta-group">
+        <button class="btn-primary magnetic" onclick="scrollToServices()">Explore Services</button>
+        <button class="btn-ghost magnetic" onclick="scrollToContact()">Let's Talk</button>
+      </div>
+      <div class="hero-ticker">
+        <div class="ticker-dot"></div>
+        <span>Currently working on: <span id="typewriter"></span></span>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <span class="scroll-text">Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-inner">
+      <span class="marquee-item"><span>✦</span> Web Security</span>
+      <span class="marquee-item"><span>✦</span> Real Estate</span>
+      <span class="marquee-item"><span>✦</span> Software Dev</span>
+      <span class="marquee-item"><span>✦</span> Mobile Apps</span>
+      <span class="marquee-item"><span>✦</span> SEO</span>
+      <span class="marquee-item"><span>✦</span> E-Commerce</span>
+      <span class="marquee-item"><span>✦</span> Web Security</span>
+      <span class="marquee-item"><span>✦</span> Real Estate</span>
+      <span class="marquee-item"><span>✦</span> Software Dev</span>
+      <span class="marquee-item"><span>✦</span> Mobile Apps</span>
+      <span class="marquee-item"><span>✦</span> SEO</span>
+      <span class="marquee-item"><span>✦</span> E-Commerce</span>
+    </div>
+  </div>
+
+  <!-- ========= 3D SCROLL SECTION ========= -->
+  <section id="scroll-3d-section">
+    <div class="scroll-3d-sticky">
+      <canvas id="scroll-3d-canvas"></canvas>
+      <div class="scroll-3d-text" id="scroll-3d-text">
+        <div class="scroll-3d-label" id="s3d-label">// Powered By</div>
+        <div class="scroll-3d-title" id="s3d-title">INNOVATION</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services-section" id="services-section">
+    <p class="section-eyebrow reveal">// What We Do</p>
+    <h2 class="section-title reveal">OUR<br>SERVICES</h2>
+    <div class="services-track-wrap">
+      <div class="services-track">
+        <div class="service-card reveal" role="button" tabindex="0" onclick="showService('security')">
+          <span class="card-num">01</span><span class="card-icon">🔐</span>
+          <div class="card-arrow">↗</div>
+          <h3 class="card-title">WEB SECURITY</h3>
+          <p class="card-desc">HTTPS, SSL, hashing, injection prevention, access control — complete protection for your digital assets.</p>
+        </div>
+        <div class="service-card reveal" role="button" tabindex="0" onclick="showService('realestate')">
+          <span class="card-num">02</span><span class="card-icon">🏢</span>
+          <div class="card-arrow">↗</div>
+          <h3 class="card-title">REAL ESTATE</h3>
+          <p class="card-desc">Smart property platforms with listings, lead generation, and data-driven market intelligence.</p>
+        </div>
+        <div class="service-card reveal" role="button" tabindex="0" onclick="showService('software')">
+          <span class="card-num">03</span><span class="card-icon">⚙️</span>
+          <div class="card-arrow">↗</div>
+          <h3 class="card-title">SOFTWARE DEV</h3>
+          <p class="card-desc">Custom scalable software built for performance, reliability, and long-term business growth.</p>
+        </div>
+        <div class="service-card reveal" role="button" tabindex="0" onclick="showService('mobile')">
+          <span class="card-num">04</span><span class="card-icon">📱</span>
+          <div class="card-arrow">↗</div>
+          <h3 class="card-title">MOBILE APPS</h3>
+          <p class="card-desc">Native and cross-platform mobile apps engineered for buttery-smooth performance and engagement.</p>
+        </div>
+        <div class="service-card reveal" role="button" tabindex="0" onclick="showService('seo')">
+          <span class="card-num">05</span><span class="card-icon">📈</span>
+          <div class="card-arrow">↗</div>
+          <h3 class="card-title">SEO</h3>
+          <p class="card-desc">Search engine optimization that puts you at the top — technical, on-page, and content strategy.</p>
+        </div>
+        <div class="service-card reveal" role="button" tabindex="0" onclick="showService('ecommerce')">
+          <span class="card-num">06</span><span class="card-icon">🛒</span>
+          <div class="card-arrow">↗</div>
+          <h3 class="card-title">E-COMMERCE</h3>
+          <p class="card-desc">High-converting online stores built for scale — payments, inventory, and customer experience.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-item reveal"><span class="stat-num" data-target="200" data-suffix="+">0</span><span class="stat-label">Projects Delivered</span></div>
+      <div class="stat-item reveal"><span class="stat-num" data-target="98" data-suffix="%">0</span><span class="stat-label">Client Satisfaction</span></div>
+      <div class="stat-item reveal"><span class="stat-num" data-target="6" data-suffix="">0</span><span class="stat-label">Core Services</span></div>
+      <div class="stat-item reveal"><span class="stat-num" data-target="24" data-suffix="/7">0</span><span class="stat-label">Support Hours</span></div>
+    </div>
+  </section>
+
+  <!-- TECH STACK MARQUEE (BONUS) -->
+  <section class="tech-section">
+    <div style="overflow:hidden">
+      <div class="tech-marquee">
+        <div class="tech-badge"><span>⚛️</span> React</div>
+        <div class="tech-badge"><span>🟢</span> Node.js</div>
+        <div class="tech-badge"><span>🐍</span> Python</div>
+        <div class="tech-badge"><span>☁️</span> AWS</div>
+        <div class="tech-badge"><span>🐳</span> Docker</div>
+        <div class="tech-badge"><span>🔷</span> TypeScript</div>
+        <div class="tech-badge"><span>🗄️</span> PostgreSQL</div>
+        <div class="tech-badge"><span>🔥</span> Firebase</div>
+        <div class="tech-badge"><span>📱</span> Flutter</div>
+        <div class="tech-badge"><span>🎨</span> Figma</div>
+        <div class="tech-badge"><span>🔍</span> Elasticsearch</div>
+        <div class="tech-badge"><span>📊</span> GraphQL</div>
+        <!-- duplicate for seamless loop -->
+        <div class="tech-badge"><span>⚛️</span> React</div>
+        <div class="tech-badge"><span>🟢</span> Node.js</div>
+        <div class="tech-badge"><span>🐍</span> Python</div>
+        <div class="tech-badge"><span>☁️</span> AWS</div>
+        <div class="tech-badge"><span>🐳</span> Docker</div>
+        <div class="tech-badge"><span>🔷</span> TypeScript</div>
+        <div class="tech-badge"><span>🗄️</span> PostgreSQL</div>
+        <div class="tech-badge"><span>🔥</span> Firebase</div>
+        <div class="tech-badge"><span>📱</span> Flutter</div>
+        <div class="tech-badge"><span>🎨</span> Figma</div>
+        <div class="tech-badge"><span>🔍</span> Elasticsearch</div>
+        <div class="tech-badge"><span>📊</span> GraphQL</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS — European female names with real avatar photos -->
+  <section class="reviews-section" id="reviews-section">
+    <div class="reviews-header reveal">
+      <div>
+        <p class="section-eyebrow">// Client Voices</p>
+        <h2 class="section-title" style="margin-bottom:0">WHAT PEOPLE<br>ARE SAYING</h2>
+      </div>
+      <div class="review-overall">
+        <div class="review-big-score">4.2</div>
+        <div style="display:flex;gap:2px;justify-content:flex-end;margin:4px 0">
+          <span style="color:#f5c518">★★★★</span><span style="color:#555">★</span>
+        </div>
+        <div class="review-big-label">Based on 47 reviews</div>
+      </div>
+    </div>
+
+    <div class="reviews-track-wrap" id="reviewTrack">
+      <div class="reviews-track">
+
+        <div class="review-card">
+          <span class="review-verified">✓ Verified</span>
+          <div class="review-header">
+            <div class="review-avatar">
+              <img src="girl2.jpg" alt="Sophie Laurent" crossorigin="anonymous" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Sophie+Laurent&background=c8f135&color=000&size=44&bold=true'">
+            </div>
+            <div class="review-meta">
+              <div class="review-name">Sophie Laurent</div>
+              <div class="review-role">Founder, RetailFlow</div>
+            </div>
+          </div>
+          <div class="review-stars">
+            <span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span>
+          </div>
+          <p class="review-text">"They delivered on time and the site looks great. Communication was smooth — nothing crazy, just got the job done. Would absolutely use again."</p>
+          <div class="review-service">E-Commerce</div>
+        </div>
+
+        <div class="review-card">
+          <span class="review-verified">✓ Verified</span>
+          <div class="review-header">
+            <div class="review-avatar">
+              <img src="girl.jpg" alt="Elena Müller" crossorigin="anonymous" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Elena+Muller&background=7b61ff&color=fff&size=44&bold=true'">
+            </div>
+            <div class="review-meta">
+              <div class="review-name">Elena Müller</div>
+              <div class="review-role">Marketing Head, Nuvora</div>
+            </div>
+          </div>
+          <div class="review-stars">
+            <span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span><span class="star">★</span>
+          </div>
+          <p class="review-text">"SEO results took a bit longer than expected but they moved the needle. Page 1 rankings for 3 of our main keywords now. Happy enough."</p>
+          <div class="review-service">SEO</div>
+        </div>
+
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar">
+              <img src="girl3.jpg" alt="Isabelle Dubois" crossorigin="anonymous" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Isabelle+Dubois&background=378add&color=fff&size=44&bold=true'">
+            </div>
+            <div class="review-meta">
+              <div class="review-name">Isabelle Dubois</div>
+              <div class="review-role">CTO, PropVista</div>
+            </div>
+          </div>
+          <div class="review-stars">
+            <span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span><span class="star">★</span><span class="star">★</span>
+          </div>
+          <p class="review-text">"Three stars because early on there were some bugs. They fixed everything and the platform works well now. Wish the QA was tighter from the start."</p>
+          <div class="review-service">Real Estate Platform</div>
+        </div>
+
+        <div class="review-card">
+          <span class="review-verified">✓ Verified</span>
+          <div class="review-header">
+            <div class="review-avatar">
+              <img src="girl.jpg" alt="Mia Andersson" crossorigin="anonymous" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Mia+Andersson&background=c8f135&color=000&size=44&bold=true'">
+            </div>
+            <div class="review-meta">
+              <div class="review-name">Mia Andersson</div>
+              <div class="review-role">CEO, QuickMart</div>
+            </div>
+          </div>
+          <div class="review-stars">
+            <span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span>
+          </div>
+          <p class="review-text">"Really solid work on the app. My users love it. One or two minor things I'd do differently but overall very pleased. Great team to work with."</p>
+          <div class="review-service">Mobile App</div>
+        </div>
+
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar">
+              <img src="girl2.jpg" alt="Katja Novak" crossorigin="anonymous" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Katja+Novak&background=7b61ff&color=fff&size=44&bold=true'">
+            </div>
+            <div class="review-meta">
+              <div class="review-name">Katja Novak</div>
+              <div class="review-role">IT Manager, Kontra Systems</div>
+            </div>
+          </div>
+          <div class="review-stars">
+            <span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span><span class="star">★</span>
+          </div>
+          <p class="review-text">"The security audit was thorough. Found 4 vulnerabilities we didn't know about. Pricing was slightly more than quoted but the work was solid."</p>
+          <div class="review-service">Web Security</div>
+        </div>
+
+        <div class="review-card">
+          <span class="review-verified">✓ Verified</span>
+          <div class="review-header">
+            <div class="review-avatar">
+              <img src="girl3.jpg" alt="Anya Kowalski" crossorigin="anonymous" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Anya+Kowalski&background=1d9e75&color=fff&size=44&bold=true'">
+            </div>
+            <div class="review-meta">
+              <div class="review-name">Anya Kowalski</div>
+              <div class="review-role">Ops Director, CloudNest</div>
+            </div>
+          </div>
+          <div class="review-stars">
+            <span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span>
+          </div>
+          <p class="review-text">"Wasn't sure at first — they seemed small. But they built our software exactly as specified. Took 3 weeks extra but the end result was genuinely impressive."</p>
+          <div class="review-service">Software Dev</div>
+        </div>
+
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar">
+              <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="Léa Fontaine" crossorigin="anonymous" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Lea+Fontaine&background=ef9f27&color=000&size=44&bold=true'">
+            </div>
+            <div class="review-meta">
+              <div class="review-name">Léa Fontaine</div>
+              <div class="review-role">Founder, Taproot Media</div>
+            </div>
+          </div>
+          <div class="review-stars">
+            <span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span><span class="star">★</span><span class="star">★</span>
+          </div>
+          <p class="review-text">"Mixed feelings. The design is nice but we went back and forth on revisions. They were responsive to feedback so I can't complain too much overall."</p>
+          <div class="review-service">Software Dev</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- BIG CTA -->
+  <section class="cta-section">
+    <div class="cta-bg"></div>
+    <p class="section-eyebrow reveal" style="text-align:center">// Ready?</p>
+    <h2 class="cta-title reveal">LET'S BUILD<br>SOMETHING<br><em>GREAT</em></h2>
+    <div style="margin-top:2.5rem" class="reveal">
+      <button class="btn-primary magnetic" style="font-size:1rem;padding:1.1rem 3rem" onclick="scrollToContact()">Start a Project</button>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact-section" id="contact-section">
+    <p class="section-eyebrow reveal">// Get In Touch</p>
+    <div class="contact-grid">
+      <div>
+        <div class="contact-info">
+          <h3 class="reveal">START<br>YOUR<br>PROJECT</h3>
+          <p class="reveal">Tell us about your vision. We'll get back to you within 24 hours with a tailored plan.</p>
+          <div class="contact-detail reveal">
+            <div class="contact-detail-icon">✉</div>
+            <div>
+              <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em">Email</div>
+              <div>hello@blurr.agency</div>
+            </div>
+          </div>
+          <div class="contact-detail reveal">
+            <div class="contact-detail-icon">📞</div>
+            <div>
+              <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em">Phone</div>
+              <div>+1 (800) BLU-RRAG</div>
+            </div>
+          </div>
+          <div class="contact-detail reveal">
+            <div class="contact-detail-icon">🕐</div>
+            <div>
+              <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em">Response Time</div>
+              <div>Under 24 hours</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <form class="contact-form reveal" onsubmit="handleSubmit(event)">
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" placeholder="John Smith" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="john@company.com" required>
+          </div>
+          <div class="form-group">
+            <label>Service Interested In</label>
+            <select>
+              <option value="">Select a service...</option>
+              <option>Web Security</option>
+              <option>Real Estate Platform</option>
+              <option>Software Development</option>
+              <option>Mobile App Development</option>
+              <option>Search Engine Optimisation</option>
+              <option>E-Commerce</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tell Us About Your Project</label>
+            <textarea placeholder="Describe your project, goals, timeline..."></textarea>
+          </div>
+          <button type="submit" class="form-submit magnetic">Send Message →</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo" onclick="showHome()">Blurr</div>
+    <div class="footer-copy">© 2025 Blurr AGENCY — ALL RIGHTS RESERVED</div>
+  </footer>
+</div>
+
+<!-- ===== SERVICE DETAIL PAGE ===== -->
+<div id="service-page">
+  <div id="sp-hero" class="sp-hero">
+    <div class="sp-bg" id="sp-bg"></div>
+    <div style="position:relative;z-index:1;width:100%">
+      <button class="sp-back" onclick="showHome()">← Back to Services</button>
+      <span class="sp-tag" id="sp-tag"></span>
+      <h1 class="sp-title" id="sp-title"></h1>
+      <p class="sp-intro" id="sp-intro"></p>
+    </div>
+  </div>
+  <div class="sp-body" id="sp-body">
+    <div class="sp-features" id="sp-features"></div>
+    <div class="sp-sidebar" id="sp-sidebar"></div>
+  </div>
+  <div style="padding:0 4rem 2rem">
+    <p style="font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.18em;color:var(--accent);text-transform:uppercase;margin-bottom:2rem">// Our Process</p>
+  </div>
+  <div class="sp-process" id="sp-process"></div>
+  <div class="sp-cta">
+    <div style="position:relative;z-index:1">
+      <span style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.15em;color:var(--accent);text-transform:uppercase">// Ready to Begin?</span>
+      <h2 id="sp-cta-title" style="margin-top:0.5rem"></h2>
+      <p id="sp-cta-desc"></p>
+      <button class="btn-primary" onclick="showHome();setTimeout(scrollToContact,400)">Start This Project</button>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo" onclick="showHome()" style="cursor:pointer">Blurr</div>
+    <div class="footer-copy">© 2025 Blurr AGENCY — ALL RIGHTS RESERVED</div>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   THREE.JS HERO BACKGROUND — LIVING PARTICLE FIELD
+   ============================================================ */
+(function initHeroThree(){
+  const canvas = document.getElementById('three-canvas');
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({canvas,antialias:false,alpha:true,powerPreference:'high-performance',failIfMajorPerformanceCaveat:false});
+  } catch(e) {canvas.style.display='none';return;}
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,isIOS?1:2));
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.setClearColor(0x06060a,1);
+
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+  camera.position.z=30;
+
+  // — PARTICLE GALAXY — fewer particles on iOS for performance
+  const particleCount=isIOS?1000:3000;
+  const geometry = new THREE.BufferGeometry();
+  const positions = new Float32Array(particleCount * 3);
+  const colors = new Float32Array(particleCount * 3);
+  const sizes = new Float32Array(particleCount);
+
+  const accentColor = new THREE.Color('#c8f135');
+  const accent2Color = new THREE.Color('#7b61ff');
+  const mutedColor = new THREE.Color('#333355');
+
+  for(let i = 0; i < particleCount; i++){
+    const r = Math.random() * 60 + 5;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    positions[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+    positions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+    positions[i*3+2] = r * Math.cos(phi);
+
+    const t = Math.random();
+    const col = t < 0.15 ? accentColor : (t < 0.25 ? accent2Color : mutedColor);
+    colors[i*3]   = col.r;
+    colors[i*3+1] = col.g;
+    colors[i*3+2] = col.b;
+    sizes[i] = Math.random() * 2 + 0.5;
+  }
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+  const particleMat = new THREE.PointsMaterial({
+    size: 0.15, vertexColors: true, transparent: true, opacity: 0.75,
+    sizeAttenuation: true
+  });
+  const particles = new THREE.Points(geometry, particleMat);
+  scene.add(particles);
+
+  // — WIREFRAME TORUS KNOT —
+  const torusGeo = new THREE.TorusKnotGeometry(8, 1.5, 120, 16);
+  const torusMat = new THREE.MeshBasicMaterial({
+    color: 0x7b61ff, wireframe: true, transparent: true, opacity: 0.07
+  });
+  const torus = new THREE.Mesh(torusGeo, torusMat);
+  scene.add(torus);
+
+  // — FLOATING ICOSAHEDRON —
+  const icoGeo = new THREE.IcosahedronGeometry(4, 1);
+  const icoMat = new THREE.MeshBasicMaterial({
+    color: 0xc8f135, wireframe: true, transparent: true, opacity: 0.06
+  });
+  const ico = new THREE.Mesh(icoGeo, icoMat);
+  ico.position.set(18, 6, -10);
+  scene.add(ico);
+
+  // — SECOND ICO —
+  const icoGeo2 = new THREE.IcosahedronGeometry(3, 1);
+  const icoMat2 = new THREE.MeshBasicMaterial({
+    color: 0x7b61ff, wireframe: true, transparent: true, opacity: 0.08
+  });
+  const ico2 = new THREE.Mesh(icoGeo2, icoMat2);
+  ico2.position.set(-20, -8, -15);
+  scene.add(ico2);
+
+  let mouseX = 0, mouseY = 0;
+  document.addEventListener('mousemove', e => {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseY = -(e.clientY / window.innerHeight - 0.5) * 2;
+  });
+  // iOS touch parallax
+  document.addEventListener('touchmove', e => {
+    if(e.touches.length > 0){
+      mouseX = (e.touches[0].clientX / window.innerWidth - 0.5) * 2;
+      mouseY = -(e.touches[0].clientY / window.innerHeight - 0.5) * 2;
+    }
+  }, {passive: true});
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  let frame = 0;
+  function animate(){
+    requestAnimationFrame(animate);
+    frame += 0.005;
+
+    particles.rotation.y = frame * 0.12;
+    particles.rotation.x = frame * 0.04;
+
+    torus.rotation.x = frame * 0.3;
+    torus.rotation.y = frame * 0.2;
+
+    ico.rotation.x = frame * 0.5;
+    ico.rotation.y = frame * 0.3;
+    ico2.rotation.x = -frame * 0.4;
+    ico2.rotation.y = frame * 0.6;
+
+    // subtle mouse tracking
+    camera.position.x += (mouseX * 3 - camera.position.x) * 0.03;
+    camera.position.y += (mouseY * 2 - camera.position.y) * 0.03;
+    camera.lookAt(scene.position);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+/* ============================================================
+   THREE.JS SCROLL 3D SECTION
+   ============================================================ */
+(function initScroll3D(){
+  const canvas = document.getElementById('scroll-3d-canvas');
+  if(!canvas) return;
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({canvas,antialias:false,alpha:true,powerPreference:'high-performance',failIfMajorPerformanceCaveat:false});
+  } catch(e) {canvas.style.display='none';return;}
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,isIOS?1:2));
+  renderer.setClearColor(0x06060a,1);
+  renderer.setSize(window.innerWidth,window.innerHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+  camera.position.z = 25;
+
+  // Grid of cubes
+  const cubeGroup = new THREE.Group();
+  scene.add(cubeGroup);
+  const cubeMat = new THREE.MeshBasicMaterial({color: 0xc8f135, wireframe: true, transparent: true, opacity: 0.15});
+  const cubeGeo = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+  const gridSize = 8;
+  for(let x = -gridSize/2; x < gridSize/2; x++){
+    for(let y = -gridSize/2; y < gridSize/2; y++){
+      const mesh = new THREE.Mesh(cubeGeo, cubeMat.clone());
+      mesh.position.set(x * 4, y * 4, 0);
+      mesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0);
+      cubeGroup.add(mesh);
+    }
+  }
+
+  // Central sphere
+  const sphereGeo = new THREE.SphereGeometry(5, 32, 32);
+  const sphereMat = new THREE.MeshBasicMaterial({color: 0x7b61ff, wireframe: true, transparent: true, opacity: 0.12});
+  const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+  scene.add(sphere);
+
+  // Rings
+  for(let i = 0; i < 3; i++){
+    const ringGeo = new THREE.TorusGeometry(7 + i*3, 0.05, 8, 64);
+    const ringMat = new THREE.MeshBasicMaterial({color: 0xc8f135, transparent: true, opacity: 0.1 - i*0.02});
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = Math.PI/3 * i;
+    ring.rotation.y = Math.PI/4 * i;
+    scene.add(ring);
+  }
+
+  const section = document.getElementById('scroll-3d-section');
+  const labels = [
+    {label:'// Powered By', title:'INNOVATION'},
+    {label:'// Built With', title:'PRECISION'},
+    {label:'// Driven By', title:'RESULTS'},
+    {label:'// Made For', title:'YOU'},
+  ];
+
+  let frame3d = 0;
+  let currentScrolled = 0; // track via scroll event for iOS reliability
+  window.addEventListener('scroll', () => {
+    if(!section) return;
+    const sectionTop = section.offsetTop;
+    const totalH = section.offsetHeight - window.innerHeight;
+    const raw = (window.scrollY - sectionTop) / Math.max(totalH, 1);
+    currentScrolled = Math.max(0, Math.min(1, raw));
+  }, {passive: true});
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  function animate3d(){
+    requestAnimationFrame(animate3d);
+    if(!section) return;
+
+    const scrolled = currentScrolled;
+
+    frame3d += 0.008;
+    cubeGroup.rotation.y = scrolled * Math.PI * 4 + frame3d * 0.3;
+    cubeGroup.rotation.x = scrolled * Math.PI * 2;
+
+    // animate individual cubes
+    cubeGroup.children.forEach((c, i) => {
+      c.rotation.x += 0.01;
+      c.rotation.y += 0.007 + i * 0.0001;
+      const wave = Math.sin(frame3d * 2 + i * 0.3) * 0.5;
+      c.position.z = wave * 3;
+    });
+
+    sphere.rotation.y = frame3d * 0.5;
+    sphere.scale.setScalar(1 + Math.sin(frame3d) * 0.1 + scrolled * 0.5);
+
+    camera.position.z = 25 - scrolled * 8;
+    camera.position.y = scrolled * 5;
+
+    // update text
+    const phase = Math.floor(scrolled * labels.length);
+    const lbl = labels[Math.min(phase, labels.length-1)];
+    const labelEl = document.getElementById('s3d-label');
+    const titleEl = document.getElementById('s3d-title');
+    if(labelEl && titleEl){
+      if(labelEl.textContent !== lbl.label){
+        labelEl.style.opacity = '0';
+        titleEl.style.opacity = '0';
+        setTimeout(()=>{
+          labelEl.textContent = lbl.label;
+          titleEl.textContent = lbl.title;
+          labelEl.style.transition = 'opacity 0.5s';
+          titleEl.style.transition = 'opacity 0.5s';
+          labelEl.style.opacity = '1';
+          titleEl.style.opacity = '1';
+        }, 300);
+      }
+    }
+
+    renderer.render(scene, camera);
+  }
+  animate3d();
+})();
+
+/* ── CURSOR ── */
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+if(window.matchMedia('(pointer:fine)').matches){
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
+  function animRing(){rx+=(mx-rx)*0.1;ry+=(my-ry)*0.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing)}
+  animRing();
+  document.querySelectorAll('a,button,.service-card,.review-card,.nav-logo').forEach(el=>{
+    el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-grow'));
+    el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-grow'));
+  });
+}
+
+/* ── MAGNETIC BUTTONS ── */
+document.querySelectorAll('.magnetic').forEach(el => {
+  el.addEventListener('mousemove', e => {
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width/2;
+    const y = e.clientY - rect.top - rect.height/2;
+    el.style.transform = `translate(${x*0.25}px, ${y*0.25}px)`;
+  });
+  el.addEventListener('mouseleave', () => {
+    el.style.transform = '';
+  });
+});
+
+/* ── PROGRESS BAR ── */
+window.addEventListener('scroll',()=>{
+  const prog=document.getElementById('progress');
+  const h=document.body.scrollHeight-window.innerHeight;
+  prog.style.width=(window.scrollY/h*100)+'%';
+  document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>60);
+});
+
+/* ── REVEAL ON SCROLL ── */
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*70)});
+},{threshold:0.1});
+function initReveal(){document.querySelectorAll('.reveal,.reveal-left').forEach(el=>observer.observe(el))}
+
+/* ── TYPEWRITER ── */
+const phrases=['an e-commerce store...','a mobile app...','a real estate platform...','web security audit...','an SEO campaign...'];
+let pi=0,ci=0,deleting=false;
+function type(){
+  const tw=document.getElementById('typewriter');
+  if(!tw)return;
+  const phrase=phrases[pi];
+  if(deleting){tw.textContent=phrase.substring(0,ci--)}
+  else{tw.textContent=phrase.substring(0,ci++)}
+  if(!deleting&&ci===phrase.length+1){setTimeout(()=>deleting=true,1400)}
+  else if(deleting&&ci<0){deleting=false;pi=(pi+1)%phrases.length;ci=0}
+  setTimeout(type,deleting?40:80);
+}
+type();
+
+/* ── COUNTER ANIMATION ── */
+function animateCounters(){
+  document.querySelectorAll('[data-target]').forEach(el=>{
+    const target=+el.dataset.target,suffix=el.dataset.suffix||'',dur=1800;
+    let start=null;
+    const step=ts=>{
+      if(!start)start=ts;
+      const p=Math.min((ts-start)/dur,1);
+      const eased=1-Math.pow(1-p,3);
+      el.textContent=Math.floor(eased*target)+suffix;
+      if(p<1)requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+const counterObs=new IntersectionObserver(entries=>{
+  if(entries[0].isIntersecting){animateCounters();counterObs.disconnect();}
+},{threshold:0.3});
+const statsSection=document.querySelector('.stats-section');
+if(statsSection)counterObs.observe(statsSection);
+
+/* ── MOUSE PARALLAX (Hero float cards) ── */
+if(window.matchMedia('(pointer:fine)').matches){
+  document.addEventListener('mousemove',e=>{
+    const cx=window.innerWidth/2,cy=window.innerHeight/2;
+    const dx=(e.clientX-cx)/cx,dy=(e.clientY-cy)/cy;
+    document.querySelectorAll('.float-card').forEach((fc,i)=>{
+      const depth=(i+1)*4;
+      fc.style.transform=`translate(${dx*depth}px,${dy*depth}px)`;
+    });
+  });
+}
+
+/* ── 3D TILT on service cards ── */
+if(window.matchMedia('(pointer:fine)').matches){
+  document.querySelectorAll('.service-card').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const x=((e.clientX-r.left)/r.width-0.5)*16;
+      const y=((e.clientY-r.top)/r.height-0.5)*-16;
+      card.style.transform=`translateY(-12px) perspective(700px) rotateX(${y}deg) rotateY(${x}deg)`;
+    });
+    card.addEventListener('mouseleave',()=>{card.style.transform='';});
+  });
+}
+
+/* ── DRAG SCROLL for review track ── */
+function makeDraggable(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  let isDown=false,startX,scrollLeft;
+  el.addEventListener('mousedown',e=>{isDown=true;el.style.cursor='grabbing';startX=e.pageX-el.offsetLeft;scrollLeft=el.scrollLeft});
+  el.addEventListener('mouseleave',()=>{isDown=false;el.style.cursor='grab'});
+  el.addEventListener('mouseup',()=>{isDown=false;el.style.cursor='grab'});
+  el.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-el.offsetLeft;el.scrollLeft=scrollLeft-(x-startX)*1.2});
+  el.addEventListener('touchstart',e=>{startX=e.touches[0].pageX-el.offsetLeft;scrollLeft=el.scrollLeft},{passive:true});
+  el.addEventListener('touchmove',e=>{const x=e.touches[0].pageX-el.offsetLeft;el.scrollLeft=scrollLeft-(x-startX)*1.2},{passive:true});
+}
+makeDraggable('reviewTrack');
+
+/* ── SERVICE DATA ── */
+const services={
+  security:{tag:'// 01 — Cyber & Web Security',title:'WEB\nSECURITY',intro:'Enterprise-grade security solutions that protect your infrastructure, users, and data — from HTTPS to advanced access control.',color:'rgba(123,97,255,0.15)',features:[{icon:'🔒',title:'HTTPS & SSL Certificates',desc:'We configure and manage SSL/TLS certificates for all your domains, ensuring encrypted, trustworthy connections that browsers and users trust implicitly.'},{icon:'🔑',title:'Secure Password Storage',desc:'Implementation of industry-standard bcrypt, Argon2, or PBKDF2 hashing algorithms — your users\' passwords are never stored in plain text.'},{icon:'🛡️',title:'Input Validation & Sanitisation',desc:'Complete protection against SQL injection, XSS, CSRF, and SSRF attacks through robust server-side validation and parameterized queries.'},{icon:'👥',title:'Access Control & Role Management',desc:'Fine-grained admin/user role systems, JWT authentication, OAuth 2.0 integration, and audit logging for full accountability.'},{icon:'🔄',title:'Regular Security Updates',desc:'Proactive patch management, dependency auditing, and vulnerability scanning to stay ahead of emerging threats.'}],tools:['OWASP Compliance','Penetration Testing','SSL/TLS Configuration','Firewall Setup','2FA Implementation','GDPR Compliance'],process:[{num:'01',title:'Security Audit',desc:'We analyse your existing infrastructure for vulnerabilities and risk exposure.'},{num:'02',title:'Strategy Design',desc:'A bespoke security architecture tailored to your stack and compliance requirements.'},{num:'03',title:'Implementation',desc:'We deploy and configure all security layers — no disruption to your operations.'},{num:'04',title:'Monitoring',desc:'Ongoing threat monitoring, alerting, and quarterly security reviews.'}],ctaTitle:'SECURE YOUR\nDIGITAL ASSETS',ctaDesc:'One vulnerability can cost everything. Let\'s lock it down before it\'s too late.'},
+  realestate:{tag:'// 02 — Real Estate Technology',title:'REAL\nESTATE',intro:'Modern, data-powered real estate platforms that connect buyers, sellers, and agents — with beautiful listings and intelligent automation.',color:'rgba(29,158,117,0.12)',features:[{icon:'🏘️',title:'Property Listing Platforms',desc:'Rich, searchable listing databases with filters, map views, virtual tours, and detailed property pages that convert visitors into leads.'},{icon:'📊',title:'Market Analytics Dashboards',desc:'Real-time price trends, neighborhood data, and investment ROI calculators.'},{icon:'🤝',title:'CRM & Lead Management',desc:'Built-in CRM to capture, nurture, and convert leads with automated follow-ups and pipeline tracking.'},{icon:'🗺️',title:'Interactive Map Integration',desc:'Google Maps and Mapbox integrations with property pins, school zones, transit routes, and points of interest.'},{icon:'📱',title:'Agent Mobile Apps',desc:'Dedicated mobile apps for agents — manage listings, respond to inquiries, and close deals from anywhere.'}],tools:['IDX/MLS Integration','Virtual Tour Support','Mortgage Calculator','3D Floor Plans','E-Signature Integration','Analytics Dashboard'],process:[{num:'01',title:'Discovery',desc:'We learn your market, users, and business model before writing a single line of code.'},{num:'02',title:'Platform Design',desc:'Wireframes and prototypes focused on conversion and ease of use.'},{num:'03',title:'Development',desc:'Full-stack build — backend APIs, database, and beautiful front-end.'},{num:'04',title:'Launch & Growth',desc:'SEO-optimised launch, training, and ongoing feature development.'}],ctaTitle:'BUILD YOUR\nPROPERTY PLATFORM',ctaDesc:'Transform how properties are discovered, evaluated, and sold.'},
+  software:{tag:'// 03 — Software Development',title:'SOFTWARE\nDEV',intro:'From MVPs to enterprise systems — we architect, build, and scale custom software that becomes the backbone of your business.',color:'rgba(55,138,221,0.12)',features:[{icon:'🏗️',title:'Custom Web Applications',desc:'Full-stack web applications built with React, Next.js, Vue, or your preferred framework — scalable, fast, and maintainable.'},{icon:'🔌',title:'API Development & Integration',desc:'RESTful and GraphQL APIs that power your frontend, third-party integrations, and microservices architecture.'},{icon:'☁️',title:'Cloud Architecture',desc:'AWS, GCP, and Azure deployments with Docker, Kubernetes, CI/CD pipelines, and auto-scaling infrastructure.'},{icon:'🗄️',title:'Database Design & Optimisation',desc:'Relational and NoSQL database architecture optimised for your query patterns.'},{icon:'🧪',title:'Testing & Quality Assurance',desc:'Comprehensive unit, integration, and end-to-end testing — we ship confidence, not bugs.'}],tools:['React / Next.js','Node.js / Python','PostgreSQL / MongoDB','AWS / GCP','Docker / K8s','CI/CD Pipelines'],process:[{num:'01',title:'Requirements',desc:'Deep-dive sessions to map features, user stories, and technical constraints.'},{num:'02',title:'Architecture',desc:'System design, database schema, and tech stack selection.'},{num:'03',title:'Agile Build',desc:'2-week sprints with demos, feedback loops, and continuous delivery.'},{num:'04',title:'Maintenance',desc:'Post-launch support, monitoring, and iterative improvement.'}],ctaTitle:'BUILD YOUR\nIDEAL SOFTWARE',ctaDesc:'Great software doesn\'t happen by accident. It\'s architected with intention.'},
+  mobile:{tag:'// 04 — Mobile App Development',title:'MOBILE\nAPPS',intro:'Native iOS and Android apps, plus cross-platform Flutter and React Native solutions — designed for delight and engineered for performance.',color:'rgba(186,117,23,0.12)',features:[{icon:'🍎',title:'iOS Development',desc:'Swift and SwiftUI native iOS apps — App Store submission included.'},{icon:'🤖',title:'Android Development',desc:'Kotlin-first Android apps following Material Design 3 guidelines.'},{icon:'⚡',title:'React Native & Flutter',desc:'Cross-platform apps that share 90%+ of code between iOS and Android — faster delivery, lower cost, same quality.'},{icon:'🔔',title:'Push Notifications & Engagement',desc:'Smart push notifications, deep linking, and in-app messaging to keep users engaged.'},{icon:'📡',title:'Offline-First Architecture',desc:'Apps that work without internet and sync seamlessly when reconnected.'}],tools:['Swift / SwiftUI','Kotlin / Jetpack','React Native','Flutter / Dart','Firebase','App Store Optimisation'],process:[{num:'01',title:'UX Research',desc:'User interviews, competitor analysis, and journey mapping.'},{num:'02',title:'UI/UX Design',desc:'High-fidelity prototypes in Figma — reviewed before development begins.'},{num:'03',title:'Development',desc:'Iterative builds with weekly TestFlight/beta releases.'},{num:'04',title:'Store Launch',desc:'App Store and Play Store submission, ASO, and launch support.'}],ctaTitle:'LAUNCH YOUR\nMOBILE APP',ctaDesc:'Your users are on mobile. Let\'s meet them there with something extraordinary.'},
+  seo:{tag:'// 05 — Search Engine Optimisation',title:'SEARCH\nENGINE\nOPT.',intro:'Data-driven SEO strategies that deliver sustainable organic growth — ranking you where your customers are searching.',color:'rgba(99,153,34,0.12)',features:[{icon:'🔍',title:'Technical SEO Audit',desc:'Crawlability, Core Web Vitals, schema markup, site speed, and indexation issues — fixed at the foundation.'},{icon:'📝',title:'Content Strategy & Creation',desc:'Keyword research, content gap analysis, and a publishing roadmap that earns topical authority.'},{icon:'🔗',title:'Link Building',desc:'White-hat outreach, digital PR, and guest posting that build authoritative backlinks.'},{icon:'📍',title:'Local SEO',desc:'Google Business Profile optimisation, local citations, and review management.'},{icon:'📊',title:'Reporting & Analytics',desc:'Custom dashboards tracking rankings, traffic, conversions, and ROI — clear proof of progress.'}],tools:['Ahrefs / SEMrush','Google Search Console','Core Web Vitals','Schema Markup','Content Optimisation','Competitor Analysis'],process:[{num:'01',title:'SEO Audit',desc:'Full technical and content audit to identify quick wins and long-term opportunities.'},{num:'02',title:'Keyword Strategy',desc:'Mapping keywords to user intent and your sales funnel.'},{num:'03',title:'Execution',desc:'Technical fixes, content creation, and link acquisition in parallel.'},{num:'04',title:'Report & Refine',desc:'Monthly reporting with strategy adjustments based on data.'}],ctaTitle:'RANK HIGHER.\nGROW FASTER.',ctaDesc:'Organic search is the most sustainable growth channel. Let\'s own it together.'},
+  ecommerce:{tag:'// 06 — E-Commerce Department',title:'E-\nCOMMERCE',intro:'High-converting online stores built for scale — beautiful storefronts, frictionless checkout, and the analytics to drive growth.',color:'rgba(212,83,126,0.12)',features:[{icon:'🛍️',title:'Storefront Design & Build',desc:'Custom Shopify, WooCommerce, or fully bespoke stores designed to convert browsers into buyers.'},{icon:'💳',title:'Payment Gateway Integration',desc:'Stripe, PayPal, Apple Pay, Google Pay, and BNPL options — frictionless checkout.'},{icon:'📦',title:'Inventory & Order Management',desc:'Real-time stock tracking, low-stock alerts, multi-warehouse support, and automated fulfillment.'},{icon:'🎯',title:'Conversion Rate Optimisation',desc:'A/B testing, heatmaps, abandoned cart recovery, and upsell strategies.'},{icon:'🌍',title:'Multi-Currency & International',desc:'Multi-language storefronts, currency conversion, international shipping, and tax calculation.'}],tools:['Shopify / WooCommerce','Stripe / PayPal','Inventory Management','Email Marketing','Analytics & Reporting','Abandoned Cart Recovery'],process:[{num:'01',title:'Store Strategy',desc:'Product catalogue, pricing strategy, and target audience research.'},{num:'02',title:'Design & UX',desc:'Conversion-focused design that builds trust and removes friction.'},{num:'03',title:'Build & Integrate',desc:'Store build, payment setup, shipping, and third-party tools.'},{num:'04',title:'Launch & Optimise',desc:'Go-live support, paid ads setup, and ongoing CRO.'}],ctaTitle:'OPEN YOUR\nDIGITAL STORE',ctaDesc:'The world\'s biggest mall is online. Let\'s get you the best location.'}
+};
+
+/* ── PAGE ROUTING ── */
+function showHome(){
+  document.getElementById('home-page').classList.add('active');
+  document.getElementById('home-page').style.display='block';
+  document.getElementById('service-page').classList.remove('active');
+  document.getElementById('service-page').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(initReveal,100);
+}
+
+function showService(id){
+  const s=services[id];if(!s)return;
+  document.getElementById('sp-tag').textContent=s.tag;
+  document.getElementById('sp-title').innerHTML=s.title.replace(/\n/g,'<br>');
+  document.getElementById('sp-intro').textContent=s.intro;
+  document.getElementById('sp-bg').style.background=`radial-gradient(ellipse 80% 60% at 30% 80%,${s.color} 0%,transparent 70%)`;
+  document.getElementById('sp-features').innerHTML=s.features.map(f=>`<div class="sp-feature"><span class="sp-feature-icon">${f.icon}</span><div class="sp-feature-title">${f.title}</div><div class="sp-feature-desc">${f.desc}</div></div>`).join('');
+  document.getElementById('sp-sidebar').innerHTML=`<div class="sp-card"><div class="sp-card-title">Tools & Tech</div><ul class="sp-list">${s.tools.map(t=>`<li>${t}</li>`).join('')}</ul></div><div class="sp-card"><div class="sp-card-title" style="font-size:1.2rem;color:var(--text)">Why Choose Us</div><ul class="sp-list"><li>Dedicated project manager</li><li>Transparent weekly updates</li><li>Fixed-price contracts available</li><li>Post-launch support included</li><li>NDA & IP ownership guaranteed</li></ul></div><div style="text-align:center;margin-top:1.5rem"><button class="btn-primary" style="width:100%;border-radius:12px" onclick="showHome();setTimeout(scrollToContact,400)">Get a Free Quote →</button></div>`;
+  document.getElementById('sp-process').innerHTML=s.process.map(p=>`<div class="sp-step"><div class="sp-step-num">${p.num}</div><div class="sp-step-title">${p.title}</div><div class="sp-step-desc">${p.desc}</div></div>`).join('');
+  document.getElementById('sp-cta-title').innerHTML=s.ctaTitle.replace(/\n/g,'<br>');
+  document.getElementById('sp-cta-desc').textContent=s.ctaDesc;
+  document.getElementById('home-page').style.display='none';
+  document.getElementById('home-page').classList.remove('active');
+  document.getElementById('service-page').style.display='block';
+  document.getElementById('service-page').classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
+  setTimeout(()=>document.querySelectorAll('#service-page .reveal,#service-page .sp-feature').forEach(el=>el.style.opacity='1'),100);
+}
+
+function scrollToServices(){
+  if(document.getElementById('home-page').classList.contains('active')){document.getElementById('services-section').scrollIntoView({behavior:'smooth'})}
+  else{showHome();setTimeout(()=>document.getElementById('services-section').scrollIntoView({behavior:'smooth'}),400)}
+}
+function scrollToReviews(){
+  if(document.getElementById('home-page').classList.contains('active')){document.getElementById('reviews-section').scrollIntoView({behavior:'smooth'})}
+  else{showHome();setTimeout(()=>document.getElementById('reviews-section').scrollIntoView({behavior:'smooth'}),400)}
+}
+function scrollToContact(){
+  if(document.getElementById('home-page').classList.contains('active')){document.getElementById('contact-section').scrollIntoView({behavior:'smooth'})}
+  else{showHome();setTimeout(()=>document.getElementById('contact-section').scrollIntoView({behavior:'smooth'}),400)}
+}
+
+function handleSubmit(e){
+  e.preventDefault();
+  const btn=e.target.querySelector('.form-submit');
+  btn.textContent='Sending...';btn.style.opacity='0.7';
+  setTimeout(()=>{btn.textContent='Message Sent! ✓';btn.style.background='#4caf50';btn.style.opacity='1';e.target.reset();setTimeout(()=>{btn.textContent='Send Message →';btn.style.background='';},3000)},1200);
+}
+
+/* INIT */
+initReveal();
+
+/* ── iOS SAFARI TOUCH FIX ──
+   iOS Safari only fires onclick on elements that are <a>, <button>, or have cursor:pointer.
+   We already added cursor:pointer via CSS, but as belt-and-suspenders we also
+   bind touchend on service cards + nav clickables to guarantee they respond. */
+(function iosFixTouchTargets(){
+  // Service cards
+  document.querySelectorAll('.service-card').forEach(card => {
+    let startX, startY;
+    card.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }, {passive: true});
+    card.addEventListener('touchend', e => {
+      const dx = Math.abs(e.changedTouches[0].clientX - startX);
+      const dy = Math.abs(e.changedTouches[0].clientY - startY);
+      // Only fire if it was a tap (not a scroll)
+      if(dx < 10 && dy < 10){
+        e.preventDefault();
+        card.click();
+      }
+    }, {passive: false});
+  });
+
+  // Nav logo and footer logo
+  document.querySelectorAll('.nav-logo, .footer-logo').forEach(el => {
+    el.addEventListener('touchend', e => {
+      e.preventDefault();
+      showHome();
+    }, {passive: false});
+  });
+})();
+</script>
+</body>
+</html>
