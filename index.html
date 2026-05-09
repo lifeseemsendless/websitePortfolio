@@ -380,7 +380,7 @@
     <div class="hero-grid"></div>
 
     <div class="hero-3d-scene">
-      <div class="float-card fc1">// SSL_CTX_new()<br>→ HTTPS ready ✓</div>
+      <div class="float-card fc1">// const app = React<br>→ build() ✓</div>
       <div class="float-card fc2">const app = await<br>buildFuture()</div>
       <div class="float-card fc3">SEO_SCORE: 98 / 100<br>↑ +24 this month</div>
       <div class="float-card fc4">Mobile: iOS + Android<br>deploy: SUCCESS ✓</div>
@@ -390,7 +390,7 @@
     <div class="hero-content">
       <p class="hero-tag">// Digital Innovation Agency</p>
       <h1 class="hero-title">WE BUILD<br><span class="glitch" data-text="DIGITAL">DIGITAL</span><br>FUTURES</h1>
-      <p class="hero-sub">Full-spectrum digital services — from fortified web security to immersive mobile apps that move markets.</p>
+      <p class="hero-sub">Full-spectrum digital services — from stunning web development to immersive mobile apps that move markets.</p>
       <div class="hero-cta-group">
         <button class="btn-primary magnetic" onclick="scrollToServices()">Explore Services</button>
         <button class="btn-ghost magnetic" onclick="scrollToContact()">Let's Talk</button>
@@ -410,13 +410,13 @@
   <!-- MARQUEE -->
   <div class="marquee-wrap">
     <div class="marquee-inner">
-      <span class="marquee-item"><span>✦</span> Web Security</span>
+      <span class="marquee-item"><span>✦</span> Web Development</span>
       <span class="marquee-item"><span>✦</span> Real Estate</span>
       <span class="marquee-item"><span>✦</span> Software Dev</span>
       <span class="marquee-item"><span>✦</span> Mobile Apps</span>
       <span class="marquee-item"><span>✦</span> SEO</span>
       <span class="marquee-item"><span>✦</span> E-Commerce</span>
-      <span class="marquee-item"><span>✦</span> Web Security</span>
+      <span class="marquee-item"><span>✦</span> Web Development</span>
       <span class="marquee-item"><span>✦</span> Real Estate</span>
       <span class="marquee-item"><span>✦</span> Software Dev</span>
       <span class="marquee-item"><span>✦</span> Mobile Apps</span>
@@ -442,11 +442,11 @@
     <h2 class="section-title reveal">OUR<br>SERVICES</h2>
     <div class="services-track-wrap">
       <div class="services-track">
-        <div class="service-card reveal" role="button" tabindex="0" onclick="showService('security')">
-          <span class="card-num">01</span><span class="card-icon">🔐</span>
+        <div class="service-card reveal" role="button" tabindex="0" onclick="showService('webdev')">
+          <span class="card-num">01</span><span class="card-icon">🌐</span>
           <div class="card-arrow">↗</div>
-          <h3 class="card-title">WEB SECURITY</h3>
-          <p class="card-desc">HTTPS, SSL, hashing, injection prevention, access control — complete protection for your digital assets.</p>
+          <h3 class="card-title">WEB DEVELOPMENT</h3>
+          <p class="card-desc">Modern, fast, and beautiful websites and web apps — from landing pages to complex full-stack platforms built to convert.</p>
         </div>
         <div class="service-card reveal" role="button" tabindex="0" onclick="showService('realestate')">
           <span class="card-num">02</span><span class="card-icon">🏢</span>
@@ -525,7 +525,7 @@
     </div>
   </section>
 
-  <!-- REVIEWS — European female names with real avatar photos -->
+  <!-- REVIEWS -->
   <section class="reviews-section" id="reviews-section">
     <div class="reviews-header reveal">
       <div>
@@ -628,8 +628,8 @@
           <div class="review-stars">
             <span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span><span class="star lit">★</span><span class="star">★</span>
           </div>
-          <p class="review-text">"The security audit was thorough. Found 4 vulnerabilities we didn't know about. Pricing was slightly more than quoted but the work was solid."</p>
-          <div class="review-service">Web Security</div>
+          <p class="review-text">"The web development was thorough and polished. They built exactly what we needed and were responsive throughout. Pricing was slightly more than quoted but the work was solid."</p>
+          <div class="review-service">Web Development</div>
         </div>
 
         <div class="review-card">
@@ -726,7 +726,7 @@
             <label>Service Interested In</label>
             <select>
               <option value="">Select a service...</option>
-              <option>Web Security</option>
+              <option>Web Development</option>
               <option>Real Estate Platform</option>
               <option>Software Development</option>
               <option>Mobile App Development</option>
@@ -802,7 +802,6 @@
   const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
   camera.position.z=30;
 
-  // — PARTICLE GALAXY — fewer particles on iOS for performance
   const particleCount=isIOS?1000:3000;
   const geometry = new THREE.BufferGeometry();
   const positions = new Float32Array(particleCount * 3);
@@ -839,7 +838,6 @@
   const particles = new THREE.Points(geometry, particleMat);
   scene.add(particles);
 
-  // — WIREFRAME TORUS KNOT —
   const torusGeo = new THREE.TorusKnotGeometry(8, 1.5, 120, 16);
   const torusMat = new THREE.MeshBasicMaterial({
     color: 0x7b61ff, wireframe: true, transparent: true, opacity: 0.07
@@ -847,7 +845,6 @@
   const torus = new THREE.Mesh(torusGeo, torusMat);
   scene.add(torus);
 
-  // — FLOATING ICOSAHEDRON —
   const icoGeo = new THREE.IcosahedronGeometry(4, 1);
   const icoMat = new THREE.MeshBasicMaterial({
     color: 0xc8f135, wireframe: true, transparent: true, opacity: 0.06
@@ -856,7 +853,6 @@
   ico.position.set(18, 6, -10);
   scene.add(ico);
 
-  // — SECOND ICO —
   const icoGeo2 = new THREE.IcosahedronGeometry(3, 1);
   const icoMat2 = new THREE.MeshBasicMaterial({
     color: 0x7b61ff, wireframe: true, transparent: true, opacity: 0.08
@@ -870,7 +866,6 @@
     mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
     mouseY = -(e.clientY / window.innerHeight - 0.5) * 2;
   });
-  // iOS touch parallax
   document.addEventListener('touchmove', e => {
     if(e.touches.length > 0){
       mouseX = (e.touches[0].clientX / window.innerWidth - 0.5) * 2;
@@ -888,23 +883,17 @@
   function animate(){
     requestAnimationFrame(animate);
     frame += 0.005;
-
     particles.rotation.y = frame * 0.12;
     particles.rotation.x = frame * 0.04;
-
     torus.rotation.x = frame * 0.3;
     torus.rotation.y = frame * 0.2;
-
     ico.rotation.x = frame * 0.5;
     ico.rotation.y = frame * 0.3;
     ico2.rotation.x = -frame * 0.4;
     ico2.rotation.y = frame * 0.6;
-
-    // subtle mouse tracking
     camera.position.x += (mouseX * 3 - camera.position.x) * 0.03;
     camera.position.y += (mouseY * 2 - camera.position.y) * 0.03;
     camera.lookAt(scene.position);
-
     renderer.render(scene, camera);
   }
   animate();
@@ -929,7 +918,6 @@
   const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
   camera.position.z = 25;
 
-  // Grid of cubes
   const cubeGroup = new THREE.Group();
   scene.add(cubeGroup);
   const cubeMat = new THREE.MeshBasicMaterial({color: 0xc8f135, wireframe: true, transparent: true, opacity: 0.15});
@@ -944,13 +932,11 @@
     }
   }
 
-  // Central sphere
   const sphereGeo = new THREE.SphereGeometry(5, 32, 32);
   const sphereMat = new THREE.MeshBasicMaterial({color: 0x7b61ff, wireframe: true, transparent: true, opacity: 0.12});
   const sphere = new THREE.Mesh(sphereGeo, sphereMat);
   scene.add(sphere);
 
-  // Rings
   for(let i = 0; i < 3; i++){
     const ringGeo = new THREE.TorusGeometry(7 + i*3, 0.05, 8, 64);
     const ringMat = new THREE.MeshBasicMaterial({color: 0xc8f135, transparent: true, opacity: 0.1 - i*0.02});
@@ -969,7 +955,7 @@
   ];
 
   let frame3d = 0;
-  let currentScrolled = 0; // track via scroll event for iOS reliability
+  let currentScrolled = 0;
   window.addEventListener('scroll', () => {
     if(!section) return;
     const sectionTop = section.offsetTop;
@@ -987,28 +973,20 @@
   function animate3d(){
     requestAnimationFrame(animate3d);
     if(!section) return;
-
     const scrolled = currentScrolled;
-
     frame3d += 0.008;
     cubeGroup.rotation.y = scrolled * Math.PI * 4 + frame3d * 0.3;
     cubeGroup.rotation.x = scrolled * Math.PI * 2;
-
-    // animate individual cubes
     cubeGroup.children.forEach((c, i) => {
       c.rotation.x += 0.01;
       c.rotation.y += 0.007 + i * 0.0001;
       const wave = Math.sin(frame3d * 2 + i * 0.3) * 0.5;
       c.position.z = wave * 3;
     });
-
     sphere.rotation.y = frame3d * 0.5;
     sphere.scale.setScalar(1 + Math.sin(frame3d) * 0.1 + scrolled * 0.5);
-
     camera.position.z = 25 - scrolled * 8;
     camera.position.y = scrolled * 5;
-
-    // update text
     const phase = Math.floor(scrolled * labels.length);
     const lbl = labels[Math.min(phase, labels.length-1)];
     const labelEl = document.getElementById('s3d-label');
@@ -1027,7 +1005,6 @@
         }, 300);
       }
     }
-
     renderer.render(scene, camera);
   }
   animate3d();
@@ -1074,7 +1051,7 @@ const observer=new IntersectionObserver(entries=>{
 function initReveal(){document.querySelectorAll('.reveal,.reveal-left').forEach(el=>observer.observe(el))}
 
 /* ── TYPEWRITER ── */
-const phrases=['an e-commerce store...','a mobile app...','a real estate platform...','web security audit...','an SEO campaign...'];
+const phrases=['an e-commerce store...','a mobile app...','a real estate platform...','a web development project...','an SEO campaign...'];
 let pi=0,ci=0,deleting=false;
 function type(){
   const tw=document.getElementById('typewriter');
@@ -1150,7 +1127,28 @@ makeDraggable('reviewTrack');
 
 /* ── SERVICE DATA ── */
 const services={
-  security:{tag:'// 01 — Cyber & Web Security',title:'WEB\nSECURITY',intro:'Enterprise-grade security solutions that protect your infrastructure, users, and data — from HTTPS to advanced access control.',color:'rgba(123,97,255,0.15)',features:[{icon:'🔒',title:'HTTPS & SSL Certificates',desc:'We configure and manage SSL/TLS certificates for all your domains, ensuring encrypted, trustworthy connections that browsers and users trust implicitly.'},{icon:'🔑',title:'Secure Password Storage',desc:'Implementation of industry-standard bcrypt, Argon2, or PBKDF2 hashing algorithms — your users\' passwords are never stored in plain text.'},{icon:'🛡️',title:'Input Validation & Sanitisation',desc:'Complete protection against SQL injection, XSS, CSRF, and SSRF attacks through robust server-side validation and parameterized queries.'},{icon:'👥',title:'Access Control & Role Management',desc:'Fine-grained admin/user role systems, JWT authentication, OAuth 2.0 integration, and audit logging for full accountability.'},{icon:'🔄',title:'Regular Security Updates',desc:'Proactive patch management, dependency auditing, and vulnerability scanning to stay ahead of emerging threats.'}],tools:['OWASP Compliance','Penetration Testing','SSL/TLS Configuration','Firewall Setup','2FA Implementation','GDPR Compliance'],process:[{num:'01',title:'Security Audit',desc:'We analyse your existing infrastructure for vulnerabilities and risk exposure.'},{num:'02',title:'Strategy Design',desc:'A bespoke security architecture tailored to your stack and compliance requirements.'},{num:'03',title:'Implementation',desc:'We deploy and configure all security layers — no disruption to your operations.'},{num:'04',title:'Monitoring',desc:'Ongoing threat monitoring, alerting, and quarterly security reviews.'}],ctaTitle:'SECURE YOUR\nDIGITAL ASSETS',ctaDesc:'One vulnerability can cost everything. Let\'s lock it down before it\'s too late.'},
+  webdev:{
+    tag:'// 01 — Web Development',
+    title:'WEB\nDEVELOPMENT',
+    intro:'From pixel-perfect landing pages to complex full-stack web applications — we design and build fast, modern, and scalable digital experiences that convert visitors into customers.',
+    color:'rgba(123,97,255,0.15)',
+    features:[
+      {icon:'🎨',title:'UI/UX Design & Prototyping',desc:'We craft intuitive, visually stunning interfaces using Figma — wireframes to high-fidelity prototypes reviewed and approved before a single line of code is written.'},
+      {icon:'⚛️',title:'Frontend Development',desc:'React, Next.js, Vue, and Svelte — we build blazing-fast frontends with smooth animations, perfect Lighthouse scores, and accessibility built in from the start.'},
+      {icon:'🔧',title:'Backend & API Development',desc:'Node.js, Python, and PHP backends with RESTful and GraphQL APIs — secure, scalable, and documented so your team can build on top with confidence.'},
+      {icon:'🗄️',title:'Database Architecture',desc:'PostgreSQL, MySQL, and MongoDB — properly structured schemas, optimised queries, and migrations that scale as your user base grows.'},
+      {icon:'☁️',title:'Hosting, DevOps & Deployment',desc:'We handle CI/CD pipelines, Docker containers, and cloud deployments on AWS, Vercel, or your preferred provider — zero-downtime launches every time.'}
+    ],
+    tools:['React / Next.js','Vue / Nuxt','Node.js / Express','PostgreSQL / MongoDB','AWS / Vercel / Netlify','Figma & Storybook'],
+    process:[
+      {num:'01',title:'Discovery & Planning',desc:'We map your goals, audience, and technical requirements — no surprises later.'},
+      {num:'02',title:'Design',desc:'Wireframes, brand-aligned UI, and interactive prototypes in Figma.'},
+      {num:'03',title:'Development',desc:'Agile sprints with weekly previews — you see progress every step of the way.'},
+      {num:'04',title:'Launch & Support',desc:'QA testing, performance tuning, launch, and 30-day post-launch support.'}
+    ],
+    ctaTitle:'BUILD YOUR\nWEB PRESENCE',
+    ctaDesc:'Your website is your most powerful sales tool. Let\'s make it extraordinary.'
+  },
   realestate:{tag:'// 02 — Real Estate Technology',title:'REAL\nESTATE',intro:'Modern, data-powered real estate platforms that connect buyers, sellers, and agents — with beautiful listings and intelligent automation.',color:'rgba(29,158,117,0.12)',features:[{icon:'🏘️',title:'Property Listing Platforms',desc:'Rich, searchable listing databases with filters, map views, virtual tours, and detailed property pages that convert visitors into leads.'},{icon:'📊',title:'Market Analytics Dashboards',desc:'Real-time price trends, neighborhood data, and investment ROI calculators.'},{icon:'🤝',title:'CRM & Lead Management',desc:'Built-in CRM to capture, nurture, and convert leads with automated follow-ups and pipeline tracking.'},{icon:'🗺️',title:'Interactive Map Integration',desc:'Google Maps and Mapbox integrations with property pins, school zones, transit routes, and points of interest.'},{icon:'📱',title:'Agent Mobile Apps',desc:'Dedicated mobile apps for agents — manage listings, respond to inquiries, and close deals from anywhere.'}],tools:['IDX/MLS Integration','Virtual Tour Support','Mortgage Calculator','3D Floor Plans','E-Signature Integration','Analytics Dashboard'],process:[{num:'01',title:'Discovery',desc:'We learn your market, users, and business model before writing a single line of code.'},{num:'02',title:'Platform Design',desc:'Wireframes and prototypes focused on conversion and ease of use.'},{num:'03',title:'Development',desc:'Full-stack build — backend APIs, database, and beautiful front-end.'},{num:'04',title:'Launch & Growth',desc:'SEO-optimised launch, training, and ongoing feature development.'}],ctaTitle:'BUILD YOUR\nPROPERTY PLATFORM',ctaDesc:'Transform how properties are discovered, evaluated, and sold.'},
   software:{tag:'// 03 — Software Development',title:'SOFTWARE\nDEV',intro:'From MVPs to enterprise systems — we architect, build, and scale custom software that becomes the backbone of your business.',color:'rgba(55,138,221,0.12)',features:[{icon:'🏗️',title:'Custom Web Applications',desc:'Full-stack web applications built with React, Next.js, Vue, or your preferred framework — scalable, fast, and maintainable.'},{icon:'🔌',title:'API Development & Integration',desc:'RESTful and GraphQL APIs that power your frontend, third-party integrations, and microservices architecture.'},{icon:'☁️',title:'Cloud Architecture',desc:'AWS, GCP, and Azure deployments with Docker, Kubernetes, CI/CD pipelines, and auto-scaling infrastructure.'},{icon:'🗄️',title:'Database Design & Optimisation',desc:'Relational and NoSQL database architecture optimised for your query patterns.'},{icon:'🧪',title:'Testing & Quality Assurance',desc:'Comprehensive unit, integration, and end-to-end testing — we ship confidence, not bugs.'}],tools:['React / Next.js','Node.js / Python','PostgreSQL / MongoDB','AWS / GCP','Docker / K8s','CI/CD Pipelines'],process:[{num:'01',title:'Requirements',desc:'Deep-dive sessions to map features, user stories, and technical constraints.'},{num:'02',title:'Architecture',desc:'System design, database schema, and tech stack selection.'},{num:'03',title:'Agile Build',desc:'2-week sprints with demos, feedback loops, and continuous delivery.'},{num:'04',title:'Maintenance',desc:'Post-launch support, monitoring, and iterative improvement.'}],ctaTitle:'BUILD YOUR\nIDEAL SOFTWARE',ctaDesc:'Great software doesn\'t happen by accident. It\'s architected with intention.'},
   mobile:{tag:'// 04 — Mobile App Development',title:'MOBILE\nAPPS',intro:'Native iOS and Android apps, plus cross-platform Flutter and React Native solutions — designed for delight and engineered for performance.',color:'rgba(186,117,23,0.12)',features:[{icon:'🍎',title:'iOS Development',desc:'Swift and SwiftUI native iOS apps — App Store submission included.'},{icon:'🤖',title:'Android Development',desc:'Kotlin-first Android apps following Material Design 3 guidelines.'},{icon:'⚡',title:'React Native & Flutter',desc:'Cross-platform apps that share 90%+ of code between iOS and Android — faster delivery, lower cost, same quality.'},{icon:'🔔',title:'Push Notifications & Engagement',desc:'Smart push notifications, deep linking, and in-app messaging to keep users engaged.'},{icon:'📡',title:'Offline-First Architecture',desc:'Apps that work without internet and sync seamlessly when reconnected.'}],tools:['Swift / SwiftUI','Kotlin / Jetpack','React Native','Flutter / Dart','Firebase','App Store Optimisation'],process:[{num:'01',title:'UX Research',desc:'User interviews, competitor analysis, and journey mapping.'},{num:'02',title:'UI/UX Design',desc:'High-fidelity prototypes in Figma — reviewed before development begins.'},{num:'03',title:'Development',desc:'Iterative builds with weekly TestFlight/beta releases.'},{num:'04',title:'Store Launch',desc:'App Store and Play Store submission, ASO, and launch support.'}],ctaTitle:'LAUNCH YOUR\nMOBILE APP',ctaDesc:'Your users are on mobile. Let\'s meet them there with something extraordinary.'},
@@ -1210,12 +1208,8 @@ function handleSubmit(e){
 /* INIT */
 initReveal();
 
-/* ── iOS SAFARI TOUCH FIX ──
-   iOS Safari only fires onclick on elements that are <a>, <button>, or have cursor:pointer.
-   We already added cursor:pointer via CSS, but as belt-and-suspenders we also
-   bind touchend on service cards + nav clickables to guarantee they respond. */
+/* ── iOS SAFARI TOUCH FIX ── */
 (function iosFixTouchTargets(){
-  // Service cards
   document.querySelectorAll('.service-card').forEach(card => {
     let startX, startY;
     card.addEventListener('touchstart', e => {
@@ -1225,7 +1219,6 @@ initReveal();
     card.addEventListener('touchend', e => {
       const dx = Math.abs(e.changedTouches[0].clientX - startX);
       const dy = Math.abs(e.changedTouches[0].clientY - startY);
-      // Only fire if it was a tap (not a scroll)
       if(dx < 10 && dy < 10){
         e.preventDefault();
         card.click();
@@ -1233,7 +1226,6 @@ initReveal();
     }, {passive: false});
   });
 
-  // Nav logo and footer logo
   document.querySelectorAll('.nav-logo, .footer-logo').forEach(el => {
     el.addEventListener('touchend', e => {
       e.preventDefault();
