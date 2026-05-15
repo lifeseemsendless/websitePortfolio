@@ -11,12 +11,15 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#04040a;
-  --text:#efefef;
-  --muted:rgba(239,239,239,0.38);
-  --muted2:rgba(239,239,239,0.18);
-  --accent:#a0a0ff;
-  --border:rgba(255,255,255,0.07);
+  --bg:#f5f4f0;
+  --bg2:#eeede8;
+  --text:#0a0a0f;
+  --muted:rgba(10,10,15,0.45);
+  --muted2:rgba(10,10,15,0.2);
+  --accent:#5a5a7a;
+  --silver:#9a9aaa;
+  --border:rgba(10,10,15,0.08);
+  --border2:rgba(10,10,15,0.14);
   --font-display:'Syne',sans-serif;
   --font-mono:'Syne Mono',monospace;
   --font-body:'Inter',sans-serif;
@@ -30,49 +33,21 @@ body{
   cursor:none;
 }
 
-/* ===== WEBGL CANVAS ===== */
-#cv{
-  position:fixed;inset:0;z-index:0;
-  width:100%;height:100%;
-  display:block;
-}
+#cv{position:fixed;inset:0;z-index:0;width:100%;height:100%;display:block;}
 
-/* ===== POST-PROCESSING OVERLAY ===== */
+/* Subtle vignette for depth */
 #post-overlay{
-  position:fixed;inset:0;z-index:1;
-  pointer-events:none;
-  background:
-    radial-gradient(ellipse 90% 70% at 50% 50%, transparent 40%, rgba(4,4,10,0.55) 100%);
-  mix-blend-mode:normal;
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 90% 80% at 50% 50%, transparent 50%, rgba(240,238,232,0.4) 100%);
 }
-/* Scanlines */
 #post-overlay::after{
-  content:'';
-  position:absolute;inset:0;
-  background:repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.03) 2px,
-    rgba(0,0,0,0.03) 4px
-  );
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.008) 3px,rgba(0,0,0,0.008) 4px);
   pointer-events:none;
 }
-/* Film grain via CSS animation */
-#grain{
-  position:fixed;inset:0;z-index:2;
-  pointer-events:none;
-  opacity:0.035;
-  animation:grainShift 0.15s steps(1) infinite;
-}
-@keyframes grainShift{
-  0%{transform:translate(0,0)}10%{transform:translate(-2%,-2%)}20%{transform:translate(2%,2%)}
-  30%{transform:translate(-1%,1%)}40%{transform:translate(1%,-1%)}50%{transform:translate(-2%,1%)}
-  60%{transform:translate(2%,-2%)}70%{transform:translate(-1%,2%)}80%{transform:translate(2%,1%)}
-  90%{transform:translate(-2%,-1%)}100%{transform:translate(1%,2%)}
-}
+#grain{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0.022;}
 
-/* ===== NAV ===== */
+/* NAV */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:200;
   padding:2rem 3rem;
@@ -80,48 +55,34 @@ nav{
   pointer-events:none;
 }
 .nav-logo{
-  font-family:var(--font-display);
-  font-size:1.15rem;
-  font-weight:700;
-  letter-spacing:.08em;
-  color:var(--text);
-  pointer-events:all;
-  cursor:pointer;
-  transition:opacity .3s;
-  user-select:none;
-  position:relative;
+  font-family:var(--font-display);font-size:1.15rem;font-weight:700;
+  letter-spacing:.1em;color:var(--text);pointer-events:all;cursor:pointer;
+  transition:opacity .3s;user-select:none;position:relative;
 }
 .nav-logo::after{
-  content:'';
-  position:absolute;bottom:-4px;left:0;right:0;
-  height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent);
-  transform:scaleX(0);
-  transition:transform .4s cubic-bezier(.23,1,.32,1);
+  content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,0,0,0.35),transparent);
+  transform:scaleX(0);transition:transform .4s cubic-bezier(.23,1,.32,1);
 }
 .nav-logo:hover::after{transform:scaleX(1)}
-.nav-logo:hover{opacity:.8}
+.nav-logo:hover{opacity:.6}
 .nav-hamburger{
-  pointer-events:all;
-  cursor:pointer;
-  display:flex;flex-direction:column;gap:5px;
-  padding:4px;
-  transition:opacity .3s;
+  pointer-events:all;cursor:pointer;
+  display:flex;flex-direction:column;gap:5px;padding:4px;transition:opacity .3s;
 }
-.nav-hamburger:hover{opacity:.6}
+.nav-hamburger:hover{opacity:.5}
 .nav-hamburger span{
   display:block;width:24px;height:1.5px;
-  background:var(--text);
-  transition:all .4s cubic-bezier(.23,1,.32,1);
+  background:var(--text);transition:all .4s cubic-bezier(.23,1,.32,1);
 }
 .nav-hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
 .nav-hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
 .nav-hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
 
-/* ===== NAV MENU ===== */
+/* NAV MENU */
 .nav-menu{
   position:fixed;inset:0;z-index:190;
-  background:rgba(4,4,10,0.97);
+  background:rgba(245,244,240,0.97);
   backdrop-filter:blur(32px);
   display:flex;align-items:center;justify-content:center;
   opacity:0;pointer-events:none;
@@ -130,15 +91,9 @@ nav{
 .nav-menu.open{opacity:1;pointer-events:all}
 .nav-menu ul{list-style:none;text-align:center;display:flex;flex-direction:column;gap:1.5rem}
 .nav-menu a{
-  font-family:var(--font-display);
-  font-size:clamp(3rem,7vw,6rem);
-  font-weight:800;
-  color:rgba(239,239,239,0.15);
-  text-decoration:none;
-  letter-spacing:-.02em;
-  display:block;
-  transform:translateY(40px) skewY(4deg);
-  opacity:0;
+  font-family:var(--font-display);font-size:clamp(3rem,7vw,6rem);font-weight:800;
+  color:rgba(10,10,15,0.1);text-decoration:none;letter-spacing:-.02em;display:block;
+  transform:translateY(40px) skewY(4deg);opacity:0;
   transition:color .3s,transform .6s cubic-bezier(.23,1,.32,1),opacity .6s,letter-spacing .4s;
   cursor:pointer;
 }
@@ -149,567 +104,442 @@ nav{
 .nav-menu.open a:nth-child(4){transition-delay:.2s}
 .nav-menu a:hover{color:var(--text);letter-spacing:.04em}
 
-/* ===== SCROLL DRIVER ===== */
 #scroll-driver{position:relative;z-index:1;pointer-events:none;}
 
-/* ===== FIXED UI OVERLAY ===== */
-#ui-overlay{
-  position:fixed;inset:0;z-index:100;
-  pointer-events:none;
-  overflow:hidden;
-}
+/* FIXED UI OVERLAY */
+#ui-overlay{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden;}
 
-/* Hero text */
 .hero-left{
-  position:absolute;
-  bottom:14vh;
-  left:3rem;
-  max-width:600px;
+  position:absolute;bottom:14vh;left:3rem;max-width:600px;
 }
 .hero-left .eyebrow{
-  font-family:var(--font-mono);
-  font-size:.68rem;
-  letter-spacing:.2em;
-  text-transform:uppercase;
-  color:var(--muted);
-  margin-bottom:1rem;
-  display:flex;align-items:center;gap:.7rem;
+  font-family:var(--font-mono);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:1rem;display:flex;align-items:center;gap:.7rem;
 }
 .hero-left .eyebrow::before{
   content:'';flex:0 0 24px;height:1px;
-  background:linear-gradient(90deg,rgba(160,160,255,0.6),transparent);
+  background:linear-gradient(90deg,rgba(90,90,120,0.5),transparent);
 }
 .hero-left .big-title{
-  font-family:var(--font-display);
-  font-size:clamp(3rem,5.5vw,5.5rem);
-  font-weight:800;
-  line-height:1.0;
-  letter-spacing:-.03em;
-  color:var(--text);
+  font-family:var(--font-display);font-size:clamp(3rem,5.5vw,5.5rem);font-weight:800;
+  line-height:1.0;letter-spacing:-.03em;color:var(--text);
   transition:opacity .5s,transform .7s cubic-bezier(.23,1,.32,1);
 }
-.hero-left .big-title .dim{
-  color:rgba(239,239,239,0.22);
-  font-weight:400;
-}
+.hero-left .big-title .dim{color:rgba(10,10,15,0.22);font-weight:400}
 .hero-left .big-title .accent-word{
-  background:linear-gradient(135deg,#fff 0%,#a0a0ff 50%,#6060dd 100%);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
+  background:linear-gradient(135deg,#222 0%,#777 50%,#aaa 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 
-/* Right panel */
 .content-panel{
-  position:absolute;
-  top:50%;
-  right:3rem;
-  width:min(400px,36vw);
-  opacity:0;
-  transform:translateY(-50%) translateX(40px);
-  transition:opacity .9s cubic-bezier(.23,1,.32,1), transform .9s cubic-bezier(.23,1,.32,1);
+  position:absolute;top:50%;right:3rem;width:min(400px,36vw);
+  opacity:0;transform:translateY(-50%) translateX(40px);
+  transition:opacity .9s cubic-bezier(.23,1,.32,1),transform .9s cubic-bezier(.23,1,.32,1);
   pointer-events:none;
 }
-.content-panel.visible{
-  opacity:1;
-  transform:translateY(-50%) translateX(0);
-  pointer-events:all;
-}
+.content-panel.visible{opacity:1;transform:translateY(-50%) translateX(0);pointer-events:all;}
 .content-panel-inner{
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:16px;
-  padding:2rem;
-  backdrop-filter:blur(20px);
-  position:relative;
-  overflow:hidden;
+  background:rgba(255,255,255,0.55);
+  border:1px solid rgba(10,10,15,0.1);
+  border-radius:16px;padding:2rem;
+  backdrop-filter:blur(24px);
+  position:relative;overflow:hidden;
+  box-shadow:0 8px 40px rgba(0,0,0,0.08),0 1px 0 rgba(255,255,255,0.9) inset;
 }
 .content-panel-inner::before{
-  content:'';
-  position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(160,160,255,0.4),transparent);
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.9),transparent);
 }
-.content-panel h3{
-  font-family:var(--font-display);
-  font-size:1.3rem;
-  font-weight:700;
-  letter-spacing:-.01em;
-  margin-bottom:.9rem;
-  color:var(--text);
-}
-.content-panel p{
-  font-size:.88rem;
-  line-height:1.8;
-  color:var(--muted);
-  font-weight:300;
-  margin-bottom:1.5rem;
-}
+.content-panel h3{font-family:var(--font-display);font-size:1.3rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.9rem;color:var(--text);}
+.content-panel p{font-size:.88rem;line-height:1.8;color:var(--muted);font-weight:300;margin-bottom:1.5rem;}
 .panel-btn{
   display:inline-flex;align-items:center;gap:.6rem;
-  background:rgba(160,160,255,0.1);
-  border:1px solid rgba(160,160,255,0.25);
-  color:var(--text);
-  padding:.7rem 1.6rem;
-  border-radius:2rem;
-  font-size:.83rem;
-  font-family:var(--font-display);
-  font-weight:600;
-  letter-spacing:.03em;
-  cursor:pointer;
-  pointer-events:all;
-  transition:all .35s cubic-bezier(.23,1,.32,1);
-  text-decoration:none;
+  background:var(--text);border:1px solid transparent;
+  color:#f5f4f0;padding:.7rem 1.6rem;border-radius:2rem;
+  font-size:.83rem;font-family:var(--font-display);font-weight:600;letter-spacing:.03em;
+  cursor:pointer;pointer-events:all;transition:all .35s cubic-bezier(.23,1,.32,1);text-decoration:none;
 }
-.panel-btn:hover{
-  background:rgba(160,160,255,0.2);
-  border-color:rgba(160,160,255,0.5);
-  transform:translateX(5px);
-  box-shadow:0 8px 32px rgba(100,100,255,0.2);
-}
+.panel-btn:hover{transform:translateX(5px);box-shadow:0 8px 32px rgba(0,0,0,0.18);opacity:.85;}
 
 /* Bottom bar */
 .bottom-bar{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:1.8rem 3rem;
+  position:absolute;bottom:0;left:0;right:0;padding:1.8rem 3rem;
   display:flex;align-items:flex-end;justify-content:space-between;
   border-top:1px solid var(--border);
 }
-.bottom-bar .copy{
-  font-family:var(--font-mono);
-  font-size:.58rem;
-  letter-spacing:.1em;
-  color:var(--muted2);
-  text-transform:uppercase;
-}
+.bottom-bar .copy{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.1em;color:var(--muted2);text-transform:uppercase;}
 .scroll-hint{
-  font-family:var(--font-mono);
-  font-size:.6rem;
-  letter-spacing:.14em;
-  color:var(--muted);
-  text-transform:uppercase;
-  display:flex;align-items:center;gap:.8rem;
-  transition:opacity .5s;
+  font-family:var(--font-mono);font-size:.6rem;letter-spacing:.14em;color:var(--muted);
+  text-transform:uppercase;display:flex;align-items:center;gap:.8rem;transition:opacity .5s;
 }
 .scroll-arrow{
-  width:22px;height:22px;
-  border:1px solid rgba(255,255,255,0.18);
-  border-radius:50%;
+  width:22px;height:22px;border:1px solid rgba(0,0,0,0.18);border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   animation:bob 2.5s ease-in-out infinite;
 }
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
 
-/* Progress */
 .progress-track{
   position:absolute;right:3rem;top:50%;transform:translateY(-50%);
-  width:1px;height:140px;
-  background:rgba(255,255,255,0.05);
+  width:1px;height:140px;background:rgba(0,0,0,0.06);
 }
 .progress-fill{
   position:absolute;top:0;left:0;width:100%;
-  background:linear-gradient(180deg,rgba(160,160,255,0.6),rgba(255,255,255,0.3));
-  height:0%;
-  transition:height .15s linear;
+  background:linear-gradient(180deg,rgba(90,90,120,0.7),rgba(0,0,0,0.3));
+  height:0%;transition:height .15s linear;
 }
 .progress-dot{
   position:absolute;left:50%;transform:translateX(-50%);
-  width:5px;height:5px;border-radius:50%;
-  background:rgba(160,160,255,0.9);
-  box-shadow:0 0 10px rgba(160,160,255,0.8);
-  top:0%;
-  transition:top .15s linear;
+  width:5px;height:5px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 8px rgba(90,90,120,0.5);top:0%;transition:top .15s linear;
 }
-
-/* Scene number indicator */
 .scene-counter{
   position:absolute;right:3.8rem;top:50%;transform:translateY(-50%);
-  display:flex;flex-direction:column;gap:6px;
-  align-items:center;
+  display:flex;flex-direction:column;gap:6px;align-items:center;
 }
-.scene-dot{
-  width:3px;height:3px;border-radius:50%;
-  background:rgba(255,255,255,0.2);
-  transition:all .4s;
-}
-.scene-dot.active{
-  background:rgba(160,160,255,0.8);
-  height:16px;border-radius:3px;
-  box-shadow:0 0 8px rgba(160,160,255,0.6);
-}
+.scene-dot{width:3px;height:3px;border-radius:50%;background:rgba(0,0,0,0.15);transition:all .4s;}
+.scene-dot.active{background:var(--accent);height:16px;border-radius:3px;box-shadow:0 0 8px rgba(90,90,120,0.4);}
 
-/* ===== MAIN CONTENT ===== */
-#main-content{
-  position:relative;z-index:10;
-  background:var(--bg);
-}
-.section{
-  padding:8rem 3rem;
-  border-top:1px solid var(--border);
-  max-width:1400px;
-  margin:0 auto;
-}
+/* MAIN CONTENT */
+#main-content{position:relative;z-index:10;background:var(--bg);}
+.section{padding:8rem 3rem;border-top:1px solid var(--border);max-width:1400px;margin:0 auto;}
 .section-label{
-  font-family:var(--font-mono);
-  font-size:.66rem;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  color:rgba(160,160,255,0.6);
-  margin-bottom:3rem;
-  display:flex;align-items:center;gap:1rem;
+  font-family:var(--font-mono);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:3rem;display:flex;align-items:center;gap:1rem;
 }
-.section-label::before{content:'';flex:0 0 32px;height:1px;background:linear-gradient(90deg,rgba(160,160,255,0.4),transparent)}
+.section-label::before{content:'';flex:0 0 32px;height:1px;background:linear-gradient(90deg,var(--accent),transparent)}
 
 /* Marquee */
 .marquee-section{
-  border-top:1px solid var(--border);
-  border-bottom:1px solid var(--border);
-  padding:1.3rem 0;
-  overflow:hidden;
-  background:rgba(255,255,255,0.012);
-  position:relative;
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:1.3rem 0;overflow:hidden;background:rgba(0,0,0,0.018);position:relative;
 }
-.marquee-section::before,.marquee-section::after{
-  content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;
-}
+.marquee-section::before,.marquee-section::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;}
 .marquee-section::before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
 .marquee-section::after{right:0;background:linear-gradient(-90deg,var(--bg),transparent)}
-.marquee-track{
-  display:flex;white-space:nowrap;
-  animation:marquee 32s linear infinite;
-}
+.marquee-track{display:flex;white-space:nowrap;animation:marquee 32s linear infinite;}
 .marquee-track span{
-  font-family:var(--font-display);
-  font-size:1rem;
-  font-weight:700;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  color:rgba(239,239,239,0.18);
-  padding:0 2.5rem;
-  transition:color .3s;
+  font-family:var(--font-display);font-size:1rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(10,10,15,0.15);padding:0 2.5rem;transition:color .3s;
 }
-.marquee-track span.dot{color:rgba(160,160,255,0.3);padding:0}
+.marquee-track span.dot{color:rgba(90,90,120,0.3);padding:0}
 @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
 /* Services Grid */
 .services-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:1px;
-  background:var(--border);
-  border:1px solid var(--border);
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);border:1px solid var(--border);
 }
 .srv-card{
-  background:var(--bg);
-  padding:3rem 2.5rem;
-  cursor:pointer;
-  position:relative;
-  overflow:hidden;
-  transition:background .4s;
+  background:var(--bg);padding:3rem 2.5rem;cursor:pointer;
+  position:relative;overflow:hidden;transition:background .4s;
 }
 .srv-card::before{
-  content:'';
-  position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(100,100,255,0.06) 0%,transparent 60%);
-  opacity:0;
-  transition:opacity .5s;
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,0,0,0.025) 0%,transparent 60%);
+  opacity:0;transition:opacity .5s;
 }
 .srv-card::after{
-  content:'';
-  position:absolute;
-  bottom:0;left:0;right:0;
-  height:2px;
-  background:linear-gradient(90deg,transparent,rgba(160,160,255,0.5),transparent);
-  transform:scaleX(0);
-  transition:transform .5s cubic-bezier(.23,1,.32,1);
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(90,90,120,0.4),transparent);
+  transform:scaleX(0);transition:transform .5s cubic-bezier(.23,1,.32,1);
 }
-.srv-card:hover{background:rgba(100,100,255,0.04)}
+.srv-card:hover{background:rgba(255,255,255,0.7)}
 .srv-card:hover::before{opacity:1}
 .srv-card:hover::after{transform:scaleX(1)}
-.srv-num{
-  font-family:var(--font-mono);
-  font-size:.6rem;
-  letter-spacing:.18em;
-  color:rgba(160,160,255,0.4);
-  display:block;
-  margin-bottom:2.5rem;
-}
-.srv-icon{
-  font-size:1.8rem;display:block;margin-bottom:1.5rem;
-  filter:grayscale(0.3);
-  transition:transform .4s cubic-bezier(.23,1,.32,1);
-}
+.srv-num{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.18em;color:rgba(90,90,120,0.4);display:block;margin-bottom:2.5rem;}
+.srv-icon{font-size:1.8rem;display:block;margin-bottom:1.5rem;filter:grayscale(0.4);transition:transform .4s cubic-bezier(.23,1,.32,1);}
 .srv-card:hover .srv-icon{transform:scale(1.1) rotate(-5deg)}
-.srv-title{
-  font-family:var(--font-display);
-  font-size:1.5rem;
-  font-weight:700;
-  letter-spacing:-.01em;
-  margin-bottom:.8rem;
-  line-height:1.1;
-  color:var(--text);
-  transition:color .3s;
-}
-.srv-card:hover .srv-title{color:#fff}
-.srv-desc{
-  font-size:.84rem;
-  line-height:1.75;
-  color:var(--muted);
-  font-weight:300;
-}
+.srv-title{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.8rem;line-height:1.1;color:var(--text);transition:color .3s;}
+.srv-desc{font-size:.84rem;line-height:1.75;color:var(--muted);font-weight:300;}
 .srv-arrow{
-  position:absolute;bottom:2rem;right:2rem;
-  width:36px;height:36px;
-  border:1px solid var(--border);
-  border-radius:50%;
+  position:absolute;bottom:2rem;right:2rem;width:36px;height:36px;
+  border:1px solid var(--border2);border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  color:var(--muted2);
-  font-size:.9rem;
-  transition:all .4s cubic-bezier(.23,1,.32,1);
-  background:rgba(255,255,255,0.02);
+  color:var(--muted2);font-size:.9rem;
+  transition:all .4s cubic-bezier(.23,1,.32,1);background:rgba(0,0,0,0.02);
 }
 .srv-card:hover .srv-arrow{
-  border-color:rgba(160,160,255,0.4);
-  color:var(--accent);
+  border-color:rgba(90,90,120,0.4);color:var(--accent);
   transform:rotate(45deg) scale(1.1);
-  background:rgba(100,100,255,0.08);
-  box-shadow:0 0 20px rgba(160,160,255,0.15);
+  background:rgba(90,90,120,0.08);
+  box-shadow:0 0 20px rgba(90,90,120,0.12);
 }
 
 /* Stats */
 .stats-row{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  border:1px solid var(--border);
-  background:var(--border);
-  gap:1px;
-  margin-top:4rem;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--border);background:var(--border);gap:1px;margin-top:4rem;
 }
-.stat-cell{
-  background:var(--bg);
-  padding:3rem 2.5rem;
-  text-align:center;
-  position:relative;
-  overflow:hidden;
-}
-.stat-cell::before{
-  content:'';
-  position:absolute;inset:0;
-  background:radial-gradient(circle at 50% 0%,rgba(160,160,255,0.05),transparent 70%);
-}
+.stat-cell{background:var(--bg);padding:3rem 2.5rem;text-align:center;position:relative;overflow:hidden;}
+.stat-cell::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(90,90,120,0.04),transparent 70%);}
 .stat-n{
-  font-family:var(--font-display);
-  font-size:4.5rem;
-  font-weight:800;
-  line-height:1;
-  color:var(--text);
-  display:block;
-  letter-spacing:-.04em;
-  background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,0.6) 100%);
+  font-family:var(--font-display);font-size:4.5rem;font-weight:800;line-height:1;
+  color:var(--text);display:block;letter-spacing:-.04em;
+  background:linear-gradient(180deg,#111 0%,rgba(50,50,60,0.5) 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.stat-l{
-  font-family:var(--font-mono);
-  font-size:.63rem;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  color:var(--muted);
-  margin-top:.6rem;
-  display:block;
-}
+.stat-l{font-family:var(--font-mono);font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:.6rem;display:block;}
 
 /* Tech strip */
-.tech-strip{
-  border-top:1px solid var(--border);
-  padding:1.5rem 0;
-  overflow:hidden;
-  position:relative;
-}
-.tech-strip::before,.tech-strip::after{
-  content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2;pointer-events:none;
-}
+.tech-strip{border-top:1px solid var(--border);padding:1.5rem 0;overflow:hidden;position:relative;}
+.tech-strip::before,.tech-strip::after{content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2;pointer-events:none;}
 .tech-strip::before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
 .tech-strip::after{right:0;background:linear-gradient(-90deg,var(--bg),transparent)}
-.tech-track{
-  display:flex;gap:2rem;
-  animation:marquee 22s linear infinite;
-  width:max-content;
-}
+.tech-track{display:flex;gap:2rem;animation:marquee 22s linear infinite;width:max-content;}
 .tech-item{
-  display:flex;align-items:center;gap:.6rem;
-  padding:.5rem 1.2rem;
-  border:1px solid var(--border);
-  border-radius:2rem;
-  font-family:var(--font-mono);
-  font-size:.68rem;
-  letter-spacing:.08em;
-  color:var(--muted);
-  white-space:nowrap;
-  background:rgba(255,255,255,0.02);
-  transition:all .3s;
+  display:flex;align-items:center;gap:.6rem;padding:.5rem 1.2rem;
+  border:1px solid var(--border2);border-radius:2rem;font-family:var(--font-mono);
+  font-size:.68rem;letter-spacing:.08em;color:var(--muted);white-space:nowrap;
+  background:rgba(255,255,255,0.5);transition:all .3s;
 }
-.tech-item:hover{border-color:rgba(160,160,255,0.3);color:var(--text);background:rgba(100,100,255,0.06)}
+.tech-item:hover{border-color:rgba(90,90,120,0.3);color:var(--text);background:rgba(255,255,255,0.8)}
 
 /* Reviews */
-.reviews-scroll{
-  display:flex;
-  gap:1rem;
-  overflow-x:auto;
-  padding:1rem 0 2rem;
-  scrollbar-width:none;
-  cursor:grab;
-  margin-top:2rem;
-}
+.reviews-scroll{display:flex;gap:1rem;overflow-x:auto;padding:1rem 0 2rem;scrollbar-width:none;cursor:grab;margin-top:2rem;}
 .reviews-scroll::-webkit-scrollbar{display:none}
 .rv-card{
-  flex:0 0 300px;
-  background:rgba(255,255,255,0.022);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:1.8rem;
-  transition:all .4s cubic-bezier(.23,1,.32,1);
-  position:relative;
-  overflow:hidden;
+  flex:0 0 300px;background:rgba(255,255,255,0.6);
+  border:1px solid var(--border);border-radius:14px;padding:1.8rem;
+  transition:all .4s cubic-bezier(.23,1,.32,1);position:relative;overflow:hidden;
+  backdrop-filter:blur(8px);
 }
-.rv-card::before{
-  content:'';
-  position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(160,160,255,0.3),transparent);
-  opacity:0;transition:opacity .4s;
-}
-.rv-card:hover{border-color:rgba(160,160,255,0.2);transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,0.5),0 0 40px rgba(100,100,255,0.05)}
+.rv-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.9),transparent);opacity:0;transition:opacity .4s;}
+.rv-card:hover{border-color:rgba(90,90,120,0.2);transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,0.1),0 0 0 1px rgba(255,255,255,0.8)}
 .rv-card:hover::before{opacity:1}
-.rv-verified{
-  position:absolute;top:1rem;right:1rem;
-  font-family:var(--font-mono);font-size:.5rem;letter-spacing:.08em;
-  color:rgba(160,160,255,0.5);border:1px solid rgba(160,160,255,0.2);
-  padding:2px 7px;border-radius:20px;text-transform:uppercase;
-}
+.rv-verified{position:absolute;top:1rem;right:1rem;font-family:var(--font-mono);font-size:.5rem;letter-spacing:.08em;color:var(--accent);border:1px solid rgba(90,90,120,0.25);padding:2px 7px;border-radius:20px;text-transform:uppercase;}
 .rv-head{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
-.rv-av{width:38px;height:38px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,0.08);border:1px solid var(--border);flex-shrink:0;}
+.rv-av{width:38px;height:38px;border-radius:50%;overflow:hidden;background:rgba(0,0,0,0.06);border:1px solid var(--border);flex-shrink:0;}
 .rv-av img{width:100%;height:100%;object-fit:cover}
 .rv-name{font-size:.88rem;font-weight:600;color:var(--text)}
 .rv-role{font-size:.68rem;color:var(--muted);margin-top:1px}
 .rv-stars{display:flex;gap:2px;margin-bottom:.7rem}
-.rv-stars span{font-size:.8rem;color:rgba(255,255,255,0.12)}
-.rv-stars span.on{color:rgba(200,200,255,0.7)}
+.rv-stars span{font-size:.8rem;color:rgba(0,0,0,0.1)}
+.rv-stars span.on{color:rgba(80,80,100,0.7)}
 .rv-text{font-size:.84rem;line-height:1.68;color:var(--muted);font-style:italic;font-weight:300}
-.rv-svc{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:.58rem;letter-spacing:.1em;color:rgba(160,160,255,0.3);text-transform:uppercase}
+.rv-svc{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:.58rem;letter-spacing:.1em;color:var(--accent);opacity:.5;text-transform:uppercase}
 .reviews-header{display:flex;justify-content:space-between;align-items:flex-end}
 .rv-score{font-family:var(--font-display);font-size:4rem;font-weight:800;color:var(--text);letter-spacing:-.04em;line-height:1}
 .rv-score-label{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-top:.3rem}
 
 /* CTA */
-.cta-section{
-  padding:10rem 3rem;
-  text-align:center;
-  border-top:1px solid var(--border);
-  position:relative;overflow:hidden;
-}
-.cta-section::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 60% 60% at 50% 100%,rgba(100,100,255,0.06) 0%,transparent 70%);
-}
-.cta-title{
-  font-family:var(--font-display);
-  font-size:clamp(3.5rem,9vw,9rem);
-  font-weight:800;
-  letter-spacing:-.04em;
-  line-height:.92;
-  position:relative;z-index:1;
-  color:var(--text);
-}
-.cta-title em{font-style:normal;background:linear-gradient(135deg,rgba(239,239,239,0.4),rgba(160,160,255,0.5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.cta-section{padding:10rem 3rem;text-align:center;border-top:1px solid var(--border);position:relative;overflow:hidden;}
+.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 100%,rgba(90,90,120,0.05) 0%,transparent 70%);}
+.cta-title{font-family:var(--font-display);font-size:clamp(3.5rem,9vw,9rem);font-weight:800;letter-spacing:-.04em;line-height:.92;position:relative;z-index:1;color:var(--text);}
+.cta-title em{font-style:normal;background:linear-gradient(135deg,rgba(10,10,15,0.35),rgba(90,90,120,0.5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .cta-btn{
   display:inline-flex;align-items:center;gap:.7rem;
   background:var(--text);color:var(--bg);
   padding:1.1rem 3rem;border-radius:2rem;
   font-family:var(--font-display);font-size:1rem;font-weight:700;
   letter-spacing:.02em;cursor:pointer;border:none;margin-top:3rem;
-  position:relative;z-index:1;
-  transition:all .4s cubic-bezier(.23,1,.32,1);
+  position:relative;z-index:1;transition:all .4s cubic-bezier(.23,1,.32,1);
 }
-.cta-btn:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(160,160,255,0.25);opacity:.95}
+.cta-btn:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.22);opacity:.9}
 
 /* Contact */
 .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start}
 .contact-title{font-family:var(--font-display);font-size:clamp(2.5rem,5vw,4rem);font-weight:800;letter-spacing:-.02em;line-height:1;margin-bottom:1.5rem;color:var(--text)}
 .contact-desc{font-size:.9rem;line-height:1.78;color:var(--muted);font-weight:300;margin-bottom:2.5rem}
 .contact-detail{display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border);font-size:.88rem;color:var(--muted)}
-.contact-detail-icon{width:34px;height:34px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0;color:var(--accent);background:rgba(100,100,255,0.05)}
+.contact-detail-icon{width:34px;height:34px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0;color:var(--accent);background:rgba(90,90,120,0.05)}
 .form-group{display:flex;flex-direction:column;gap:.38rem;margin-bottom:1.1rem}
-.form-group label{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(160,160,255,0.5)}
+.form-group label{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);opacity:.7}
 .form-group input,.form-group textarea,.form-group select{
-  background:rgba(255,255,255,0.025);
-  border:1px solid var(--border);color:var(--text);
-  padding:.88rem 1rem;border-radius:10px;
-  font-family:var(--font-body);font-size:.9rem;
+  background:rgba(255,255,255,0.6);border:1px solid var(--border2);color:var(--text);
+  padding:.88rem 1rem;border-radius:10px;font-family:var(--font-body);font-size:.9rem;
   outline:none;-webkit-appearance:none;
   transition:border-color .3s,background .3s,box-shadow .3s;
 }
 .form-group input:focus,.form-group textarea:focus,.form-group select:focus{
-  border-color:rgba(160,160,255,0.3);
-  background:rgba(100,100,255,0.04);
-  box-shadow:0 0 0 3px rgba(160,160,255,0.06);
+  border-color:rgba(90,90,120,0.4);background:rgba(255,255,255,0.9);
+  box-shadow:0 0 0 3px rgba(90,90,120,0.06);
 }
-.form-group select option{background:#080812}
+.form-group select option{background:#f5f4f0;color:var(--text)}
 .form-group textarea{min-height:120px;resize:vertical}
 .form-submit{
-  background:linear-gradient(135deg,rgba(160,160,255,0.9),rgba(100,100,255,0.8));
-  color:#fff;padding:.95rem 2.5rem;border-radius:2rem;
+  background:var(--text);color:var(--bg);
+  padding:.95rem 2.5rem;border-radius:2rem;
   font-family:var(--font-display);font-size:.9rem;font-weight:700;
   letter-spacing:.03em;cursor:pointer;border:none;
   transition:all .4s cubic-bezier(.23,1,.32,1);margin-top:.5rem;
-  box-shadow:0 8px 32px rgba(100,100,255,0.2);
+  box-shadow:0 8px 32px rgba(0,0,0,0.12);
 }
-.form-submit:hover{opacity:.9;transform:translateY(-3px);box-shadow:0 16px 48px rgba(100,100,255,0.35)}
+.form-submit:hover{opacity:.85;transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,0.2)}
 
-/* Footer */
-footer{
-  padding:2.5rem 3rem;
-  border-top:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-  background:var(--bg);
-}
+footer{padding:2.5rem 3rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg);}
 .footer-logo{font-family:var(--font-display);font-size:1rem;font-weight:700;letter-spacing:.07em;color:var(--text);cursor:pointer;transition:opacity .3s}
-.footer-logo:hover{opacity:.6}
+.footer-logo:hover{opacity:.5}
 .footer-copy{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.1em;color:var(--muted2)}
 
-/* ===== SERVICE PAGE ===== */
-#service-page{display:none;min-height:100vh;position:relative;z-index:20;background:var(--bg)}
-#service-page.active{display:block}
-.sp-hero{min-height:70vh;display:flex;align-items:flex-end;padding:8rem 3rem 4rem;position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
-.sp-back{display:inline-flex;align-items:center;gap:.5rem;color:var(--muted);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:none;background:none;font-family:var(--font-mono);margin-bottom:2rem;transition:color .2s;padding:0}
-.sp-back:hover{color:var(--accent)}
-.sp-tag{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.2em;color:rgba(160,160,255,0.5);text-transform:uppercase;margin-bottom:1rem;display:block}
-.sp-title{font-family:var(--font-display);font-size:clamp(4rem,9vw,9rem);font-weight:800;line-height:.9;letter-spacing:-.04em;margin-bottom:1.5rem;color:var(--text)}
-.sp-intro{font-size:1.05rem;color:var(--muted);max-width:560px;line-height:1.75;font-weight:300}
-.sp-body{padding:6rem 3rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start;max-width:1400px;margin:0 auto}
-.sp-features{display:flex;flex-direction:column;gap:1.5rem}
-.sp-feature{padding:2rem;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,0.015);transition:all .4s cubic-bezier(.23,1,.32,1)}
-.sp-feature:hover{border-color:rgba(160,160,255,0.2);transform:translateX(8px);background:rgba(100,100,255,0.04)}
-.sp-feature-icon{font-size:1.3rem;margin-bottom:.8rem;display:block}
-.sp-feature-title{font-size:.95rem;font-weight:600;letter-spacing:.02em;margin-bottom:.4rem;color:var(--text)}
-.sp-feature-desc{color:var(--muted);font-size:.84rem;line-height:1.65;font-weight:300}
-.sp-sidebar{position:sticky;top:8rem}
-.sp-card{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:1.2rem}
-.sp-card-title{font-family:var(--font-display);font-size:1.2rem;font-weight:700;margin-bottom:1.2rem;color:var(--text)}
-.sp-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
-.sp-list li{display:flex;align-items:center;gap:.7rem;font-size:.84rem;color:var(--muted)}
-.sp-list li::before{content:'';width:4px;height:4px;border-radius:50%;background:rgba(160,160,255,0.5);flex-shrink:0}
-.sp-process{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);max-width:1400px;margin:0 auto}
-.sp-step{background:var(--bg);padding:2.5rem 2rem}
-.sp-step-num{font-family:var(--font-display);font-size:3.5rem;font-weight:800;color:rgba(160,160,255,0.08);margin-bottom:.5rem;line-height:1;letter-spacing:-.03em}
-.sp-step-title{font-size:.9rem;font-weight:600;margin-bottom:.4rem;color:var(--text)}
-.sp-step-desc{font-size:.8rem;color:var(--muted);line-height:1.6}
-.sp-process-label{padding:2rem 3rem 1rem;font-family:var(--font-mono);font-size:.64rem;letter-spacing:.2em;color:rgba(160,160,255,0.4);text-transform:uppercase;max-width:1400px;margin:0 auto}
-.sp-cta-wrap{padding:6rem 3rem;text-align:center;border-top:1px solid var(--border);max-width:1400px;margin:0 auto;position:relative;overflow:hidden}
-.sp-cta-wrap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 50% 100%,rgba(100,100,255,0.06),transparent 70%)}
-.sp-cta-wrap h2{font-family:var(--font-display);font-size:clamp(2.5rem,5vw,5rem);font-weight:800;letter-spacing:-.03em;color:var(--text);position:relative;z-index:1;line-height:.92;margin-bottom:.8rem}
-.sp-cta-wrap p{color:var(--muted);font-size:.9rem;margin-bottom:2rem;position:relative;z-index:1}
+/* ============================================
+   SERVICE MODAL — PREMIUM OVERLAY
+============================================ */
+.svc-modal-backdrop{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(245,244,240,0.3);
+  backdrop-filter:blur(28px) saturate(1.4);
+  -webkit-backdrop-filter:blur(28px) saturate(1.4);
+  opacity:0;pointer-events:none;
+  transition:opacity .55s cubic-bezier(.23,1,.32,1);
+  display:flex;align-items:center;justify-content:center;
+  padding:2rem;
+}
+.svc-modal-backdrop.open{opacity:1;pointer-events:all;}
+
+.svc-modal{
+  width:min(880px,90vw);
+  max-height:88vh;
+  background:rgba(255,255,255,0.78);
+  border:1px solid rgba(255,255,255,0.95);
+  border-radius:24px;
+  box-shadow:
+    0 2px 0 rgba(255,255,255,1) inset,
+    0 40px 120px rgba(0,0,0,0.18),
+    0 8px 32px rgba(0,0,0,0.1);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  transform:translateY(60px) scale(0.96);
+  transition:transform .65s cubic-bezier(.23,1,.32,1),opacity .55s cubic-bezier(.23,1,.32,1);
+  opacity:0;
+  position:relative;
+}
+.svc-modal-backdrop.open .svc-modal{transform:translateY(0) scale(1);opacity:1;}
+
+/* shimmery top line */
+.svc-modal::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,1) 30%,rgba(200,200,220,0.8) 70%,transparent);
+  z-index:10;
+}
+
+.svc-modal-header{
+  padding:2.2rem 2.5rem 1.5rem;
+  display:flex;align-items:flex-start;justify-content:space-between;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  flex-shrink:0;
+  background:linear-gradient(180deg,rgba(255,255,255,0.9) 0%,rgba(255,255,255,0.6) 100%);
+}
+.svc-modal-meta{flex:1}
+.svc-modal-tag{
+  font-family:var(--font-mono);font-size:.6rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.7rem;display:block;
+}
+.svc-modal-title{
+  font-family:var(--font-display);font-size:clamp(2.2rem,5vw,3.5rem);
+  font-weight:800;letter-spacing:-.03em;line-height:.92;color:var(--text);
+}
+.svc-modal-close{
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(0,0,0,0.05);border:1px solid rgba(0,0,0,0.08);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--muted);font-size:1.1rem;flex-shrink:0;
+  margin-left:1.5rem;margin-top:.3rem;
+  transition:all .3s cubic-bezier(.23,1,.32,1);
+}
+.svc-modal-close:hover{background:rgba(0,0,0,0.1);color:var(--text);transform:rotate(90deg);}
+
+.svc-modal-body{
+  display:grid;grid-template-columns:1fr 260px;
+  flex:1;overflow:hidden;
+}
+.svc-modal-main{
+  padding:2rem 2.5rem;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(0,0,0,0.15) transparent;
+}
+.svc-modal-main::-webkit-scrollbar{width:4px}
+.svc-modal-main::-webkit-scrollbar-track{background:transparent}
+.svc-modal-main::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.12);border-radius:2px}
+
+.svc-modal-intro{
+  font-size:.95rem;line-height:1.78;color:var(--muted);font-weight:300;
+  margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid rgba(0,0,0,0.06);
+}
+.svc-features-grid{display:flex;flex-direction:column;gap:.8rem;}
+.svc-feature{
+  padding:1.4rem 1.6rem;
+  background:rgba(255,255,255,0.5);
+  border:1px solid rgba(0,0,0,0.06);
+  border-radius:12px;
+  transition:all .35s cubic-bezier(.23,1,.32,1);
+  position:relative;overflow:hidden;
+}
+.svc-feature::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,transparent,rgba(90,90,120,0.4),transparent);
+  transform:scaleY(0);transition:transform .4s;
+}
+.svc-feature:hover{transform:translateX(6px);background:rgba(255,255,255,0.85);border-color:rgba(90,90,120,0.15);box-shadow:0 4px 20px rgba(0,0,0,0.06);}
+.svc-feature:hover::before{transform:scaleY(1)}
+.svc-feature-top{display:flex;align-items:center;gap:.7rem;margin-bottom:.4rem;}
+.svc-feature-icon{font-size:1rem;}
+.svc-feature-title{font-size:.9rem;font-weight:600;color:var(--text);}
+.svc-feature-desc{font-size:.8rem;line-height:1.65;color:var(--muted);font-weight:300;}
+
+/* Modal sidebar */
+.svc-modal-sidebar{
+  padding:2rem 1.8rem 2rem 1.5rem;
+  border-left:1px solid rgba(0,0,0,0.06);
+  overflow-y:auto;
+  display:flex;flex-direction:column;gap:1.2rem;
+  background:rgba(245,244,240,0.6);
+}
+.svc-sidebar-card{
+  background:rgba(255,255,255,0.7);
+  border:1px solid rgba(0,0,0,0.06);
+  border-radius:12px;padding:1.3rem 1.2rem;
+}
+.svc-sidebar-card-title{
+  font-family:var(--font-display);font-size:.85rem;font-weight:700;
+  color:var(--text);margin-bottom:1rem;letter-spacing:-.01em;
+}
+.svc-tools-list{display:flex;flex-wrap:wrap;gap:.4rem;}
+.svc-tool-pill{
+  font-family:var(--font-mono);font-size:.58rem;letter-spacing:.06em;
+  background:rgba(90,90,120,0.07);border:1px solid rgba(90,90,120,0.15);
+  color:var(--accent);padding:4px 10px;border-radius:2rem;
+  transition:all .2s;
+}
+.svc-tool-pill:hover{background:rgba(90,90,120,0.12);border-color:rgba(90,90,120,0.3);}
+.svc-process-steps{display:flex;flex-direction:column;gap:.6rem;}
+.svc-process-step{
+  display:flex;gap:.8rem;align-items:flex-start;
+  padding:.7rem;border-radius:8px;transition:background .2s;
+}
+.svc-process-step:hover{background:rgba(255,255,255,0.6)}
+.svc-step-num{
+  font-family:var(--font-display);font-size:.75rem;font-weight:700;
+  color:rgba(90,90,120,0.35);flex-shrink:0;line-height:1.2;margin-top:1px;
+}
+.svc-step-title{font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:2px;}
+.svc-step-desc{font-size:.73rem;color:var(--muted);line-height:1.5;}
+
+/* Modal CTA */
+.svc-modal-cta{
+  padding:1.5rem 2.5rem;
+  border-top:1px solid rgba(0,0,0,0.06);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+  background:linear-gradient(180deg,rgba(255,255,255,0.6) 0%,rgba(255,255,255,0.85) 100%);
+  gap:1rem;
+}
+.svc-modal-cta p{font-size:.82rem;color:var(--muted);font-weight:300;line-height:1.5;max-width:400px;}
+.svc-cta-btn{
+  display:inline-flex;align-items:center;gap:.6rem;flex-shrink:0;
+  background:var(--text);color:var(--bg);
+  padding:.8rem 2rem;border-radius:2rem;
+  font-family:var(--font-display);font-size:.85rem;font-weight:700;
+  letter-spacing:.02em;cursor:pointer;border:none;
+  transition:all .4s cubic-bezier(.23,1,.32,1);
+  white-space:nowrap;
+}
+.svc-cta-btn:hover{opacity:.85;transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,0.18);}
 
 /* Cursor */
-#cursor-dot{position:fixed;width:6px;height:6px;background:rgba(255,255,255,0.95);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);display:none}
-#cursor-ring{position:fixed;width:38px;height:38px;border:1px solid rgba(255,255,255,0.25);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .18s,height .18s,border-color .25s,transform .08s;display:none}
+#cursor-dot{position:fixed;width:5px;height:5px;background:rgba(10,10,15,0.85);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);display:none}
+#cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(10,10,15,0.2);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .18s,height .18s,border-color .25s,transform .08s;display:none}
 @media(pointer:fine){body{cursor:none}#cursor-dot,#cursor-ring{display:block}}
 @media(pointer:coarse){body{cursor:auto}}
 
@@ -728,42 +558,37 @@ footer{
   .services-grid{grid-template-columns:1fr 1fr}
   .stats-row{grid-template-columns:1fr 1fr}
   .contact-grid{grid-template-columns:1fr;gap:3rem}
-  .sp-body{grid-template-columns:1fr;gap:3rem}
-  .sp-sidebar{position:static}
-  .sp-process{grid-template-columns:1fr 1fr}
   footer{flex-direction:column;gap:1rem;text-align:center;padding:2rem 1.5rem}
   .reviews-header{flex-direction:column;align-items:flex-start;gap:1rem}
+  .svc-modal-body{grid-template-columns:1fr}
+  .svc-modal-sidebar{border-left:none;border-top:1px solid rgba(0,0,0,0.06);}
+  .svc-modal{max-height:92vh;}
 }
 @media(max-width:600px){
   .services-grid{grid-template-columns:1fr}
   .stats-row{grid-template-columns:1fr 1fr}
-  .sp-process{grid-template-columns:1fr}
   .hero-left .big-title{font-size:2.2rem}
+  .svc-modal-header{padding:1.5rem 1.5rem 1rem;}
+  .svc-modal-main{padding:1.5rem;}
+  .svc-modal-cta{flex-direction:column;align-items:flex-start;padding:1.2rem 1.5rem;}
 }
 </style>
 </head>
 <body>
 
-<!-- WEBGL CANVAS -->
 <canvas id="cv"></canvas>
-
-<!-- POST PROCESSING -->
 <div id="post-overlay"></div>
 <canvas id="grain"></canvas>
-
-<!-- CURSOR -->
 <div id="cursor-dot"></div>
 <div id="cursor-ring"></div>
 
-<!-- NAV -->
 <nav id="nav">
-  <div class="nav-logo" onclick="showHome()">Blurr</div>
+  <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})">Blurr</div>
   <div class="nav-hamburger" id="hamburger" onclick="toggleMenu()">
     <span></span><span></span><span></span>
   </div>
 </nav>
 
-<!-- NAV MENU -->
 <div class="nav-menu" id="navMenu">
   <ul>
     <li><a onclick="menuGo('home')">Home</a></li>
@@ -773,10 +598,8 @@ footer{
   </ul>
 </div>
 
-<!-- SCROLL DRIVER -->
 <div id="scroll-driver"></div>
 
-<!-- FIXED UI OVERLAY -->
 <div id="ui-overlay">
   <div class="hero-left" id="heroLeft">
     <span class="eyebrow" id="heroEyebrow">// Digital Innovation Agency</span>
@@ -790,13 +613,14 @@ footer{
       <h3 id="panelTitle"></h3>
       <p id="panelDesc"></p>
       <a class="panel-btn" id="panelBtn" href="#">
-        View Services <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        View Services
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>
   </div>
 
   <div class="bottom-bar">
-    <div class="copy">© 2025 Blurr Agency — All Rights Reserved</div>
+    <div class="copy">© 2025 Blurr Agency</div>
     <div class="scroll-hint" id="scrollHint">
       Scroll to Explore
       <div class="scroll-arrow">
@@ -809,12 +633,52 @@ footer{
     <div class="progress-fill" id="progressFill"></div>
     <div class="progress-dot" id="progressDot"></div>
   </div>
-
   <div class="scene-counter" id="sceneCounter"></div>
 </div>
 
-<!-- MAIN SITE CONTENT -->
-<div id="home-page">
+<!-- SERVICE MODAL -->
+<div class="svc-modal-backdrop" id="svcModalBackdrop" onclick="handleBackdropClick(event)">
+  <div class="svc-modal" id="svcModal">
+    <div class="svc-modal-header">
+      <div class="svc-modal-meta">
+        <span class="svc-modal-tag" id="svcModalTag"></span>
+        <h2 class="svc-modal-title" id="svcModalTitle"></h2>
+      </div>
+      <button class="svc-modal-close" onclick="closeServiceModal()" aria-label="Close">✕</button>
+    </div>
+    <div class="svc-modal-body">
+      <div class="svc-modal-main">
+        <p class="svc-modal-intro" id="svcModalIntro"></p>
+        <div class="svc-features-grid" id="svcModalFeatures"></div>
+      </div>
+      <div class="svc-modal-sidebar">
+        <div class="svc-sidebar-card">
+          <div class="svc-sidebar-card-title">Tools & Tech</div>
+          <div class="svc-tools-list" id="svcModalTools"></div>
+        </div>
+        <div class="svc-sidebar-card">
+          <div class="svc-sidebar-card-title">Our Process</div>
+          <div class="svc-process-steps" id="svcModalProcess"></div>
+        </div>
+        <div class="svc-sidebar-card" style="background:rgba(10,10,15,0.04);border-color:rgba(10,10,15,0.08)">
+          <div class="svc-sidebar-card-title">Why Blurr?</div>
+          <div class="svc-process-steps">
+            <div class="svc-process-step"><div style="font-size:.8rem;color:var(--muted);line-height:1.6">✓&nbsp; Dedicated project manager<br>✓&nbsp; Weekly transparent updates<br>✓&nbsp; Fixed-price contracts<br>✓&nbsp; Post-launch support<br>✓&nbsp; Full IP ownership</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="svc-modal-cta">
+      <p id="svcModalCtaDesc"></p>
+      <button class="svc-cta-btn" onclick="closeServiceModal();setTimeout(scrollToContact,300)">
+        Start a Project
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- HOME PAGE -->
 <div id="main-content">
 
   <div class="marquee-section">
@@ -838,43 +702,37 @@ footer{
     <div class="section-label reveal">What We Do</div>
     <div class="services-grid">
       <div class="srv-card reveal" onclick="showService('webdev')" tabindex="0">
-        <span class="srv-num">01</span>
-        <span class="srv-icon">🌐</span>
+        <span class="srv-num">01</span><span class="srv-icon">🌐</span>
         <div class="srv-title">Web Development</div>
         <p class="srv-desc">Modern, fast, and beautiful websites and web apps — from landing pages to complex full-stack platforms built to convert.</p>
         <div class="srv-arrow">↗</div>
       </div>
       <div class="srv-card reveal" onclick="showService('contentcreation')" tabindex="0">
-        <span class="srv-num">02</span>
-        <span class="srv-icon">✍️</span>
+        <span class="srv-num">02</span><span class="srv-icon">✍️</span>
         <div class="srv-title">Content Creation</div>
         <p class="srv-desc">Strategic, high-impact content that builds authority, engages audiences, and converts — blogs, copy, social, and beyond.</p>
         <div class="srv-arrow">↗</div>
       </div>
       <div class="srv-card reveal" onclick="showService('software')" tabindex="0">
-        <span class="srv-num">03</span>
-        <span class="srv-icon">⚙️</span>
+        <span class="srv-num">03</span><span class="srv-icon">⚙️</span>
         <div class="srv-title">Software Dev</div>
         <p class="srv-desc">Custom scalable software built for performance, reliability, and long-term business growth.</p>
         <div class="srv-arrow">↗</div>
       </div>
       <div class="srv-card reveal" onclick="showService('mobile')" tabindex="0">
-        <span class="srv-num">04</span>
-        <span class="srv-icon">📱</span>
+        <span class="srv-num">04</span><span class="srv-icon">📱</span>
         <div class="srv-title">Mobile Apps</div>
         <p class="srv-desc">Native and cross-platform mobile apps engineered for buttery-smooth performance and engagement.</p>
         <div class="srv-arrow">↗</div>
       </div>
       <div class="srv-card reveal" onclick="showService('seo')" tabindex="0">
-        <span class="srv-num">05</span>
-        <span class="srv-icon">📈</span>
+        <span class="srv-num">05</span><span class="srv-icon">📈</span>
         <div class="srv-title">SEO</div>
         <p class="srv-desc">Search engine optimization that puts you at the top — technical, on-page, and content strategy.</p>
         <div class="srv-arrow">↗</div>
       </div>
       <div class="srv-card reveal" onclick="showService('videogen')" tabindex="0">
-        <span class="srv-num">06</span>
-        <span class="srv-icon">🎬</span>
+        <span class="srv-num">06</span><span class="srv-icon">🎬</span>
         <div class="srv-title">Video Generation</div>
         <p class="srv-desc">AI-powered and human-crafted video content — ads, explainers, reels, and cinematic brand films that stop the scroll.</p>
         <div class="srv-arrow">↗</div>
@@ -916,18 +774,18 @@ footer{
       </div>
       <div>
         <div class="rv-score">4.2</div>
-        <div style="color:rgba(160,160,255,0.5);font-size:.9rem;margin:4px 0">★★★★☆</div>
+        <div style="color:var(--accent);font-size:.9rem;margin:4px 0;opacity:.7">★★★★☆</div>
         <div class="rv-score-label">Based on 47 reviews</div>
       </div>
     </div>
     <div class="reviews-scroll" id="reviewScroll">
-      <div class="rv-card"><span class="rv-verified">✓ Verified</span><div class="rv-head"><div class="rv-av"><img src="https://ui-avatars.com/api/?name=Sophie+Laurent&background=444&color=fff&size=38&bold=true" alt="Sophie Laurent"></div><div><div class="rv-name">Sophie Laurent</div><div class="rv-role">Founder, RetailFlow</div></div></div><div class="rv-stars"><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span></div><p class="rv-text">"They delivered on time and the site looks great. Communication was smooth — nothing crazy, just got the job done. Would absolutely use again."</p><div class="rv-svc">Web Development</div></div>
-      <div class="rv-card"><span class="rv-verified">✓ Verified</span><div class="rv-head"><div class="rv-av"><img src="https://ui-avatars.com/api/?name=Elena+Muller&background=333&color=fff&size=38&bold=true" alt="Elena Müller"></div><div><div class="rv-name">Elena Müller</div><div class="rv-role">Marketing Head, Nuvora</div></div></div><div class="rv-stars"><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span><span>★</span></div><p class="rv-text">"SEO results took a bit longer than expected but they moved the needle. Page 1 rankings for 3 of our main keywords now."</p><div class="rv-svc">SEO</div></div>
-      <div class="rv-card"><div class="rv-head"><div class="rv-av"><img src="https://ui-avatars.com/api/?name=Isabelle+Dubois&background=3a3a3a&color=fff&size=38&bold=true" alt="Isabelle Dubois"></div><div><div class="rv-name">Isabelle Dubois</div><div class="rv-role">Founder, ContentLab</div></div></div><div class="rv-stars"><span class="on">★</span><span class="on">★</span><span class="on">★</span><span>★</span><span>★</span></div><p class="rv-text">"Content quality was solid. A bit slow on turnaround initially but they sorted it and our engagement metrics have genuinely improved."</p><div class="rv-svc">Content Creation</div></div>
-      <div class="rv-card"><span class="rv-verified">✓ Verified</span><div class="rv-head"><div class="rv-av"><img src="https://ui-avatars.com/api/?name=Mia+Andersson&background=555&color=fff&size=38&bold=true" alt="Mia Andersson"></div><div><div class="rv-name">Mia Andersson</div><div class="rv-role">CEO, QuickMart</div></div></div><div class="rv-stars"><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span></div><p class="rv-text">"Really solid work on the app. My users love it. One or two minor things I'd do differently but overall very pleased. Great team."</p><div class="rv-svc">Mobile App</div></div>
-      <div class="rv-card"><div class="rv-head"><div class="rv-av"><img src="https://ui-avatars.com/api/?name=Katja+Novak&background=2a2a2a&color=fff&size=38&bold=true" alt="Katja Novak"></div><div><div class="rv-name">Katja Novak</div><div class="rv-role">Marketing, Nova Films</div></div></div><div class="rv-stars"><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span></div><p class="rv-text">"The video ads they produced were incredible. We saw a 3x lift in click-through rate on our campaigns within 2 weeks."</p><div class="rv-svc">Video Generation</div></div>
-      <div class="rv-card"><span class="rv-verified">✓ Verified</span><div class="rv-head"><div class="rv-av"><img src="https://ui-avatars.com/api/?name=Anya+Kowalski&background=404040&color=fff&size=38&bold=true" alt="Anya Kowalski"></div><div><div class="rv-name">Anya Kowalski</div><div class="rv-role">Ops Director, CloudNest</div></div></div><div class="rv-stars"><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span></div><p class="rv-text">"Took 3 weeks extra but the end result was genuinely impressive. Built our software exactly as specified."</p><div class="rv-svc">Software Dev</div></div>
-      <div class="rv-card"><div class="rv-head"><div class="rv-av"><img src="https://ui-avatars.com/api/?name=Lea+Fontaine&background=363636&color=fff&size=38&bold=true" alt="Léa Fontaine"></div><div><div class="rv-name">Léa Fontaine</div><div class="rv-role">Founder, Taproot Media</div></div></div><div class="rv-stars"><span class="on">★</span><span class="on">★</span><span class="on">★</span><span>★</span><span>★</span></div><p class="rv-text">"Mixed feelings. The design is nice but we went back and forth on revisions. They were responsive to feedback so can't complain much."</p><div class="rv-svc">Content Creation</div></div>
+      <div class="rv-card"><span class="rv-verified">✓ Verified</span><div class="rv-head"><div class="rv-av"><img src="https://ui-avatars.com/api/?name=Sophie+Laurent&background=ccc&color=444&size=38&bold=true" alt="Sophie Laurent"></div><div><div class="rv-name">Sophie Laurent</div><div class="rv-role">Founder, RetailFlow</div></div></div><div class="rv-stars"><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span></div><p class="rv-text">"They delivered on time and the site looks great. Communication was smooth — nothing crazy, just got the job done. Would absolutely use again."</p><div class="rv-svc">Web Development</div></div>
+      <div class="rv-card"><span class="rv-verified">✓ Verified</span><div class="rv-head"><div class="rv-av"><img src="https://ui-avatars.com/api/?name=Elena+Muller&background=bbb&color=444&size=38&bold=true" alt="Elena Müller"></div><div><div class="rv-name">Elena Müller</div><div class="rv-role">Marketing Head, Nuvora</div></div></div><div class="rv-stars"><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span><span>★</span></div><p class="rv-text">"SEO results took a bit longer than expected but they moved the needle. Page 1 rankings for 3 of our main keywords now."</p><div class="rv-svc">SEO</div></div>
+      <div class="rv-card"><div class="rv-head"><div class="rv-av"><img src="https://ui-avatars.com/api/?name=Isabelle+Dubois&background=d0d0d0&color=444&size=38&bold=true" alt="Isabelle Dubois"></div><div><div class="rv-name">Isabelle Dubois</div><div class="rv-role">Founder, ContentLab</div></div></div><div class="rv-stars"><span class="on">★</span><span class="on">★</span><span class="on">★</span><span>★</span><span>★</span></div><p class="rv-text">"Content quality was solid. A bit slow on turnaround initially but they sorted it and our engagement metrics have genuinely improved."</p><div class="rv-svc">Content Creation</div></div>
+      <div class="rv-card"><span class="rv-verified">✓ Verified</span><div class="rv-head"><div class="rv-av"><img src="https://ui-avatars.com/api/?name=Mia+Andersson&background=c8c8c8&color=444&size=38&bold=true" alt="Mia Andersson"></div><div><div class="rv-name">Mia Andersson</div><div class="rv-role">CEO, QuickMart</div></div></div><div class="rv-stars"><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span></div><p class="rv-text">"Really solid work on the app. My users love it. One or two minor things I'd do differently but overall very pleased. Great team."</p><div class="rv-svc">Mobile App</div></div>
+      <div class="rv-card"><div class="rv-head"><div class="rv-av"><img src="https://ui-avatars.com/api/?name=Katja+Novak&background=b8b8b8&color=444&size=38&bold=true" alt="Katja Novak"></div><div><div class="rv-name">Katja Novak</div><div class="rv-role">Marketing, Nova Films</div></div></div><div class="rv-stars"><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span></div><p class="rv-text">"The video ads they produced were incredible. We saw a 3x lift in click-through rate on our campaigns within 2 weeks."</p><div class="rv-svc">Video Generation</div></div>
+      <div class="rv-card"><span class="rv-verified">✓ Verified</span><div class="rv-head"><div class="rv-av"><img src="https://ui-avatars.com/api/?name=Anya+Kowalski&background=c0c0c0&color=444&size=38&bold=true" alt="Anya Kowalski"></div><div><div class="rv-name">Anya Kowalski</div><div class="rv-role">Ops Director, CloudNest</div></div></div><div class="rv-stars"><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span><span class="on">★</span></div><p class="rv-text">"Took 3 weeks extra but the end result was genuinely impressive. Built our software exactly as specified."</p><div class="rv-svc">Software Dev</div></div>
+      <div class="rv-card"><div class="rv-head"><div class="rv-av"><img src="https://ui-avatars.com/api/?name=Lea+Fontaine&background=d8d8d8&color=444&size=38&bold=true" alt="Léa Fontaine"></div><div><div class="rv-name">Léa Fontaine</div><div class="rv-role">Founder, Taproot Media</div></div></div><div class="rv-stars"><span class="on">★</span><span class="on">★</span><span class="on">★</span><span>★</span><span>★</span></div><p class="rv-text">"Mixed feelings. The design is nice but we went back and forth on revisions. They were responsive to feedback so can't complain much."</p><div class="rv-svc">Content Creation</div></div>
     </div>
   </div>
 
@@ -962,717 +820,574 @@ footer{
   </div>
 
   <footer>
-    <div class="footer-logo" onclick="showHome()">Blurr</div>
+    <div class="footer-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})">Blurr</div>
     <div class="footer-copy">© 2025 Blurr Agency — All Rights Reserved</div>
   </footer>
-</div>
-</div>
-
-<!-- SERVICE PAGE -->
-<div id="service-page">
-  <div class="sp-hero"><div style="position:relative;z-index:1;width:100%"><button class="sp-back" onclick="showHome()">← Back to Services</button><span class="sp-tag" id="sp-tag"></span><h1 class="sp-title" id="sp-title"></h1><p class="sp-intro" id="sp-intro"></p></div></div>
-  <div class="sp-body"><div class="sp-features" id="sp-features"></div><div class="sp-sidebar" id="sp-sidebar"></div></div>
-  <div class="sp-process-label">// Our Process</div>
-  <div class="sp-process" id="sp-process"></div>
-  <div class="sp-cta-wrap"><h2 id="sp-cta-title"></h2><p id="sp-cta-desc"></p><button class="cta-btn" style="margin-top:1.5rem" onclick="showHome();setTimeout(scrollToContact,400)">Start This Project <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div>
-  <footer><div class="footer-logo" onclick="showHome()">Blurr</div><div class="footer-copy">© 2025 Blurr Agency — All Rights Reserved</div></footer>
 </div>
 
 <script>
 /* ====================================================================
-   GRAIN CANVAS — generates procedural film grain texture
+   GRAIN CANVAS
 ===================================================================== */
 (function(){
-  const gc = document.getElementById('grain');
-  const gx = gc.getContext('2d');
-  gc.width = 256; gc.height = 256;
+  const gc=document.getElementById('grain');
+  const gx=gc.getContext('2d');
+  gc.width=256;gc.height=256;
   function regenerate(){
-    const id = gx.createImageData(256,256);
-    const d = id.data;
-    for(let i=0;i<d.length;i+=4){
-      const v = Math.random()*255|0;
-      d[i]=d[i+1]=d[i+2]=v; d[i+3]=255;
-    }
+    const id=gx.createImageData(256,256);const d=id.data;
+    for(let i=0;i<d.length;i+=4){const v=Math.random()*255|0;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255;}
     gx.putImageData(id,0,0);
-    gc.style.cssText = `
-      position:fixed;inset:0;z-index:2;pointer-events:none;
-      opacity:0.04;
-      image-rendering:pixelated;
-      width:100%;height:100%;
-      object-fit:cover;
-    `;
+    gc.style.cssText='position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0.025;image-rendering:pixelated;width:100%;height:100%;object-fit:cover;';
   }
-  regenerate();
-  setInterval(regenerate, 80);
+  regenerate();setInterval(regenerate,80);
 })();
 
 /* ====================================================================
-   THREE.JS 3D SCENE
-   - Deep star field with volumetric depth
-   - Rotating wireframe torus knot logo at center
-   - Particle nebula / galaxy cloud
-   - Scroll-driven camera animation through space
-   - Light beams / streaks in 3D
-   - Floating DNA helix on scene 3
-   - Grid plane that emerges from below
+   THREE.JS — METALLIC SILVER / ASH PALETTE ON WHITE
 ===================================================================== */
 (function(){
-  const canvas = document.getElementById('cv');
-  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:false, powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor(0x04040a, 1);
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.1;
+  const canvas=document.getElementById('cv');
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.setClearColor(0xf5f4f0,1);
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.3;
+  renderer.shadowMap.enabled=true;
 
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 3000);
-  camera.position.set(0, 0, 18);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(55,window.innerWidth/window.innerHeight,0.1,2000);
+  camera.position.set(0,0,18);
 
-  window.addEventListener('resize', ()=>{
-    camera.aspect = window.innerWidth/window.innerHeight;
+  window.addEventListener('resize',()=>{
+    camera.aspect=window.innerWidth/window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  }, {passive:true});
+    renderer.setSize(window.innerWidth,window.innerHeight);
+  },{passive:true});
 
-  /* ---- SCENE FOG ---- */
-  scene.fog = new THREE.FogExp2(0x04040a, 0.018);
+  // Soft fog — light colour matching background
+  scene.fog=new THREE.FogExp2(0xf0ede8,0.022);
 
-  /* ---- AMBIENT + DIRECTIONAL LIGHTS ---- */
-  scene.add(new THREE.AmbientLight(0x101020, 1.5));
-  const dirLight = new THREE.DirectionalLight(0x8080ff, 2.5);
-  dirLight.position.set(5,8,5);
-  scene.add(dirLight);
-  const dirLight2 = new THREE.DirectionalLight(0x4040cc, 1.5);
-  dirLight2.position.set(-8,-4,-4);
-  scene.add(dirLight2);
-  // Rim light — blue/purple
-  const rimLight = new THREE.PointLight(0x6060ff, 4, 30);
-  rimLight.position.set(-6, 3, -2);
+  // ---- LIGHTS (warm + cool studio lighting for metallic look) ----
+  scene.add(new THREE.AmbientLight(0xfaf8f4,2.5));
+
+  const keyLight=new THREE.DirectionalLight(0xffffff,3.5);
+  keyLight.position.set(8,10,6);
+  scene.add(keyLight);
+
+  const fillLight=new THREE.DirectionalLight(0xe8e4f8,1.8);
+  fillLight.position.set(-8,2,4);
+  scene.add(fillLight);
+
+  const rimLight=new THREE.DirectionalLight(0xd8dce8,2.2);
+  rimLight.position.set(0,-8,-6);
   scene.add(rimLight);
 
-  /* ---- STAR FIELD — 3 layers for parallax depth ---- */
-  function makeStarField(count, spread, size, opacity){
-    const geo = new THREE.BufferGeometry();
-    const pos = new Float32Array(count*3);
-    const col = new Float32Array(count*3);
+  const pointA=new THREE.PointLight(0xc8c8e0,3,40);
+  pointA.position.set(-6,4,-2);
+  scene.add(pointA);
+
+  const pointB=new THREE.PointLight(0xe0d8c8,2,35);
+  pointB.position.set(6,-3,5);
+  scene.add(pointB);
+
+  // ---- METALLIC MATERIAL FACTORY ----
+  function metalMat(color,roughness,metalness,opacity){
+    return new THREE.MeshStandardMaterial({
+      color:color||0xb8b8c8,
+      roughness:roughness!==undefined?roughness:0.25,
+      metalness:metalness!==undefined?metalness:0.9,
+      transparent:opacity<1,
+      opacity:opacity!==undefined?opacity:1,
+    });
+  }
+  function wireMat(color,opacity){
+    return new THREE.MeshBasicMaterial({
+      color:color||0x909090,wireframe:true,transparent:true,
+      opacity:opacity||0.25,depthWrite:false,
+    });
+  }
+
+  // ---- STAR FIELD — very subtle silver dots ----
+  function makeStarField(count,spread,size,opacity){
+    const geo=new THREE.BufferGeometry();
+    const pos=new Float32Array(count*3);
+    const col=new Float32Array(count*3);
     for(let i=0;i<count;i++){
       const i3=i*3;
-      pos[i3]   = (Math.random()-0.5)*spread;
-      pos[i3+1] = (Math.random()-0.5)*spread;
-      pos[i3+2] = (Math.random()-0.5)*spread;
-      // Slight colour variation: white, blue-white, warm white
-      const t = Math.random();
-      col[i3]   = 0.85+t*0.15;
-      col[i3+1] = 0.85+t*0.05;
-      col[i3+2] = 0.9+t*0.1;
+      pos[i3]=(Math.random()-0.5)*spread;
+      pos[i3+1]=(Math.random()-0.5)*spread;
+      pos[i3+2]=(Math.random()-0.5)*spread;
+      // Silver-to-ash tones
+      const t=Math.random();
+      col[i3]=0.6+t*0.28;
+      col[i3+1]=0.6+t*0.28;
+      col[i3+2]=0.62+t*0.28;
     }
-    geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
-    geo.setAttribute('color', new THREE.BufferAttribute(col,3));
-    const mat = new THREE.PointsMaterial({
-      size, vertexColors:true, transparent:true, opacity,
-      sizeAttenuation:true, depthWrite:false,
-      blending: THREE.AdditiveBlending
-    });
-    return new THREE.Points(geo, mat);
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+    return new THREE.Points(geo,new THREE.PointsMaterial({
+      size,vertexColors:true,transparent:true,opacity,
+      sizeAttenuation:true,depthWrite:false,
+    }));
   }
-  scene.add(makeStarField(3000, 400, 0.22, 0.9));
-  scene.add(makeStarField(1500, 200, 0.35, 0.7));
-  scene.add(makeStarField(600, 80, 0.12, 0.95));
+  scene.add(makeStarField(2500,400,0.18,0.55));
+  scene.add(makeStarField(1000,180,0.28,0.35));
+  scene.add(makeStarField(400,70,0.1,0.7));
 
-  /* ---- NEBULA PARTICLE CLOUD ---- */
-  const nebulaGeo = new THREE.BufferGeometry();
-  const nebCount = 800;
-  const nebPos = new Float32Array(nebCount*3);
-  const nebCol = new Float32Array(nebCount*3);
-  const nebSiz = new Float32Array(nebCount);
-  for(let i=0;i<nebCount;i++){
-    const i3=i*3;
-    const r = Math.random()*12+4;
-    const theta = Math.random()*Math.PI*2;
-    const phi = (Math.random()-0.5)*Math.PI*0.6;
-    nebPos[i3]   = Math.cos(theta)*Math.cos(phi)*r;
-    nebPos[i3+1] = Math.sin(phi)*r*0.5;
-    nebPos[i3+2] = Math.sin(theta)*Math.cos(phi)*r - 5;
-    // Purple-blue-cyan gradient
-    const t = Math.random();
-    nebCol[i3]   = 0.2+t*0.4;
-    nebCol[i3+1] = 0.15+t*0.2;
-    nebCol[i3+2] = 0.5+t*0.5;
-    nebSiz[i] = Math.random()*0.8+0.2;
-  }
-  nebulaGeo.setAttribute('position', new THREE.BufferAttribute(nebPos,3));
-  nebulaGeo.setAttribute('color', new THREE.BufferAttribute(nebCol,3));
-  nebulaGeo.setAttribute('size', new THREE.BufferAttribute(nebSiz,1));
-  const nebMat = new THREE.PointsMaterial({
-    vertexColors:true, transparent:true, opacity:0.35,
-    sizeAttenuation:true, depthWrite:false,
-    blending:THREE.AdditiveBlending, size:0.5
+  // ---- CENTRAL TORUS KNOT — polished chrome ----
+  const tkGeo=new THREE.TorusKnotGeometry(2.8,0.48,220,24,2,3);
+  const tkMat=new THREE.MeshStandardMaterial({
+    color:0xc8c8d8,roughness:0.12,metalness:0.95,
+    envMapIntensity:1.5,
   });
-  const nebula = new THREE.Points(nebulaGeo, nebMat);
-  scene.add(nebula);
-
-  /* ---- CENTRAL WIREFRAME TORUS KNOT ---- */
-  const torusKnotGeo = new THREE.TorusKnotGeometry(2.8, 0.5, 180, 20, 2, 3);
-  const torusKnotMat = new THREE.MeshPhongMaterial({
-    color: 0x3333cc,
-    emissive: 0x1111aa,
-    emissiveIntensity: 0.4,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.55,
-  });
-  const torusKnot = new THREE.Mesh(torusKnotGeo, torusKnotMat);
-  torusKnot.position.set(3.5, 0, 0);
+  const torusKnot=new THREE.Mesh(tkGeo,tkMat);
+  torusKnot.position.set(3.5,0,0);
   scene.add(torusKnot);
 
-  // Outer glow ring around the torus knot
-  const glowRingGeo = new THREE.TorusGeometry(4.5, 0.03, 8, 80);
-  const glowRingMat = new THREE.MeshBasicMaterial({color:0x4444ff, transparent:true, opacity:0.25, blending:THREE.AdditiveBlending});
-  const glowRing = new THREE.Mesh(glowRingGeo, glowRingMat);
-  glowRing.position.copy(torusKnot.position);
-  glowRing.rotation.x = Math.PI/2;
-  scene.add(glowRing);
+  // Wireframe overlay on torus knot (very subtle)
+  const tkWireMat=new THREE.MeshBasicMaterial({color:0x888898,wireframe:true,transparent:true,opacity:0.08});
+  const tkWire=new THREE.Mesh(tkGeo,tkWireMat);
+  tkWire.position.copy(torusKnot.position);
+  scene.add(tkWire);
 
-  // Second orbit ring
-  const orbitRingGeo = new THREE.TorusGeometry(5.5, 0.015, 8, 60);
-  const orbitRingMat = new THREE.MeshBasicMaterial({color:0x6060dd, transparent:true, opacity:0.15, blending:THREE.AdditiveBlending});
-  const orbitRing = new THREE.Mesh(orbitRingGeo, orbitRingMat);
-  orbitRing.position.copy(torusKnot.position);
-  orbitRing.rotation.x = Math.PI/3;
-  orbitRing.rotation.z = Math.PI/5;
-  scene.add(orbitRing);
+  // Orbit rings around the knot — brushed steel look
+  const ringGeo=new THREE.TorusGeometry(4.6,0.025,12,100);
+  const ringMat1=new THREE.MeshStandardMaterial({color:0xb0b0c0,roughness:0.3,metalness:0.85,transparent:true,opacity:0.55});
+  const ring1=new THREE.Mesh(ringGeo,ringMat1);
+  ring1.position.copy(torusKnot.position);ring1.rotation.x=Math.PI/2;
+  scene.add(ring1);
 
-  /* ---- FLOATING WIREFRAME SPHERES (orbiting) ---- */
-  const orbitSpheres = [];
-  const orbitData = [
-    {r:5.5, speed:0.4, phase:0, size:0.18, col:0x6060ff},
-    {r:7,   speed:0.25, phase:1.2, size:0.25, col:0x4040cc},
-    {r:4.5, speed:0.6, phase:2.4, size:0.12, col:0x8080ff},
-    {r:6.5, speed:0.35, phase:0.8, size:0.2, col:0x5050dd},
+  const ringGeo2=new THREE.TorusGeometry(5.8,0.018,8,80);
+  const ringMat2=new THREE.MeshStandardMaterial({color:0xa8a8b8,roughness:0.4,metalness:0.8,transparent:true,opacity:0.35});
+  const ring2=new THREE.Mesh(ringGeo2,ringMat2);
+  ring2.position.copy(torusKnot.position);ring2.rotation.x=Math.PI/3;ring2.rotation.z=Math.PI/5;
+  scene.add(ring2);
+
+  // Third decorative ring — thin platinum
+  const ringGeo3=new THREE.TorusGeometry(3.2,0.012,8,60);
+  const ringMat3=new THREE.MeshStandardMaterial({color:0xd0d0e0,roughness:0.15,metalness:0.95,transparent:true,opacity:0.45});
+  const ring3=new THREE.Mesh(ringGeo3,ringMat3);
+  ring3.position.copy(torusKnot.position);ring3.rotation.y=Math.PI/4;
+  scene.add(ring3);
+
+  // ---- ORBITING SPHERES — polished silver balls ----
+  const orbitSpheres=[];
+  const orbitData=[
+    {r:5.5,speed:0.38,phase:0,size:0.22,rough:0.1,metal:0.95,col:0xc0c0d0},
+    {r:7.2,speed:0.22,phase:1.2,size:0.3,rough:0.2,metal:0.9,col:0xa8a8b8},
+    {r:4.6,speed:0.55,phase:2.4,size:0.14,rough:0.05,metal:0.98,col:0xd8d8e8},
+    {r:6.6,speed:0.32,phase:0.8,size:0.24,rough:0.15,metal:0.92,col:0xb0b0c0},
+    {r:8.0,speed:0.18,phase:1.8,size:0.18,rough:0.25,metal:0.85,col:0x989898},
   ];
   orbitData.forEach(od=>{
-    const geo = new THREE.SphereGeometry(od.size, 8, 8);
-    const mat = new THREE.MeshBasicMaterial({color:od.col, wireframe:true, transparent:true, opacity:0.6});
-    const m = new THREE.Mesh(geo, mat);
+    const geo=new THREE.SphereGeometry(od.size,20,20);
+    const mat=new THREE.MeshStandardMaterial({color:od.col,roughness:od.rough,metalness:od.metal});
+    const m=new THREE.Mesh(geo,mat);
     scene.add(m);
-    orbitSpheres.push({mesh:m, ...od});
+    orbitSpheres.push({mesh:m,...od});
   });
 
-  /* ---- FLOATING ICOSAHEDRONS (scattered) ---- */
-  const icoMeshes = [];
-  for(let i=0;i<8;i++){
-    const geo = new THREE.IcosahedronGeometry(Math.random()*0.3+0.15, 0);
-    const mat = new THREE.MeshPhongMaterial({
-      color:0x3030bb, emissive:0x1010aa, wireframe:true,
-      transparent:true, opacity:Math.random()*0.4+0.2
-    });
-    const m = new THREE.Mesh(geo, mat);
-    m.position.set(
-      (Math.random()-0.5)*20,
-      (Math.random()-0.5)*12,
-      (Math.random()-0.5)*10 - 5
-    );
-    m.userData = {
-      rotX: (Math.random()-0.5)*0.015,
-      rotY: (Math.random()-0.5)*0.02,
-      floatSpeed: Math.random()*0.01+0.005,
-      floatPhase: Math.random()*Math.PI*2,
-      floatAmp: Math.random()*0.5+0.2
+  // ---- FLOATING ICOSAHEDRONS — matte silver ----
+  const icoMeshes=[];
+  const icoColours=[0xb0b0c0,0x989898,0xc8c8d0,0xa0a0a8,0xd0cfc8];
+  for(let i=0;i<10;i++){
+    const size=Math.random()*0.35+0.15;
+    const geo=new THREE.IcosahedronGeometry(size,1);
+    const col=icoColours[i%icoColours.length];
+    const mat=new THREE.MeshStandardMaterial({color:col,roughness:0.3+Math.random()*0.4,metalness:0.7+Math.random()*0.25});
+    const m=new THREE.Mesh(geo,mat);
+    m.position.set((Math.random()-0.5)*22,(Math.random()-0.5)*14,(Math.random()-0.5)*12-5);
+    m.rotation.set(Math.random()*Math.PI,Math.random()*Math.PI,Math.random()*Math.PI);
+    m.userData={
+      rotX:(Math.random()-0.5)*0.012,rotY:(Math.random()-0.5)*0.018,
+      floatSpeed:Math.random()*0.009+0.004,floatPhase:Math.random()*Math.PI*2,
+      floatAmp:Math.random()*0.4+0.15
     };
-    scene.add(m);
-    icoMeshes.push(m);
+    scene.add(m);icoMeshes.push(m);
+    // Wireframe version alongside each ico
+    const wm=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:0x909090,wireframe:true,transparent:true,opacity:0.12}));
+    wm.position.copy(m.position);wm.rotation.copy(m.rotation);
+    scene.add(wm);
   }
 
-  /* ---- LIGHT STREAKS IN 3D ---- */
-  const streakGroup = new THREE.Group();
-  scene.add(streakGroup);
-  const streaks3D = [];
+  // ---- OCTAHEDRONS — geometric accents ----
+  const octMeshes=[];
+  for(let i=0;i<6;i++){
+    const geo=new THREE.OctahedronGeometry(Math.random()*0.3+0.1,0);
+    const mat=new THREE.MeshStandardMaterial({color:0xb8b8c8,roughness:0.2,metalness:0.9,transparent:true,opacity:0.7});
+    const m=new THREE.Mesh(geo,mat);
+    m.position.set((Math.random()-0.5)*18,(Math.random()-0.5)*10,(Math.random()-0.5)*8-4);
+    m.userData={
+      rotX:(Math.random()-0.5)*0.02,rotY:(Math.random()-0.5)*0.025,
+      floatSpeed:Math.random()*0.008+0.003,floatPhase:Math.random()*Math.PI*2,
+      floatAmp:Math.random()*0.3+0.1
+    };
+    scene.add(m);octMeshes.push(m);
+  }
 
+  // ---- LIGHT STREAKS — silver hair lines ----
+  const streakGroup=new THREE.Group();scene.add(streakGroup);
+  const streaks3D=[];
   function createStreak3D(){
-    const len = Math.random()*6+2;
-    const pts = [
+    const len=Math.random()*8+2;
+    const pts=[
       new THREE.Vector3(0,0,0),
-      new THREE.Vector3(len*(Math.random()-0.5)*0.5, len*(Math.random()-0.5)*0.3, len)
+      new THREE.Vector3(len*(Math.random()-0.5)*0.4,len*(Math.random()-0.5)*0.25,len)
     ];
-    const geo = new THREE.BufferGeometry().setFromPoints(pts);
-    const alpha = Math.random()*0.3+0.05;
-    const mat = new THREE.LineBasicMaterial({
-      color: Math.random() > 0.6 ? 0x8080ff : 0xffffff,
-      transparent:true, opacity:alpha,
-      blending: THREE.AdditiveBlending
-    });
-    const line = new THREE.Line(geo, mat);
-    // Random position in space
-    line.position.set(
-      (Math.random()-0.5)*40,
-      (Math.random()-0.5)*20,
-      Math.random()*-60 + 10
-    );
-    line.rotation.set(
-      (Math.random()-0.5)*0.5,
-      (Math.random()-0.5)*0.5,
-      (Math.random()-0.5)*0.3
-    );
-    line.userData = {
-      speed: Math.random()*0.15+0.05,
-      life: Math.random()*200,
-      maxLife: Math.random()*120+60,
-      fadeAlpha: alpha
-    };
-    streakGroup.add(line);
-    return line;
+    const geo=new THREE.BufferGeometry().setFromPoints(pts);
+    const alpha=Math.random()*0.22+0.04;
+    // Silver to pearl white
+    const c=Math.random()>0.5?0xcccccc:0xe8e8e8;
+    const mat=new THREE.LineBasicMaterial({color:c,transparent:true,opacity:alpha,depthWrite:false});
+    const line=new THREE.Line(geo,mat);
+    line.position.set((Math.random()-0.5)*45,(Math.random()-0.5)*22,Math.random()*-60+10);
+    line.rotation.set((Math.random()-0.5)*0.4,(Math.random()-0.5)*0.4,(Math.random()-0.5)*0.2);
+    line.userData={speed:Math.random()*0.12+0.04,life:Math.random()*200,maxLife:Math.random()*120+60,fadeAlpha:alpha};
+    streakGroup.add(line);return line;
   }
-  for(let i=0;i<60;i++) streaks3D.push(createStreak3D());
+  for(let i=0;i<80;i++)streaks3D.push(createStreak3D());
 
-  /* ---- GRID PLANE (rises from below) ---- */
-  const gridHelper = new THREE.GridHelper(80, 40, 0x2020aa, 0x101055);
-  gridHelper.material.transparent = true;
-  gridHelper.material.opacity = 0;
-  gridHelper.position.y = -8;
-  gridHelper.position.z = -15;
+  // ---- GRID PLANE — fine platinum grid ----
+  const gridHelper=new THREE.GridHelper(100,50,0xb0b0c0,0xd0d0d8);
+  gridHelper.material.transparent=true;gridHelper.material.opacity=0;
+  gridHelper.position.y=-8;gridHelper.position.z=-18;
   scene.add(gridHelper);
 
-  /* ---- DNA HELIX (appears on scene 2-3) ---- */
-  const helixGroup = new THREE.Group();
-  helixGroup.position.set(-5, 0, -2);
-  scene.add(helixGroup);
-
-  const helixSpheres = [];
-  const helixLines = [];
-  const helixCount = 30;
+  // ---- DNA HELIX — silver helical structure ----
+  const helixGroup=new THREE.Group();
+  helixGroup.position.set(-5,0,-2);scene.add(helixGroup);
+  const helixSpheres=[];
+  const helixCount=34;
   for(let i=0;i<helixCount;i++){
-    const t = i/helixCount;
-    const angle1 = t*Math.PI*4;
-    const angle2 = angle1+Math.PI;
-    const y = (t-0.5)*10;
-
-    // Two strands
-    [angle1, angle2].forEach((angle, si)=>{
-      const x = Math.cos(angle)*1.2;
-      const z = Math.sin(angle)*1.2;
-      const geo = new THREE.SphereGeometry(0.07, 6, 6);
-      const mat = new THREE.MeshPhongMaterial({
-        color: si===0 ? 0x4444ff : 0x8844ff,
-        emissive: si===0 ? 0x2222aa : 0x441188,
-        transparent:true, opacity:0.8
-      });
-      const m = new THREE.Mesh(geo, mat);
-      m.position.set(x,y,z);
-      helixGroup.add(m);
-      helixSpheres.push(m);
+    const t=i/helixCount;
+    const a1=t*Math.PI*4;const a2=a1+Math.PI;
+    const y=(t-0.5)*11;
+    [[a1,0xc0c0d0],[a2,0x989898]].forEach(([angle,col])=>{
+      const x=Math.cos(angle)*1.3;const z=Math.sin(angle)*1.3;
+      const geo=new THREE.SphereGeometry(0.07,10,10);
+      const mat=new THREE.MeshStandardMaterial({color:col,roughness:0.15,metalness:0.92});
+      const m=new THREE.Mesh(geo,mat);
+      m.position.set(x,y,z);helixGroup.add(m);helixSpheres.push(m);
     });
-
-    // Cross connector every other step
-    if(i%2===0 && i<helixCount-1){
-      const x1 = Math.cos(angle1)*1.2, x2 = Math.cos(angle2)*1.2;
-      const z1 = Math.sin(angle1)*1.2, z2 = Math.sin(angle2)*1.2;
-      const pts = [new THREE.Vector3(x1,y,z1), new THREE.Vector3(x2,y,z2)];
-      const geo = new THREE.BufferGeometry().setFromPoints(pts);
-      const mat = new THREE.LineBasicMaterial({color:0x6666cc,transparent:true,opacity:0.4});
-      helixGroup.add(new THREE.Line(geo,mat));
+    if(i%2===0&&i<helixCount-1){
+      const x1=Math.cos(a1)*1.3;const x2=Math.cos(a2)*1.3;
+      const z1=Math.sin(a1)*1.3;const z2=Math.sin(a2)*1.3;
+      const pts=[new THREE.Vector3(x1,y,z1),new THREE.Vector3(x2,y,z2)];
+      const geo=new THREE.BufferGeometry().setFromPoints(pts);
+      helixGroup.add(new THREE.Line(geo,new THREE.LineBasicMaterial({color:0xb0b0c0,transparent:true,opacity:0.35})));
     }
   }
-  helixGroup.visible = false;
+  helixGroup.visible=false;
 
-  /* ---- WORMHOLE / TUNNEL RINGS (scene 4-5) ---- */
-  const tunnelGroup = new THREE.Group();
-  tunnelGroup.position.z = -10;
-  scene.add(tunnelGroup);
-  const tunnelRings = [];
-  for(let i=0;i<20;i++){
-    const r = 6+i*0.2;
-    const geo = new THREE.TorusGeometry(r, 0.04, 8, 60);
-    const mat = new THREE.MeshBasicMaterial({
-      color: new THREE.Color().setHSL(0.65+i*0.01, 0.8, 0.3+i*0.01),
-      transparent:true, opacity: Math.max(0.02, 0.25-i*0.01),
-      blending:THREE.AdditiveBlending
+  // ---- TUNNEL RINGS — polished concentric arcs ----
+  const tunnelGroup=new THREE.Group();
+  tunnelGroup.position.z=-10;scene.add(tunnelGroup);
+  const tunnelRings=[];
+  for(let i=0;i<22;i++){
+    const r=6+i*0.22;
+    const geo=new THREE.TorusGeometry(r,0.035,10,70);
+    const t=i/22;
+    // Silver gradient: lighter at center, darker further
+    const gray=Math.floor(0xb0+t*0x20);
+    const col=new THREE.Color(gray/255,gray/255,(gray+0x08)/255);
+    const mat=new THREE.MeshStandardMaterial({
+      color:col,roughness:0.3,metalness:0.85,
+      transparent:true,opacity:Math.max(0.03,0.3-i*0.012),
     });
-    const ring = new THREE.Mesh(geo, mat);
-    ring.position.z = -i*3;
-    ring.userData = {baseZ: -i*3, speed: 0.3+i*0.01};
-    tunnelGroup.add(ring);
-    tunnelRings.push(ring);
+    const ring=new THREE.Mesh(geo,mat);
+    ring.position.z=-i*3.2;
+    ring.userData={baseZ:-i*3.2,speed:0.25+i*0.008};
+    tunnelGroup.add(ring);tunnelRings.push(ring);
   }
-  tunnelGroup.visible = false;
+  tunnelGroup.visible=false;
 
-  /* ---- MOUSE PARALLAX ---- */
-  let mouseX = 0, mouseY = 0;
-  let targetMouseX = 0, targetMouseY = 0;
-  document.addEventListener('mousemove', e=>{
-    targetMouseX = (e.clientX/window.innerWidth - 0.5)*2;
-    targetMouseY = (e.clientY/window.innerHeight - 0.5)*2;
-  }, {passive:true});
+  // ---- FLOATING DIAMOND SHAPES (scene 3-4 special) ----
+  const diamondGroup=new THREE.Group();scene.add(diamondGroup);
+  const diamonds=[];
+  for(let i=0;i<8;i++){
+    const geo=new THREE.OctahedronGeometry(0.4+Math.random()*0.3,0);
+    const mat=new THREE.MeshStandardMaterial({color:0xd0d0e0,roughness:0.05,metalness:0.98,transparent:true,opacity:0});
+    const m=new THREE.Mesh(geo,mat);
+    const angle=i/8*Math.PI*2;
+    m.position.set(Math.cos(angle)*9,Math.sin(angle*0.7)*3,Math.sin(angle)*9-10);
+    m.userData={angle,rotSpeed:(Math.random()-0.5)*0.03,floatPhase:Math.random()*Math.PI*2};
+    diamondGroup.add(m);diamonds.push({mesh:m,mat});
+  }
 
-  /* ---- CAMERA WAYPOINTS (one per scene) ---- */
-  const waypoints = [
-    // Scene 0 — Hero: wide view
-    {pos: new THREE.Vector3(0,0,18),   lookAt: new THREE.Vector3(3.5,0,0), fogDensity:0.018},
-    // Scene 1 — Services: slight push in, tilt up
-    {pos: new THREE.Vector3(1.5,2,14), lookAt: new THREE.Vector3(2,0,-2), fogDensity:0.016},
-    // Scene 2 — Engineering: pan left, helix visible
-    {pos: new THREE.Vector3(-3,1,12),  lookAt: new THREE.Vector3(0,0,-5), fogDensity:0.014},
-    // Scene 3 — Content: dramatic dive angle
-    {pos: new THREE.Vector3(4,-2,10),  lookAt: new THREE.Vector3(0,2,-8), fogDensity:0.015},
-    // Scene 4 — Results: tunnel effect
-    {pos: new THREE.Vector3(0,0,8),    lookAt: new THREE.Vector3(0,0,-20), fogDensity:0.012},
+  // ---- PARALLAX ----
+  let mouseX=0,mouseY=0,targetMouseX=0,targetMouseY=0;
+  document.addEventListener('mousemove',e=>{
+    targetMouseX=(e.clientX/window.innerWidth-0.5)*2;
+    targetMouseY=(e.clientY/window.innerHeight-0.5)*2;
+  },{passive:true});
+
+  // ---- CAMERA WAYPOINTS ----
+  const waypoints=[
+    {pos:new THREE.Vector3(0,0,18),   lookAt:new THREE.Vector3(3.5,0,0),    fogD:0.018},
+    {pos:new THREE.Vector3(1.5,2,14), lookAt:new THREE.Vector3(2,0,-2),     fogD:0.016},
+    {pos:new THREE.Vector3(-3,1.5,12),lookAt:new THREE.Vector3(0,0,-5),     fogD:0.014},
+    {pos:new THREE.Vector3(4,-2,10),  lookAt:new THREE.Vector3(0,2,-8),     fogD:0.015},
+    {pos:new THREE.Vector3(0,0,8),    lookAt:new THREE.Vector3(0,0,-20),    fogD:0.011},
   ];
 
-  let scrollFrac = 0;
-  let currentSceneForCam = 0;
-
-  /* ---- ANIMATION LOOP ---- */
-  const clock = new THREE.Clock();
+  const clock=new THREE.Clock();
 
   function animate(){
     requestAnimationFrame(animate);
-    const t = clock.getElapsedTime();
-    const dt = clock.getDelta ? 0.016 : 0.016;
+    const t=clock.getElapsedTime();
 
-    // Mouse smooth
-    mouseX += (targetMouseX - mouseX) * 0.06;
-    mouseY += (targetMouseY - mouseY) * 0.06;
+    mouseX+=(targetMouseX-mouseX)*0.055;
+    mouseY+=(targetMouseY-mouseY)*0.055;
 
-    // Read scroll
-    const driver = document.getElementById('scroll-driver');
-    const maxScroll = driver ? Math.max(1, driver.offsetHeight - window.innerHeight) : 1;
-    scrollFrac = Math.min(1, Math.max(0, window.scrollY / maxScroll));
-    const sceneF = scrollFrac * (waypoints.length-1);
-    const sceneIdx = Math.floor(sceneF);
-    const sceneMix = sceneF - sceneIdx;
-    const wp0 = waypoints[Math.min(sceneIdx, waypoints.length-1)];
-    const wp1 = waypoints[Math.min(sceneIdx+1, waypoints.length-1)];
+    const driver=document.getElementById('scroll-driver');
+    const maxScroll=Math.max(1,(driver?driver.offsetHeight:1)-window.innerHeight);
+    const scrollFrac=Math.min(1,Math.max(0,window.scrollY/maxScroll));
+    const sceneF=scrollFrac*(waypoints.length-1);
+    const sceneIdx=Math.floor(sceneF);
+    const sceneMix=sceneF-sceneIdx;
+    const wp0=waypoints[Math.min(sceneIdx,waypoints.length-1)];
+    const wp1=waypoints[Math.min(sceneIdx+1,waypoints.length-1)];
+    const mix=sceneMix*sceneMix*(3-2*sceneMix);
 
-    // Smooth camera interpolation
-    const ease = t => t*t*(3-2*t); // smoothstep
-    const mix = ease(Math.min(1, sceneMix));
-
-    const camTarget = new THREE.Vector3().lerpVectors(wp0.pos, wp1.pos, mix);
-    // Add mouse parallax
-    camTarget.x += mouseX * 1.2;
-    camTarget.y += -mouseY * 0.8;
-    camera.position.lerp(camTarget, 0.04);
-
-    const lookTarget = new THREE.Vector3().lerpVectors(wp0.lookAt, wp1.lookAt, mix);
+    const camTarget=new THREE.Vector3().lerpVectors(wp0.pos,wp1.pos,mix);
+    camTarget.x+=mouseX*1.0;camTarget.y+=-mouseY*0.7;
+    camera.position.lerp(camTarget,0.038);
+    const lookTarget=new THREE.Vector3().lerpVectors(wp0.lookAt,wp1.lookAt,mix);
     camera.lookAt(lookTarget);
+    scene.fog.density=wp0.fogD+(wp1.fogD-wp0.fogD)*mix;
 
-    // Fog
-    const fogD = wp0.fogDensity + (wp1.fogDensity-wp0.fogDensity)*mix;
-    scene.fog.density = fogD;
-
-    /* ---- TORUS KNOT ---- */
-    torusKnot.rotation.x = t*0.22;
-    torusKnot.rotation.y = t*0.31;
-    torusKnot.rotation.z = t*0.12;
-    // Pulse scale
-    const pulse = 1 + Math.sin(t*1.8)*0.04;
+    // ---- TORUS KNOT — slow cinematic rotation ----
+    torusKnot.rotation.x=t*0.18;
+    torusKnot.rotation.y=t*0.27;
+    torusKnot.rotation.z=t*0.1;
+    tkWire.rotation.copy(torusKnot.rotation);
+    const pulse=1+Math.sin(t*1.6)*0.035;
     torusKnot.scale.setScalar(pulse);
-    glowRing.scale.setScalar(pulse*1.02);
-    glowRing.rotation.z = t*0.15;
-    orbitRing.rotation.x = t*0.18;
-    orbitRing.rotation.y = t*0.25;
-    // Emissive pulse
-    torusKnotMat.emissiveIntensity = 0.3 + Math.sin(t*2.5)*0.15;
-    // Show/hide based on scroll
-    const knotVis = 1 - Math.max(0, scrollFrac-0.8)*5;
-    torusKnotMat.opacity = Math.max(0, Math.min(0.55, knotVis*0.55));
+    tkWire.scale.setScalar(pulse);
 
-    /* ---- ORBIT SPHERES ---- */
+    // Rings orbit
+    ring1.rotation.z=t*0.14;ring1.rotation.y=t*0.07;
+    ring2.rotation.x=t*0.16;ring2.rotation.y=t*0.22;
+    ring3.rotation.x=t*0.2;ring3.rotation.z=t*0.12;
+
+    const knotVis=1-Math.max(0,scrollFrac-0.8)*5;
+    tkMat.opacity=Math.max(0,Math.min(1,knotVis));
+    tkMat.transparent=tkMat.opacity<1;
+    ringMat1.opacity=Math.max(0,Math.min(0.55,knotVis*0.55));
+    ringMat2.opacity=Math.max(0,Math.min(0.35,knotVis*0.35));
+    ringMat3.opacity=Math.max(0,Math.min(0.45,knotVis*0.45));
+
+    // ---- ORBIT SPHERES ----
     orbitSpheres.forEach(os=>{
-      const angle = t*os.speed + os.phase;
+      const angle=t*os.speed+os.phase;
       os.mesh.position.set(
-        torusKnot.position.x + Math.cos(angle)*os.r,
-        torusKnot.position.y + Math.sin(angle*0.7)*os.r*0.3,
-        torusKnot.position.z + Math.sin(angle)*os.r*0.4
+        torusKnot.position.x+Math.cos(angle)*os.r,
+        torusKnot.position.y+Math.sin(angle*0.65)*os.r*0.3,
+        torusKnot.position.z+Math.sin(angle)*os.r*0.45
       );
     });
 
-    /* ---- ICO MESHES ---- */
+    // ---- ICO + OCT MESHES ----
     icoMeshes.forEach(m=>{
-      m.rotation.x += m.userData.rotX;
-      m.rotation.y += m.userData.rotY;
-      m.position.y += Math.sin(t*m.userData.floatSpeed + m.userData.floatPhase)*m.userData.floatAmp*0.02;
+      m.rotation.x+=m.userData.rotX;m.rotation.y+=m.userData.rotY;
+      m.position.y+=Math.sin(t*m.userData.floatSpeed+m.userData.floatPhase)*m.userData.floatAmp*0.018;
+    });
+    octMeshes.forEach(m=>{
+      m.rotation.x+=m.userData.rotX;m.rotation.y+=m.userData.rotY;
+      m.position.y+=Math.sin(t*m.userData.floatSpeed+m.userData.floatPhase)*m.userData.floatAmp*0.016;
     });
 
-    /* ---- NEBULA DRIFT ---- */
-    nebula.rotation.y = t*0.012;
-    nebula.rotation.x = Math.sin(t*0.008)*0.1;
-
-    /* ---- 3D STREAKS ---- */
+    // ---- SILVER STREAKS ----
     streaks3D.forEach(s=>{
       s.userData.life++;
-      if(s.userData.life > s.userData.maxLife){
-        // Reset
-        s.position.set(
-          (Math.random()-0.5)*40,
-          (Math.random()-0.5)*20,
-          Math.random()*-50
-        );
-        s.userData.life = 0;
-        s.userData.maxLife = Math.random()*120+60;
+      if(s.userData.life>s.userData.maxLife){
+        s.position.set((Math.random()-0.5)*45,(Math.random()-0.5)*22,Math.random()*-50);
+        s.userData.life=0;s.userData.maxLife=Math.random()*120+60;
       }
-      const lt = s.userData.life/s.userData.maxLife;
-      const fa = lt < 0.15 ? lt/0.15 : lt > 0.75 ? (1-lt)/0.25 : 1;
-      s.material.opacity = s.userData.fadeAlpha * fa;
-      s.position.z += s.userData.speed;
-      if(s.position.z > 12) s.position.z = -50;
+      const lt=s.userData.life/s.userData.maxLife;
+      const fa=lt<0.15?lt/0.15:lt>0.75?(1-lt)/0.25:1;
+      s.material.opacity=s.userData.fadeAlpha*fa;
+      s.position.z+=s.userData.speed;
+      if(s.position.z>12)s.position.z=-50;
     });
 
-    /* ---- GRID PLANE ---- */
-    const gridVis = Math.max(0, (scrollFrac-0.3)*2.5);
-    gridHelper.material.opacity = Math.min(0.35, gridVis*0.35);
-    gridHelper.position.y = -8 + scrollFrac*4;
+    // ---- GRID ----
+    const gridVis=Math.max(0,(scrollFrac-0.3)*2.5);
+    gridHelper.material.opacity=Math.min(0.28,gridVis*0.28);
+    gridHelper.position.y=-8+scrollFrac*5;
 
-    /* ---- HELIX ---- */
-    const helixVis = sceneIdx >= 1 && sceneIdx <= 2;
-    helixGroup.visible = helixVis;
-    if(helixVis){
-      helixGroup.rotation.y = t*0.4;
-      helixSpheres.forEach((s,i)=>{ s.material.opacity = 0.5+Math.sin(t*2+i*0.3)*0.3; });
-    }
+    // ---- HELIX ----
+    const helixVis=sceneIdx>=1&&sceneIdx<=2;
+    helixGroup.visible=helixVis;
+    if(helixVis){helixGroup.rotation.y=t*0.35;}
 
-    /* ---- TUNNEL RINGS ---- */
-    const tunnelVis = scrollFrac > 0.7;
-    tunnelGroup.visible = tunnelVis;
+    // ---- TUNNEL ----
+    const tunnelVis=scrollFrac>0.65;
+    tunnelGroup.visible=tunnelVis;
     if(tunnelVis){
-      tunnelRings.forEach(r=>{
-        r.rotation.z = t*0.3 + r.userData.baseZ*0.05;
-        r.scale.setScalar(1+Math.sin(t*1.5+r.userData.baseZ)*0.03);
-      });
+      tunnelRings.forEach(r=>{r.rotation.z=t*0.2+r.userData.baseZ*0.04;r.scale.setScalar(1+Math.sin(t*1.2+r.userData.baseZ)*0.025);});
     }
 
-    /* ---- RIM LIGHT PULSE ---- */
-    rimLight.intensity = 3 + Math.sin(t*2.2)*1.5;
+    // ---- DIAMONDS ----
+    const dVis=scrollFrac>0.5&&scrollFrac<0.9;
+    diamonds.forEach(({mesh,mat},i)=>{
+      mesh.rotation.x=t*0.3+i;mesh.rotation.y=t*0.25+i;
+      mat.opacity=dVis?Math.min(0.65,Math.sin(t*0.5+mesh.userData.floatPhase)*0.3+0.35)*knotVis:0;
+      mat.transparent=true;
+      mesh.position.y+= Math.sin(t*0.4+mesh.userData.floatPhase)*0.008;
+    });
 
-    renderer.render(scene, camera);
+    // ---- POINT LIGHT ANIMATION ----
+    pointA.intensity=2.5+Math.sin(t*1.8)*1.0;
+    pointB.intensity=1.8+Math.cos(t*2.2)*0.8;
+    pointA.position.x=-6+Math.sin(t*0.5)*2;
+    pointA.position.y=4+Math.cos(t*0.7)*1.5;
+
+    renderer.render(scene,camera);
   }
-
   animate();
 })();
 
 /* ====================================================================
-   SCENES CONFIG
+   SCENES
 ===================================================================== */
-const SCENES = [
-  {
-    eyebrow: '// Digital Innovation Agency',
-    title: '<span class="dim">We Build</span><br>Digital<br><span class="accent-word">Futures</span>',
-    panel: null
-  },
-  {
-    eyebrow: '// Powered by Innovation',
-    title: 'Full&#8209;Spectrum<br>Digital<br>Services',
-    panel: {
-      title: 'What We Do',
-      desc: 'From stunning web development to immersive mobile apps — we build the digital backbone of tomorrow with precision and bold creative vision.',
-      btn: 'Explore Services',
-      action: 'services'
-    }
-  },
-  {
-    eyebrow: '// Engineering Excellence',
-    title: 'Web Dev.<br>Mobile.<br>Software.',
-    panel: {
-      title: 'Engineering Excellence',
-      desc: 'Modern, fast, and beautiful web apps. Native iOS and Android. Custom scalable software. We deliver full-stack excellence from concept to launch.',
-      btn: 'View Services',
-      action: 'services'
-    }
-  },
-  {
-    eyebrow: '// Content & Growth',
-    title: 'Content.<br>SEO.<br>Video.',
-    panel: {
-      title: 'Grow Your Audience',
-      desc: 'Strategic content that builds authority. SEO that puts you at the top. AI-powered video that stops the scroll. Results-first, every time.',
-      btn: 'Start a Project',
-      action: 'contact'
-    }
-  },
-  {
-    eyebrow: '// 200+ Projects · 98% Satisfaction',
-    title: 'Results<br>That<br><span class="accent-word">Speak</span>',
-    panel: {
-      title: 'Real Numbers',
-      desc: "Over 200 projects delivered. 98% client satisfaction. 6 core services. 24/7 support. Our clients don't just look good — they grow.",
-      btn: 'Read Reviews',
-      action: 'reviews'
-    }
-  }
+const SCENES=[
+  {eyebrow:'// Digital Innovation Agency',title:'<span class="dim">We Build</span><br>Digital<br><span class="accent-word">Futures</span>',panel:null},
+  {eyebrow:'// Powered by Innovation',title:'Full&#8209;Spectrum<br>Digital<br>Services',panel:{title:'What We Do',desc:'From stunning web development to immersive mobile apps — we build the digital backbone of tomorrow with precision and bold creative vision.',btn:'Explore Services',action:'services'}},
+  {eyebrow:'// Engineering Excellence',title:'Web Dev.<br>Mobile.<br>Software.',panel:{title:'Engineering Excellence',desc:'Modern, fast, and beautiful web apps. Native iOS and Android. Custom scalable software. We deliver full-stack excellence from concept to launch.',btn:'View Services',action:'services'}},
+  {eyebrow:'// Content & Growth',title:'Content.<br>SEO.<br>Video.',panel:{title:'Grow Your Audience',desc:'Strategic content that builds authority. SEO that puts you at the top. AI-powered video that stops the scroll. Results-first, every time.',btn:'Start a Project',action:'contact'}},
+  {eyebrow:'// 200+ Projects · 98% Satisfaction',title:'Results<br>That<br><span class="accent-word">Speak</span>',panel:{title:'Real Numbers',desc:"Over 200 projects delivered. 98% client satisfaction. 6 core services. 24/7 support. Our clients don't just look good — they grow.",btn:'Read Reviews',action:'reviews'}},
 ];
 
-const SCENE_HEIGHT = 900;
-const DRIVER_HEIGHT = SCENES.length * SCENE_HEIGHT;
+const SCENE_HEIGHT=900;
+const DRIVER_HEIGHT=SCENES.length*SCENE_HEIGHT;
+const driver=document.getElementById('scroll-driver');
+driver.style.height=DRIVER_HEIGHT+'px';
+driver.style.pointerEvents='none';
 
-const driver = document.getElementById('scroll-driver');
-driver.style.height = DRIVER_HEIGHT + 'px';
-driver.style.pointerEvents = 'none';
-
-/* ====================================================================
-   SCENE COUNTER DOTS
-===================================================================== */
-const sceneCounter = document.getElementById('sceneCounter');
+// Scene dots
+const sceneCounter=document.getElementById('sceneCounter');
 SCENES.forEach((_,i)=>{
-  const d = document.createElement('div');
-  d.className = 'scene-dot' + (i===0?' active':'');
-  d.id = `sdot-${i}`;
+  const d=document.createElement('div');
+  d.className='scene-dot'+(i===0?' active':'');
+  d.id=`sdot-${i}`;
   sceneCounter.appendChild(d);
 });
 
-/* ====================================================================
-   SCROLL HANDLER
-===================================================================== */
-const heroEyebrow = document.getElementById('heroEyebrow');
-const heroTitle   = document.getElementById('heroTitle');
-const contentPanel = document.getElementById('contentPanel');
-const panelTitle  = document.getElementById('panelTitle');
-const panelDesc   = document.getElementById('panelDesc');
-const panelBtn    = document.getElementById('panelBtn');
-const progressFill = document.getElementById('progressFill');
-const progressDot  = document.getElementById('progressDot');
-const scrollHint   = document.getElementById('scrollHint');
+const heroEyebrow=document.getElementById('heroEyebrow');
+const heroTitle=document.getElementById('heroTitle');
+const contentPanel=document.getElementById('contentPanel');
+const panelTitle=document.getElementById('panelTitle');
+const panelDesc=document.getElementById('panelDesc');
+const panelBtn=document.getElementById('panelBtn');
+const progressFill=document.getElementById('progressFill');
+const progressDot=document.getElementById('progressDot');
+const scrollHint=document.getElementById('scrollHint');
+let currentScene=-1,ticking=false;
 
-let currentScene = -1;
-let ticking = false;
-
-function onScroll(){
-  if(!ticking){requestAnimationFrame(processScroll); ticking=true;}
-}
-
+function onScroll(){if(!ticking){requestAnimationFrame(processScroll);ticking=true;}}
 function processScroll(){
-  ticking = false;
-  const sy = window.scrollY;
-  const driverEnd = DRIVER_HEIGHT - window.innerHeight;
-  const driverFrac = Math.min(1, Math.max(0, sy/driverEnd));
-  progressFill.style.height = (driverFrac*100)+'%';
-  progressDot.style.top = (driverFrac*100)+'%';
-  scrollHint.style.opacity = sy < 80 ? '1' : '0.3';
-
-  if(sy < DRIVER_HEIGHT){
-    const sceneIdx = Math.min(SCENES.length-1, Math.floor(sy/SCENE_HEIGHT));
-    // Update dots
-    document.querySelectorAll('.scene-dot').forEach((d,i)=>{
-      d.classList.toggle('active', i===sceneIdx);
-    });
-
-    if(sceneIdx !== currentScene){
-      currentScene = sceneIdx;
-      const scene = SCENES[sceneIdx];
-
-      // Animate out
-      heroEyebrow.style.opacity='0';
-      heroEyebrow.style.transform='translateY(-8px)';
-      heroTitle.style.opacity='0';
-      heroTitle.style.transform='translateY(24px) skewY(2deg)';
-
+  ticking=false;
+  const sy=window.scrollY;
+  const driverEnd=DRIVER_HEIGHT-window.innerHeight;
+  const driverFrac=Math.min(1,Math.max(0,sy/driverEnd));
+  progressFill.style.height=(driverFrac*100)+'%';
+  progressDot.style.top=(driverFrac*100)+'%';
+  scrollHint.style.opacity=sy<80?'1':'0.3';
+  if(sy<DRIVER_HEIGHT){
+    const sceneIdx=Math.min(SCENES.length-1,Math.floor(sy/SCENE_HEIGHT));
+    document.querySelectorAll('.scene-dot').forEach((d,i)=>d.classList.toggle('active',i===sceneIdx));
+    if(sceneIdx!==currentScene){
+      currentScene=sceneIdx;
+      const sc=SCENES[sceneIdx];
+      heroEyebrow.style.opacity='0';heroEyebrow.style.transform='translateY(-8px)';
+      heroTitle.style.opacity='0';heroTitle.style.transform='translateY(24px) skewY(2deg)';
       setTimeout(()=>{
-        heroEyebrow.textContent = scene.eyebrow;
-        heroTitle.innerHTML = scene.title;
-
-        heroEyebrow.style.transition='opacity .7s, transform .7s cubic-bezier(.23,1,.32,1)';
-        heroTitle.style.transition='opacity .9s, transform .9s cubic-bezier(.23,1,.32,1)';
-        heroEyebrow.style.opacity='1';
-        heroEyebrow.style.transform='translateY(0)';
-        heroTitle.style.opacity='1';
-        heroTitle.style.transform='translateY(0) skewY(0)';
-      }, 220);
-
-      if(scene.panel){
+        heroEyebrow.textContent=sc.eyebrow;heroTitle.innerHTML=sc.title;
+        heroEyebrow.style.transition='opacity .7s,transform .7s cubic-bezier(.23,1,.32,1)';
+        heroTitle.style.transition='opacity .9s,transform .9s cubic-bezier(.23,1,.32,1)';
+        heroEyebrow.style.opacity='1';heroEyebrow.style.transform='translateY(0)';
+        heroTitle.style.opacity='1';heroTitle.style.transform='translateY(0) skewY(0)';
+      },220);
+      if(sc.panel){
         contentPanel.classList.remove('visible');
-        panelTitle.textContent = scene.panel.title;
-        panelDesc.textContent  = scene.panel.desc;
-        panelBtn.textContent   = scene.panel.btn;
-        panelBtn.dataset.action = scene.panel.action;
-        setTimeout(()=>contentPanel.classList.add('visible'), 350);
+        panelTitle.textContent=sc.panel.title;
+        panelDesc.textContent=sc.panel.desc;
+        panelBtn.textContent=sc.panel.btn;
+        panelBtn.dataset.action=sc.panel.action;
+        setTimeout(()=>contentPanel.classList.add('visible'),350);
       } else {
         contentPanel.classList.remove('visible');
       }
     }
   }
 }
-
-window.addEventListener('scroll', onScroll, {passive:true});
+window.addEventListener('scroll',onScroll,{passive:true});
 onScroll();
 
-panelBtn.addEventListener('click', ()=>{
-  const action = panelBtn.dataset.action;
-  if(action==='services') scrollToServices();
-  else if(action==='contact') scrollToContact();
-  else if(action==='reviews') scrollToReviews();
+panelBtn.addEventListener('click',()=>{
+  const a=panelBtn.dataset.action;
+  if(a==='services')scrollToServices();
+  else if(a==='contact')scrollToContact();
+  else if(a==='reviews')scrollToReviews();
 });
 
 /* ====================================================================
    CURSOR
 ===================================================================== */
-const dot  = document.getElementById('cursor-dot');
-const ring = document.getElementById('cursor-ring');
+const dot=document.getElementById('cursor-dot');
+const ring=document.getElementById('cursor-ring');
 if(window.matchMedia('(pointer:fine)').matches){
   let rx=0,ry=0,dx=0,dy=0;
-  document.addEventListener('mousemove',e=>{
-    dx=e.clientX;dy=e.clientY;
-    dot.style.left=dx+'px';dot.style.top=dy+'px';
-  },{passive:true});
-  (function ar(){
-    rx+=(dx-rx)*0.1; ry+=(dy-ry)*0.1;
-    ring.style.left=rx+'px'; ring.style.top=ry+'px';
-    requestAnimationFrame(ar);
-  })();
-  const hoverEls = document.querySelectorAll('a,button,.srv-card,.rv-card,.nav-logo,.footer-logo,.panel-btn');
-  hoverEls.forEach(el=>{
-    el.addEventListener('mouseenter',()=>{
-      ring.style.width='60px';ring.style.height='60px';
-      ring.style.borderColor='rgba(160,160,255,0.6)';
-      ring.style.background='rgba(100,100,255,0.05)';
-    });
-    el.addEventListener('mouseleave',()=>{
-      ring.style.width='38px';ring.style.height='38px';
-      ring.style.borderColor='rgba(255,255,255,0.22)';
-      ring.style.background='transparent';
-    });
+  document.addEventListener('mousemove',e=>{dx=e.clientX;dy=e.clientY;dot.style.left=dx+'px';dot.style.top=dy+'px';},{passive:true});
+  (function ar(){rx+=(dx-rx)*0.1;ry+=(dy-ry)*0.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(ar);})();
+  document.querySelectorAll('a,button,.srv-card,.rv-card,.nav-logo,.footer-logo,.panel-btn,.svc-modal-close').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{ring.style.width='56px';ring.style.height='56px';ring.style.borderColor='rgba(90,90,120,0.5)';ring.style.background='rgba(90,90,120,0.04)';});
+    el.addEventListener('mouseleave',()=>{ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(10,10,15,0.18)';ring.style.background='transparent';});
   });
 }
 
 /* ====================================================================
    MENU
 ===================================================================== */
-const navMenu = document.getElementById('navMenu');
-const hamburger = document.getElementById('hamburger');
+const navMenu=document.getElementById('navMenu');
+const hamburger=document.getElementById('hamburger');
 function toggleMenu(){
-  const open = navMenu.classList.toggle('open');
-  hamburger.classList.toggle('open', open);
-  document.body.style.overflow = open ? 'hidden' : '';
+  const open=navMenu.classList.toggle('open');
+  hamburger.classList.toggle('open',open);
+  document.body.style.overflow=open?'hidden':'';
 }
 function menuGo(target){
   toggleMenu();
   setTimeout(()=>{
-    if(target==='home') showHome();
-    else if(target==='services') scrollToServices();
-    else if(target==='reviews') scrollToReviews();
-    else if(target==='contact') scrollToContact();
-  }, 450);
+    if(target==='home')window.scrollTo({top:0,behavior:'smooth'});
+    else if(target==='services')scrollToServices();
+    else if(target==='reviews')scrollToReviews();
+    else if(target==='contact')scrollToContact();
+  },450);
 }
-navMenu.addEventListener('click',e=>{if(e.target===navMenu)toggleMenu()});
+navMenu.addEventListener('click',e=>{if(e.target===navMenu)toggleMenu();});
 
 /* ====================================================================
    REVEAL
 ===================================================================== */
-const revObs = new IntersectionObserver(entries=>entries.forEach((e,i)=>{
-  if(e.isIntersecting) setTimeout(()=>e.target.classList.add('visible'),i*60);
+const revObs=new IntersectionObserver(entries=>entries.forEach((e,i)=>{
+  if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*60);
 }),{threshold:.07,rootMargin:'0px 0px -20px 0px'});
-function initReveal(){document.querySelectorAll('.reveal').forEach(el=>{el.classList.remove('visible');revObs.observe(el);})}
+function initReveal(){document.querySelectorAll('.reveal').forEach(el=>{el.classList.remove('visible');revObs.observe(el);});}
 initReveal();
 
 /* ====================================================================
    COUNTERS
 ===================================================================== */
-const statsObs = new IntersectionObserver(entries=>{
-  if(!entries[0].isIntersecting) return;
+const statsObs=new IntersectionObserver(entries=>{
+  if(!entries[0].isIntersecting)return;
   document.querySelectorAll('[data-target]').forEach(el=>{
-    const target=+el.dataset.target, suf=el.dataset.suffix||'';
+    const target=+el.dataset.target,suf=el.dataset.suffix||'';
     let st=null;
     const step=ts=>{
-      if(!st)st=ts;
-      const p=Math.min((ts-st)/1800,1);
+      if(!st)st=ts;const p=Math.min((ts-st)/1800,1);
       const eased=1-Math.pow(1-p,3);
       el.textContent=Math.floor(eased*target)+suf;
       if(p<1)requestAnimationFrame(step);
@@ -1688,8 +1403,7 @@ if(statsSection)statsObs.observe(statsSection);
    REVIEW DRAG
 ===================================================================== */
 (function(){
-  const el=document.getElementById('reviewScroll');
-  if(!el)return;
+  const el=document.getElementById('reviewScroll');if(!el)return;
   let dn=false,sx,sl;
   el.addEventListener('mousedown',e=>{dn=true;el.style.cursor='grabbing';sx=e.pageX-el.offsetLeft;sl=el.scrollLeft;});
   el.addEventListener('mouseleave',()=>{dn=false;el.style.cursor='grab';});
@@ -1698,21 +1412,8 @@ if(statsSection)statsObs.observe(statsSection);
 })();
 
 /* ====================================================================
-   ROUTING
+   NAVIGATION
 ===================================================================== */
-function showHome(){
-  document.getElementById('home-page').style.display='block';
-  document.getElementById('service-page').style.display='none';
-  document.getElementById('service-page').classList.remove('active');
-  document.getElementById('scroll-driver').style.display='block';
-  document.getElementById('ui-overlay').style.display='block';
-  document.getElementById('cv').style.display='block';
-  document.getElementById('post-overlay').style.display='block';
-  window.scrollTo({top:0,behavior:'instant'});
-  setTimeout(initReveal,100);
-  if(navMenu.classList.contains('open'))toggleMenu();
-}
-
 function scrollToServices(){
   const el=document.getElementById('services-section');
   if(el)window.scrollTo({top:DRIVER_HEIGHT+el.offsetTop-40,behavior:'smooth'});
@@ -1725,56 +1426,137 @@ function scrollToContact(){
   const el=document.getElementById('contact-section');
   if(el)window.scrollTo({top:DRIVER_HEIGHT+el.offsetTop-40,behavior:'smooth'});
 }
-
 function handleSubmit(e){
-  e.preventDefault();
-  const b=e.target.querySelector('.form-submit');
+  e.preventDefault();const b=e.target.querySelector('.form-submit');
   b.textContent='Sending...';b.style.opacity='.7';
-  setTimeout(()=>{
-    b.textContent='Message Sent ✓';b.style.opacity='1';
-    e.target.reset();
-    setTimeout(()=>{b.textContent='Send Message →';},3000);
-  },1200);
+  setTimeout(()=>{b.textContent='Message Sent ✓';b.style.opacity='1';e.target.reset();setTimeout(()=>{b.textContent='Send Message →';},3000);},1200);
 }
 
 /* ====================================================================
-   SERVICE DATA
+   SERVICE MODAL
 ===================================================================== */
-const services = {
-  webdev:{tag:'// 01 — Web Development',title:'Web\nDevelopment',intro:'From pixel-perfect landing pages to complex full-stack applications — we design and build fast, modern, scalable digital experiences that convert visitors into customers.',features:[{icon:'🎨',title:'UI/UX Design & Prototyping',desc:'Intuitive, visually stunning interfaces in Figma — wireframes to high-fidelity prototypes reviewed before a line of code is written.'},{icon:'⚛️',title:'Frontend Development',desc:'React, Next.js, Vue, and Svelte — blazing-fast frontends with smooth animations, perfect Lighthouse scores, and accessibility built in.'},{icon:'🔧',title:'Backend & API Development',desc:'Node.js, Python, and PHP backends with RESTful and GraphQL APIs — secure, scalable, and fully documented.'},{icon:'🗄️',title:'Database Architecture',desc:'PostgreSQL, MySQL, MongoDB — structured schemas, optimised queries, and migrations that scale.'},{icon:'☁️',title:'Hosting, DevOps & Deployment',desc:'CI/CD pipelines, Docker, cloud deployments on AWS, Vercel — zero-downtime every time.'}],tools:['React / Next.js','Vue / Nuxt','Node.js / Express','PostgreSQL / MongoDB','AWS / Vercel / Netlify','Figma & Storybook'],process:[{num:'01',title:'Discovery & Planning',desc:'Map goals, audience, and requirements.'},{num:'02',title:'Design',desc:'Brand-aligned UI and interactive prototypes.'},{num:'03',title:'Development',desc:'Agile sprints with weekly previews.'},{num:'04',title:'Launch & Support',desc:'QA, performance tuning, 30-day support.'}],ctaTitle:'Build Your\nWeb Presence',ctaDesc:"Your website is your most powerful sales tool. Let's make it extraordinary."},
-  contentcreation:{tag:'// 02 — Content Creation',title:'Content\nCreation',intro:'Strategic, high-impact content that builds authority, engages your audience, and drives real conversions — from long-form articles to social media copy and everything in between.',features:[{icon:'✍️',title:'Blog & Long-Form Articles',desc:'SEO-optimized articles and thought leadership content that ranks on Google and establishes your brand as the authority in your niche.'},{icon:'📣',title:'Social Media Content',desc:'Platform-native content calendars for Instagram, LinkedIn, X, and TikTok — copy, captions, and post concepts designed to grow and engage.'},{icon:'🖋️',title:'Website & Landing Page Copy',desc:"Conversion-focused copywriting that speaks directly to your audience's pain points and compels action."},{icon:'📧',title:'Email Marketing Campaigns',desc:'Nurture sequences, newsletters, and promotional campaigns with compelling subject lines and body copy that convert subscribers to buyers.'},{icon:'📋',title:'Brand Voice & Content Strategy',desc:'We define your brand voice, messaging pillars, and a 90-day content roadmap tailored to your goals and audience.'}],tools:['Content Strategy','SEO Copywriting','Brand Voice Guidelines','Editorial Calendars','Email Sequences','Social Media Suites'],process:[{num:'01',title:'Brand Discovery',desc:'Understand your voice, audience, and goals.'},{num:'02',title:'Strategy & Roadmap',desc:'Content calendar and topic cluster plan.'},{num:'03',title:'Creation & Review',desc:'We write, you approve with 2 revision rounds.'},{num:'04',title:'Publish & Optimise',desc:'Track performance and iterate monthly.'}],ctaTitle:'Build Your\nContent Engine',ctaDesc:"Content that converts isn't just well-written — it's strategically designed. Let's build yours."},
-  software:{tag:'// 03 — Software Development',title:'Software\nDev',intro:'From MVPs to enterprise systems — we architect, build, and scale custom software that becomes the backbone of your business.',features:[{icon:'🏗️',title:'Custom Web Applications',desc:'Full-stack apps in React, Next.js, Vue — scalable, fast, and maintainable.'},{icon:'🔌',title:'API Development & Integration',desc:'RESTful and GraphQL APIs powering frontends and microservices.'},{icon:'☁️',title:'Cloud Architecture',desc:'AWS, GCP, Azure with Docker, Kubernetes, and CI/CD pipelines.'},{icon:'🗄️',title:'Database Design & Optimisation',desc:'Relational and NoSQL architecture optimised for your query patterns.'},{icon:'🧪',title:'Testing & Quality Assurance',desc:'Unit, integration, and end-to-end testing — we ship confidence.'}],tools:['React / Next.js','Node.js / Python','PostgreSQL / MongoDB','AWS / GCP','Docker / K8s','CI/CD Pipelines'],process:[{num:'01',title:'Requirements',desc:'Map features, stories, and constraints.'},{num:'02',title:'Architecture',desc:'System design, schema, tech stack.'},{num:'03',title:'Agile Build',desc:'2-week sprints with continuous delivery.'},{num:'04',title:'Maintenance',desc:'Post-launch support and improvement.'}],ctaTitle:'Build Your\nIdeal Software',ctaDesc:"Great software doesn't happen by accident. It's architected with intention."},
-  mobile:{tag:'// 04 — Mobile App Development',title:'Mobile\nApps',intro:'Native iOS and Android apps, plus Flutter and React Native — designed for delight and engineered for performance.',features:[{icon:'🍎',title:'iOS Development',desc:'Swift and SwiftUI native iOS apps — App Store submission included.'},{icon:'🤖',title:'Android Development',desc:'Kotlin-first Android apps following Material Design 3.'},{icon:'⚡',title:'React Native & Flutter',desc:'Cross-platform apps sharing 90%+ of code.'},{icon:'🔔',title:'Push Notifications & Engagement',desc:'Smart notifications, deep linking, and in-app messaging.'},{icon:'📡',title:'Offline-First Architecture',desc:'Apps that work offline and sync seamlessly.'}],tools:['Swift / SwiftUI','Kotlin / Jetpack','React Native','Flutter / Dart','Firebase','App Store Optimisation'],process:[{num:'01',title:'UX Research',desc:'User interviews and journey mapping.'},{num:'02',title:'UI/UX Design',desc:'Figma prototypes reviewed before build.'},{num:'03',title:'Development',desc:'Weekly TestFlight/beta releases.'},{num:'04',title:'Store Launch',desc:'Submission, ASO, and launch support.'}],ctaTitle:'Launch Your\nMobile App',ctaDesc:'Meet your users on mobile with something extraordinary.'},
-  seo:{tag:'// 05 — Search Engine Optimisation',title:'Search\nEngine\nOpt.',intro:'Data-driven SEO strategies for sustainable organic growth — ranking you where your customers search.',features:[{icon:'🔍',title:'Technical SEO Audit',desc:'Core Web Vitals, schema markup, site speed, indexation — fixed at the foundation.'},{icon:'📝',title:'Content Strategy & Creation',desc:'Keyword research and publishing roadmap that earns topical authority.'},{icon:'🔗',title:'Link Building',desc:'White-hat outreach, digital PR, and guest posting.'},{icon:'📍',title:'Local SEO',desc:'Google Business Profile, local citations, review management.'},{icon:'📊',title:'Reporting & Analytics',desc:'Custom dashboards tracking rankings, traffic, and ROI.'}],tools:['Ahrefs / SEMrush','Google Search Console','Core Web Vitals','Schema Markup','Content Optimisation','Competitor Analysis'],process:[{num:'01',title:'SEO Audit',desc:'Full technical and content audit.'},{num:'02',title:'Keyword Strategy',desc:'Map keywords to user intent.'},{num:'03',title:'Execution',desc:'Technical fixes, content, and links.'},{num:'04',title:'Report & Refine',desc:'Monthly reporting and adjustments.'}],ctaTitle:'Rank Higher.\nGrow Faster.',ctaDesc:"Organic search is the most sustainable growth channel. Let's own it."},
-  videogen:{tag:'// 06 — Video Generation',title:'Video\nGeneration',intro:'AI-powered and human-directed video production — from short-form social ads to full cinematic brand films.',features:[{icon:'🎬',title:'AI Video Production',desc:'Using Sora, Runway Gen-2, Kling — stunning visuals at scale and speed, guided by our creative direction.'},{icon:'📱',title:'Short-Form & Reels',desc:"Vertical video ads, Instagram Reels, TikToks, and YouTube Shorts — hook-driven, scroll-stopping content optimized for each platform's algorithm."},{icon:'🎥',title:'Brand Films & Explainers',desc:'Cinematic brand storytelling and product explainer videos with scriptwriting, storyboarding, voiceover, and motion graphics.'},{icon:'📢',title:'Video Ad Campaigns',desc:'Full-funnel video ad creative for Meta, Google, and TikTok — A/B tested for maximum ROI.'},{icon:'✂️',title:'Post-Production & Editing',desc:'Professional colour grading, sound design, subtitles, and motion graphics.'}],tools:['Sora / Runway Gen-2','Adobe Premiere Pro','After Effects','DaVinci Resolve','Kling AI','ElevenLabs Voiceover'],process:[{num:'01',title:'Brief & Concept',desc:'Define goals, audience, and creative direction.'},{num:'02',title:'Script & Storyboard',desc:'Script approval before a single frame is produced.'},{num:'03',title:'Production',desc:'AI-assisted or live-action shoot and editing.'},{num:'04',title:'Delivery & Publish',desc:'Platform-optimized exports and launch strategy.'}],ctaTitle:'Create Videos\nThat Convert',ctaDesc:"In a world of infinite content, extraordinary video is the only kind that wins."}
+const services={
+  webdev:{tag:'01 — Web Development',title:'Web\nDevelopment',intro:'From pixel-perfect landing pages to complex full-stack applications — we design and build fast, modern, scalable digital experiences that convert visitors into customers.',ctaDesc:"Your website is your most powerful sales tool. Let's make it extraordinary.",
+    features:[
+      {icon:'🎨',title:'UI/UX Design & Prototyping',desc:'Intuitive, visually stunning interfaces in Figma — wireframes to high-fidelity prototypes reviewed before a line of code is written.'},
+      {icon:'⚛️',title:'Frontend Development',desc:'React, Next.js, Vue, and Svelte — blazing-fast frontends with smooth animations, perfect Lighthouse scores, and accessibility built in.'},
+      {icon:'🔧',title:'Backend & API Development',desc:'Node.js, Python, and PHP backends with RESTful and GraphQL APIs — secure, scalable, and fully documented.'},
+      {icon:'🗄️',title:'Database Architecture',desc:'PostgreSQL, MySQL, MongoDB — structured schemas, optimised queries, and migrations that scale.'},
+      {icon:'☁️',title:'Hosting, DevOps & Deployment',desc:'CI/CD pipelines, Docker, cloud deployments on AWS, Vercel — zero-downtime every time.'},
+    ],
+    tools:['React / Next.js','Vue / Nuxt','Node.js / Express','PostgreSQL / MongoDB','AWS / Vercel','Figma & Storybook'],
+    process:[{num:'01',title:'Discovery & Planning',desc:'Map goals, audience, and requirements.'},{num:'02',title:'Design',desc:'Brand-aligned UI and interactive prototypes.'},{num:'03',title:'Development',desc:'Agile sprints with weekly previews.'},{num:'04',title:'Launch & Support',desc:'QA, performance tuning, 30-day support.'}],
+  },
+  contentcreation:{tag:'02 — Content Creation',title:'Content\nCreation',intro:'Strategic, high-impact content that builds authority, engages your audience, and drives real conversions — from long-form articles to social media copy and everything in between.',ctaDesc:"Content that converts isn't just well-written — it's strategically designed. Let's build yours.",
+    features:[
+      {icon:'✍️',title:'Blog & Long-Form Articles',desc:'SEO-optimized articles and thought leadership content that ranks on Google and establishes your brand as the authority in your niche.'},
+      {icon:'📣',title:'Social Media Content',desc:'Platform-native content calendars for Instagram, LinkedIn, X, and TikTok — copy, captions, and post concepts designed to grow and engage.'},
+      {icon:'🖋️',title:'Website & Landing Page Copy',desc:"Conversion-focused copywriting that speaks directly to your audience's pain points and compels action."},
+      {icon:'📧',title:'Email Marketing Campaigns',desc:'Nurture sequences, newsletters, and promotional campaigns with compelling subject lines and body copy that convert subscribers to buyers.'},
+      {icon:'📋',title:'Brand Voice & Content Strategy',desc:'We define your brand voice, messaging pillars, and a 90-day content roadmap tailored to your goals and audience.'},
+    ],
+    tools:['Content Strategy','SEO Copywriting','Brand Voice Guidelines','Editorial Calendars','Email Sequences','Social Media Suites'],
+    process:[{num:'01',title:'Brand Discovery',desc:'Understand your voice, audience, and goals.'},{num:'02',title:'Strategy & Roadmap',desc:'Content calendar and topic cluster plan.'},{num:'03',title:'Creation & Review',desc:'We write, you approve with 2 revision rounds.'},{num:'04',title:'Publish & Optimise',desc:'Track performance and iterate monthly.'}],
+  },
+  software:{tag:'03 — Software Development',title:'Software\nDev',intro:'From MVPs to enterprise systems — we architect, build, and scale custom software that becomes the backbone of your business.',ctaDesc:"Great software doesn't happen by accident. It's architected with intention.",
+    features:[
+      {icon:'🏗️',title:'Custom Web Applications',desc:'Full-stack apps in React, Next.js, Vue — scalable, fast, and maintainable.'},
+      {icon:'🔌',title:'API Development & Integration',desc:'RESTful and GraphQL APIs powering frontends and microservices.'},
+      {icon:'☁️',title:'Cloud Architecture',desc:'AWS, GCP, Azure with Docker, Kubernetes, and CI/CD pipelines.'},
+      {icon:'🗄️',title:'Database Design & Optimisation',desc:'Relational and NoSQL architecture optimised for your query patterns.'},
+      {icon:'🧪',title:'Testing & Quality Assurance',desc:'Unit, integration, and end-to-end testing — we ship confidence.'},
+    ],
+    tools:['React / Next.js','Node.js / Python','PostgreSQL / MongoDB','AWS / GCP','Docker / K8s','CI/CD Pipelines'],
+    process:[{num:'01',title:'Requirements',desc:'Map features, stories, and constraints.'},{num:'02',title:'Architecture',desc:'System design, schema, tech stack.'},{num:'03',title:'Agile Build',desc:'2-week sprints with continuous delivery.'},{num:'04',title:'Maintenance',desc:'Post-launch support and improvement.'}],
+  },
+  mobile:{tag:'04 — Mobile App Development',title:'Mobile\nApps',intro:'Native iOS and Android apps, plus Flutter and React Native — designed for delight and engineered for performance.',ctaDesc:'Meet your users on mobile with something extraordinary.',
+    features:[
+      {icon:'🍎',title:'iOS Development',desc:'Swift and SwiftUI native iOS apps — App Store submission included.'},
+      {icon:'🤖',title:'Android Development',desc:'Kotlin-first Android apps following Material Design 3.'},
+      {icon:'⚡',title:'React Native & Flutter',desc:'Cross-platform apps sharing 90%+ of code.'},
+      {icon:'🔔',title:'Push Notifications & Engagement',desc:'Smart notifications, deep linking, and in-app messaging.'},
+      {icon:'📡',title:'Offline-First Architecture',desc:'Apps that work offline and sync seamlessly.'},
+    ],
+    tools:['Swift / SwiftUI','Kotlin / Jetpack','React Native','Flutter / Dart','Firebase','App Store Optimisation'],
+    process:[{num:'01',title:'UX Research',desc:'User interviews and journey mapping.'},{num:'02',title:'UI/UX Design',desc:'Figma prototypes reviewed before build.'},{num:'03',title:'Development',desc:'Weekly TestFlight/beta releases.'},{num:'04',title:'Store Launch',desc:'Submission, ASO, and launch support.'}],
+  },
+  seo:{tag:'05 — Search Engine Optimisation',title:'Search\nEngine Opt.',intro:'Data-driven SEO strategies for sustainable organic growth — ranking you where your customers search.',ctaDesc:"Organic search is the most sustainable growth channel. Let's own it.",
+    features:[
+      {icon:'🔍',title:'Technical SEO Audit',desc:'Core Web Vitals, schema markup, site speed, indexation — fixed at the foundation.'},
+      {icon:'📝',title:'Content Strategy & Creation',desc:'Keyword research and publishing roadmap that earns topical authority.'},
+      {icon:'🔗',title:'Link Building',desc:'White-hat outreach, digital PR, and guest posting.'},
+      {icon:'📍',title:'Local SEO',desc:'Google Business Profile, local citations, review management.'},
+      {icon:'📊',title:'Reporting & Analytics',desc:'Custom dashboards tracking rankings, traffic, and ROI.'},
+    ],
+    tools:['Ahrefs / SEMrush','Google Search Console','Core Web Vitals','Schema Markup','Content Optimisation','Competitor Analysis'],
+    process:[{num:'01',title:'SEO Audit',desc:'Full technical and content audit.'},{num:'02',title:'Keyword Strategy',desc:'Map keywords to user intent.'},{num:'03',title:'Execution',desc:'Technical fixes, content, and links.'},{num:'04',title:'Report & Refine',desc:'Monthly reporting and adjustments.'}],
+  },
+  videogen:{tag:'06 — Video Generation',title:'Video\nGeneration',intro:'AI-powered and human-directed video production — from short-form social ads to full cinematic brand films.',ctaDesc:"In a world of infinite content, extraordinary video is the only kind that wins.",
+    features:[
+      {icon:'🎬',title:'AI Video Production',desc:'Using Sora, Runway Gen-2, Kling — stunning visuals at scale and speed, guided by our creative direction.'},
+      {icon:'📱',title:'Short-Form & Reels',desc:"Vertical video ads, Instagram Reels, TikToks, and YouTube Shorts — hook-driven, scroll-stopping content."},
+      {icon:'🎥',title:'Brand Films & Explainers',desc:'Cinematic brand storytelling and product explainer videos with scriptwriting, storyboarding, voiceover, and motion graphics.'},
+      {icon:'📢',title:'Video Ad Campaigns',desc:'Full-funnel video ad creative for Meta, Google, and TikTok — A/B tested for maximum ROI.'},
+      {icon:'✂️',title:'Post-Production & Editing',desc:'Professional colour grading, sound design, subtitles, and motion graphics.'},
+    ],
+    tools:['Sora / Runway Gen-2','Adobe Premiere Pro','After Effects','DaVinci Resolve','Kling AI','ElevenLabs Voiceover'],
+    process:[{num:'01',title:'Brief & Concept',desc:'Define goals, audience, and creative direction.'},{num:'02',title:'Script & Storyboard',desc:'Script approval before a single frame is produced.'},{num:'03',title:'Production',desc:'AI-assisted or live-action shoot and editing.'},{num:'04',title:'Delivery & Publish',desc:'Platform-optimized exports and launch strategy.'}],
+  },
 };
+
+const backdrop=document.getElementById('svcModalBackdrop');
+let modalOpen=false;
 
 function showService(id){
   const s=services[id];if(!s)return;
-  document.getElementById('sp-tag').textContent=s.tag;
-  document.getElementById('sp-title').innerHTML=s.title.replace(/\n/g,'<br>');
-  document.getElementById('sp-intro').textContent=s.intro;
-  document.getElementById('sp-features').innerHTML=s.features.map(f=>`<div class="sp-feature"><span class="sp-feature-icon">${f.icon}</span><div class="sp-feature-title">${f.title}</div><div class="sp-feature-desc">${f.desc}</div></div>`).join('');
-  document.getElementById('sp-sidebar').innerHTML=`<div class="sp-card"><div class="sp-card-title">Tools & Tech</div><ul class="sp-list">${s.tools.map(t=>`<li>${t}</li>`).join('')}</ul></div><div class="sp-card"><div class="sp-card-title" style="font-size:1.1rem">Why Choose Us</div><ul class="sp-list"><li>Dedicated project manager</li><li>Transparent weekly updates</li><li>Fixed-price contracts available</li><li>Post-launch support included</li><li>NDA & IP ownership guaranteed</li></ul></div><div style="margin-top:1.2rem"><button class="cta-btn" style="width:100%;justify-content:center;border-radius:10px;margin-top:0" onclick="showHome();setTimeout(scrollToContact,400)">Get a Free Quote →</button></div>`;
-  document.getElementById('sp-process').innerHTML=s.process.map(p=>`<div class="sp-step"><div class="sp-step-num">${p.num}</div><div class="sp-step-title">${p.title}</div><div class="sp-step-desc">${p.desc}</div></div>`).join('');
-  document.getElementById('sp-cta-title').innerHTML=s.ctaTitle.replace(/\n/g,'<br>');
-  document.getElementById('sp-cta-desc').textContent=s.ctaDesc;
+  document.getElementById('svcModalTag').textContent=s.tag;
+  document.getElementById('svcModalTitle').innerHTML=s.title.replace(/\n/g,'<br>');
+  document.getElementById('svcModalIntro').textContent=s.intro;
+  document.getElementById('svcModalCtaDesc').textContent=s.ctaDesc;
 
-  document.getElementById('home-page').style.display='none';
-  document.getElementById('service-page').style.display='block';
-  document.getElementById('service-page').classList.add('active');
-  document.getElementById('scroll-driver').style.display='none';
-  document.getElementById('ui-overlay').style.display='none';
-  window.scrollTo({top:0,behavior:'instant'});
+  document.getElementById('svcModalFeatures').innerHTML=s.features.map(f=>`
+    <div class="svc-feature">
+      <div class="svc-feature-top">
+        <span class="svc-feature-icon">${f.icon}</span>
+        <span class="svc-feature-title">${f.title}</span>
+      </div>
+      <div class="svc-feature-desc">${f.desc}</div>
+    </div>`).join('');
+
+  document.getElementById('svcModalTools').innerHTML=s.tools.map(t=>`<span class="svc-tool-pill">${t}</span>`).join('');
+
+  document.getElementById('svcModalProcess').innerHTML=s.process.map(p=>`
+    <div class="svc-process-step">
+      <div class="svc-step-num">${p.num}</div>
+      <div>
+        <div class="svc-step-title">${p.title}</div>
+        <div class="svc-step-desc">${p.desc}</div>
+      </div>
+    </div>`).join('');
+
+  backdrop.classList.add('open');
+  document.body.style.overflow='hidden';
+  modalOpen=true;
 }
 
+function closeServiceModal(){
+  backdrop.classList.remove('open');
+  document.body.style.overflow='';
+  modalOpen=false;
+}
+
+function handleBackdropClick(e){
+  if(e.target===backdrop)closeServiceModal();
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modalOpen)closeServiceModal();});
+
+// Touch support for service cards
 document.querySelectorAll('.srv-card').forEach(c=>{
   let sx,sy;
   c.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
   c.addEventListener('touchend',e=>{
-    if(Math.abs(e.changedTouches[0].clientX-sx)<10&&Math.abs(e.changedTouches[0].clientY-sy)<10){
-      e.preventDefault();c.click();
-    }
+    if(Math.abs(e.changedTouches[0].clientX-sx)<10&&Math.abs(e.changedTouches[0].clientY-sy)<10){e.preventDefault();c.click();}
   },{passive:false});
 });
 </script>
